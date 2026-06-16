@@ -1,0 +1,71 @@
+version: '3.9'
+
+services:
+  # PostgreSQL database
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: team_insight_ai
+      POSTGRES_USER: ${DB_USER:-teaminsight}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-teaminsight}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # FastAPI backend
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${DB_USER:-teaminsight}:${DB_PASSWORD}@db:5432/team_insight_ai
+      AZURE_TENANT_ID: ${AZURE_TENANT_ID}
+      AZURE_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+      OPENAI_API_KEY: ${OPENAI_API_KEY}
+      AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
+      ENVIRONMENT: ${ENVIRONMENT:-development}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Next.js frontend
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXTAUTH_SECRET: ${NEXTAUTH_SECRET}
+      AZURE_AD_CLIENT_ID: ${AZURE_CLIENT_ID}
+      AZURE_AD_CLIENT_SECRET: ${AZURE_CLIENT_SECRET}
+      AZURE_AD_TENANT_ID: ${AZURE_TENANT_ID}
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+  # Redis for caching AI responses and sessions
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
