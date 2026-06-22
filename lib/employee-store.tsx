@@ -4,10 +4,11 @@ import { createContext, useContext, useState, useEffect, useCallback } from 'rea
 import { EMPLOYEES } from './mock-data'
 import type { Employee } from './types'
 
-const STORAGE_KEY = 'asi-employees'
+const STORAGE_KEY = 'perf-mgmt-employees-v2'
 
 interface EmployeeStore {
   employees: Employee[]
+  hydrated: boolean
   addEmployee: (data: Omit<Employee, 'id'>) => string
   updateEmployee: (id: string, updates: Partial<Employee>) => void
   deleteEmployee: (id: string) => void
@@ -47,7 +48,7 @@ export function EmployeeProvider({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <EmployeeContext.Provider value={{ employees, addEmployee, updateEmployee, deleteEmployee }}>
+    <EmployeeContext.Provider value={{ employees, hydrated, addEmployee, updateEmployee, deleteEmployee }}>
       {children}
     </EmployeeContext.Provider>
   )

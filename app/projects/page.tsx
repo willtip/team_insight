@@ -13,6 +13,64 @@ import type { ProjectContribution } from '@/lib/types'
 const inputCls = 'w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500'
 const labelCls = 'block text-xs font-medium text-slate-600 mb-1'
 
+interface ContribFormProps {
+  form: Partial<ProjectContribution>
+  setForm: React.Dispatch<React.SetStateAction<Partial<ProjectContribution>>>
+  showEmpSelect?: boolean
+  employees?: { id: string; name: string }[]
+  empId?: string
+  setEmpId?: (id: string) => void
+}
+
+function ContribForm({ form, setForm, showEmpSelect, employees = [], empId = '', setEmpId }: ContribFormProps) {
+  return (
+    <div className="space-y-3">
+      {showEmpSelect && (
+        <div>
+          <label className={labelCls}>Engineer *</label>
+          <select value={empId} onChange={e => setEmpId?.(e.target.value)} className={inputCls}>
+            <option value="">Select engineer...</option>
+            {employees.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+          </select>
+        </div>
+      )}
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={labelCls}>Project Name *</label>
+          <input type="text" value={form.projectName || ''} onChange={e => setForm(f => ({ ...f, projectName: e.target.value }))} className={inputCls} placeholder="Project name..." />
+        </div>
+        <div>
+          <label className={labelCls}>Initiative</label>
+          <input type="text" value={form.initiative || ''} onChange={e => setForm(f => ({ ...f, initiative: e.target.value }))} className={inputCls} placeholder="e.g. AIOps Platform" />
+        </div>
+        <div>
+          <label className={labelCls}>Date</label>
+          <input type="date" value={form.date || ''} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className={inputCls} />
+        </div>
+      </div>
+      <div>
+        <label className={labelCls}>Description</label>
+        <textarea value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="What was done..." />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label className={labelCls}>Business Impact</label>
+          <textarea value={form.businessImpact || ''} onChange={e => setForm(f => ({ ...f, businessImpact: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="Business outcomes..." />
+        </div>
+        <div>
+          <label className={labelCls}>Technical Impact</label>
+          <textarea value={form.technicalImpact || ''} onChange={e => setForm(f => ({ ...f, technicalImpact: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="Technical outcomes..." />
+        </div>
+      </div>
+      <div className="grid grid-cols-3 gap-4 pt-1">
+        <ScoreInput label="Leadership" value={form.leadershipScore ?? 3} onChange={v => setForm(f => ({ ...f, leadershipScore: v }))} />
+        <ScoreInput label="Collaboration" value={form.collaborationScore ?? 3} onChange={v => setForm(f => ({ ...f, collaborationScore: v }))} />
+        <ScoreInput label="Innovation" value={form.innovationScore ?? 3} onChange={v => setForm(f => ({ ...f, innovationScore: v }))} />
+      </div>
+    </div>
+  )
+}
+
 function ScoreInput({ label, value, onChange }: { label: string; value: number; onChange: (v: number) => void }) {
   return (
     <div>
@@ -109,55 +167,6 @@ export default function ProjectsPage() {
     setAddEmpId('')
   }
 
-  function ContribForm({ form, setForm, showEmpSelect }: { form: Partial<ProjectContribution>; setForm: React.Dispatch<React.SetStateAction<Partial<ProjectContribution>>>; showEmpSelect?: boolean }) {
-    return (
-      <div className="space-y-3">
-        {showEmpSelect && (
-          <div>
-            <label className={labelCls}>Engineer *</label>
-            <select value={addEmpId} onChange={e => setAddEmpId(e.target.value)} className={inputCls}>
-              <option value="">Select engineer...</option>
-              {EMPLOYEES.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
-            </select>
-          </div>
-        )}
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelCls}>Project Name *</label>
-            <input type="text" value={form.projectName || ''} onChange={e => setForm(f => ({ ...f, projectName: e.target.value }))} className={inputCls} placeholder="Project name..." />
-          </div>
-          <div>
-            <label className={labelCls}>Initiative</label>
-            <input type="text" value={form.initiative || ''} onChange={e => setForm(f => ({ ...f, initiative: e.target.value }))} className={inputCls} placeholder="e.g. AIOps Platform" />
-          </div>
-          <div>
-            <label className={labelCls}>Date</label>
-            <input type="date" value={form.date || ''} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className={inputCls} />
-          </div>
-        </div>
-        <div>
-          <label className={labelCls}>Description</label>
-          <textarea value={form.description || ''} onChange={e => setForm(f => ({ ...f, description: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="What was done..." />
-        </div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className={labelCls}>Business Impact</label>
-            <textarea value={form.businessImpact || ''} onChange={e => setForm(f => ({ ...f, businessImpact: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="Business outcomes..." />
-          </div>
-          <div>
-            <label className={labelCls}>Technical Impact</label>
-            <textarea value={form.technicalImpact || ''} onChange={e => setForm(f => ({ ...f, technicalImpact: e.target.value }))} className={cn(inputCls, 'resize-none h-16')} placeholder="Technical outcomes..." />
-          </div>
-        </div>
-        <div className="grid grid-cols-3 gap-4 pt-1">
-          <ScoreInput label="Leadership" value={form.leadershipScore ?? 3} onChange={v => setForm(f => ({ ...f, leadershipScore: v }))} />
-          <ScoreInput label="Collaboration" value={form.collaborationScore ?? 3} onChange={v => setForm(f => ({ ...f, collaborationScore: v }))} />
-          <ScoreInput label="Innovation" value={form.innovationScore ?? 3} onChange={v => setForm(f => ({ ...f, innovationScore: v }))} />
-        </div>
-      </div>
-    )
-  }
-
   return (
     <div className="flex flex-col min-h-screen">
       <Header
@@ -193,7 +202,7 @@ export default function ProjectsPage() {
               <h4 className="text-sm font-semibold text-slate-800">New Contribution</h4>
               <button onClick={() => { setAddingContrib(false); setAddForm({ leadershipScore: 3, collaborationScore: 3, innovationScore: 3, evidenceLinks: [] }); setAddEmpId('') }} className="ml-auto text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
             </div>
-            <ContribForm form={addForm} setForm={setAddForm} showEmpSelect />
+            <ContribForm form={addForm} setForm={setAddForm} showEmpSelect employees={EMPLOYEES} empId={addEmpId} setEmpId={setAddEmpId} />
             <div className="flex gap-2 mt-4">
               <button onClick={saveNewContrib} className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors">
                 <Check className="w-3.5 h-3.5" /> Save Contribution

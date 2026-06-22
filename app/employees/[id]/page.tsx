@@ -19,16 +19,17 @@ import {
   MapPin, Mail, Calendar, Building2, ArrowLeft, Star,
   AlertCircle, Target, Zap, BookOpen, MessageSquare,
   Award, TrendingUp, TrendingDown, Minus, ExternalLink,
-  CheckCircle, Clock, AlertTriangle, Lock, Plus,
+  CheckCircle, Clock, AlertTriangle, Lock, Plus, X, Users,
   Lightbulb, Flame, Pencil, Share2, Trophy, Trash2,
 } from 'lucide-react'
 import type {
   Accomplishment, SkillLevel, Goal, ProjectContribution,
   DirectorNote, Certification, Training, Conference, MentoringRelation,
   GoalStatus, GoalPriority, GoalCategory, NoteCategory,
+  OneOnOne, OneOnOneIDS, OneOnOneActionItem,
 } from '@/lib/types'
 
-const TABS = ['Overview', 'Goals', 'Skills', 'Projects', 'Development', 'Accomplishments', 'Notes', 'Performance'] as const
+const TABS = ['Overview', 'Goals', 'Skills', 'Projects', 'Development', 'Accomplishments', 'Notes', '1:1s', 'Performance'] as const
 type Tab = typeof TABS[number]
 
 const SKILL_LEVELS: SkillLevel[] = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
@@ -84,8 +85,11 @@ function EditBtn({ onClick }: { onClick: () => void }) {
 }
 
 export default function EmployeeProfilePage({ params }: { params: { id: string } }) {
-  const { employees, updateEmployee } = useEmployees()
+  const { employees, hydrated, updateEmployee } = useEmployees()
+
   const employee = employees.find(e => e.id === params.id)
+  // During SSR and before localStorage loads, EMPLOYEES is [] — wait for hydration
+  if (!hydrated) return null
   if (!employee) return notFound()
 
   const router = useRouter()
@@ -371,6 +375,43 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
   const deleteAccom = (id: string) => {
     updateEmployee(employee.id, { accomplishments: accomplishments.filter(a => a.id !== id) })
     setDeletingAccomId(null)
+  }
+
+  // ── 1:1 Meetings ───────────────────────────────────────
+  const oneOnOnes = employee.oneOnOnes ?? []
+  const [addingOon, setAddingOon] = useState(false)
+  const [editingOonId, setEditingOonId] = useState<string | null>(null)
+  const [deletingOonId, setDeletingOonId] = useState<string | null>(null)
+  const [oonForm, setOonForm] = useState<Partial<OneOnOne>>({})
+
+  const blankOon = (): Partial<OneOnOne> => ({
+    date: new Date().toISOString().split('T')[0],
+    companyUpdates: '', scorecardHighlights: '', ids: [], feedback: '', actionItems: [],
+  })
+  const openAddOon = () => { setOonForm(blankOon()); setEditingOonId(null); setAddingOon(true) }
+  const openEditOon = (o: OneOnOne) => { setOonForm({ ...o }); setEditingOonId(o.id); setAddingOon(false) }
+  const cancelOon = () => { setEditingOonId(null); setAddingOon(false) }
+  const saveOon = () => {
+    if (!oonForm.date?.trim()) return
+    if (addingOon) {
+      const item: OneOnOne = {
+        id: `oon-${Date.now()}`, employeeId: employee.id,
+        date: oonForm.date!, companyUpdates: oonForm.companyUpdates ?? '',
+        scorecardHighlights: oonForm.scorecardHighlights ?? '',
+        ids: oonForm.ids ?? [], feedback: oonForm.feedback ?? '',
+        actionItems: oonForm.actionItems ?? [],
+      }
+      updateEmployee(employee.id, { oneOnOnes: [item, ...oneOnOnes] })
+    } else {
+      updateEmployee(employee.id, {
+        oneOnOnes: oneOnOnes.map(o => o.id === editingOonId ? { ...o, ...oonForm } as OneOnOne : o)
+      })
+    }
+    cancelOon()
+  }
+  const deleteOon = (id: string) => {
+    updateEmployee(employee.id, { oneOnOnes: oneOnOnes.filter(o => o.id !== id) })
+    setDeletingOonId(null)
   }
 
   // ── Derived ────────────────────────────────────────────
@@ -666,6 +707,9 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
               )}
               {tab === 'Accomplishments' && accomplishments.length > 0 && (
                 <span className="ml-1.5 text-xs bg-purple-100 text-purple-700 px-1.5 py-0.5 rounded-full">{accomplishments.length}</span>
+              )}
+              {tab === '1:1s' && oneOnOnes.length > 0 && (
+                <span className="ml-1.5 text-xs bg-teal-100 text-teal-700 px-1.5 py-0.5 rounded-full">{oneOnOnes.length}</span>
               )}
             </button>
           ))}
@@ -1307,6 +1351,128 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
           </div>
         )}
 
+        {/* ── 1:1 MEETINGS ── */}
+        {activeTab === '1:1s' && (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-slate-500">{oneOnOnes.length} meeting{oneOnOnes.length !== 1 ? 's' : ''} recorded</p>
+              <Button size="sm" icon={<Plus className="w-3.5 h-3.5" />} onClick={openAddOon}>New 1:1</Button>
+            </div>
+            {addingOon && (
+              <OonForm form={oonForm} setForm={setOonForm} onSave={saveOon} onCancel={cancelOon} isNew
+                employeeScorecard={{ overall: employee.performanceScore.overall, goalAchievement: employee.performanceScore.goalAchievement, atRiskCount: employee.goals.filter(g => g.status === 'At Risk').length }} />
+            )}
+            {[...oneOnOnes].sort((a, b) => b.date.localeCompare(a.date)).map(oon => (
+              editingOonId === oon.id
+                ? (
+                  <OonForm key={oon.id} form={oonForm} setForm={setOonForm} onSave={saveOon} onCancel={cancelOon}
+                    employeeScorecard={{ overall: employee.performanceScore.overall, goalAchievement: employee.performanceScore.goalAchievement, atRiskCount: employee.goals.filter(g => g.status === 'At Risk').length }} />
+                ) : (
+                  <div key={oon.id} className="bg-white rounded-xl border border-slate-200 p-5">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="bg-teal-50 border border-teal-200 rounded-lg px-3 py-2">
+                          <p className="text-xs font-bold text-teal-700">{formatDate(oon.date)}</p>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-semibold text-slate-900">1:1 Meeting</h4>
+                          <p className="text-xs text-slate-500">
+                            {oon.actionItems.length > 0 && `${oon.actionItems.filter(a => !a.completed).length}/${oon.actionItems.length} action items open`}
+                            {oon.ids.length > 0 && ` · ${oon.ids.length} IDS item${oon.ids.length !== 1 ? 's' : ''}`}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <EditBtn onClick={() => openEditOon(oon)} />
+                        <DeleteConfirm id={oon.id} deletingId={deletingOonId} onArm={() => setDeletingOonId(oon.id)} onConfirm={() => deleteOon(oon.id)} onCancel={() => setDeletingOonId(null)} />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-3 mb-4 bg-slate-50 rounded-lg p-3">
+                      <div className="text-center">
+                        <p className={cn('text-lg font-bold', scoreToColor(employee.performanceScore.overall))}>{employee.performanceScore.overall}</p>
+                        <p className="text-[10px] text-slate-500">Overall</p>
+                      </div>
+                      <div className="text-center">
+                        <p className={cn('text-lg font-bold', scoreToColor(employee.performanceScore.goalAchievement))}>{employee.performanceScore.goalAchievement}</p>
+                        <p className="text-[10px] text-slate-500">Goal Achievement</p>
+                      </div>
+                      <div className="text-center">
+                        <p className={cn('text-lg font-bold', employee.goals.filter(g => g.status === 'At Risk').length > 0 ? 'text-amber-600' : 'text-green-600')}>
+                          {employee.goals.filter(g => g.status === 'At Risk').length}
+                        </p>
+                        <p className="text-[10px] text-slate-500">At-Risk Goals</p>
+                      </div>
+                    </div>
+                    {oon.companyUpdates && (
+                      <div className="mb-3">
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Company Updates</p>
+                        <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{oon.companyUpdates}</p>
+                      </div>
+                    )}
+                    {oon.scorecardHighlights && (
+                      <div className="mb-3">
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Scorecard Notes</p>
+                        <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{oon.scorecardHighlights}</p>
+                      </div>
+                    )}
+                    {oon.ids.length > 0 && (
+                      <div className="mb-3">
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">IDS Items</p>
+                        <div className="space-y-2">
+                          {oon.ids.map((item, idx) => (
+                            <div key={item.id} className="border border-slate-200 rounded-lg p-3 text-xs">
+                              <p className="font-semibold text-slate-500 mb-1.5">Issue {idx + 1}</p>
+                              {item.issue && <p className="text-slate-700 mb-0.5"><span className="font-medium">Identify:</span> {item.issue}</p>}
+                              {item.discussion && <p className="text-slate-700 mb-0.5"><span className="font-medium">Discuss:</span> {item.discussion}</p>}
+                              {item.solve && <p className="text-slate-700"><span className="font-medium">Solve:</span> {item.solve}</p>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {oon.feedback && (
+                      <div className="mb-3">
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-1">Feedback & Notes</p>
+                        <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-line">{oon.feedback}</p>
+                      </div>
+                    )}
+                    {oon.actionItems.length > 0 && (
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide mb-2">Action Items</p>
+                        <div className="space-y-1.5">
+                          {oon.actionItems.map(ai => (
+                            <div key={ai.id} className={cn('flex items-center gap-2 text-xs p-2 rounded-lg', ai.completed ? 'bg-green-50' : 'bg-slate-50')}>
+                              <button
+                                onClick={() => updateEmployee(employee.id, {
+                                  oneOnOnes: oneOnOnes.map(o => o.id === oon.id
+                                    ? { ...o, actionItems: o.actionItems.map(a => a.id === ai.id ? { ...a, completed: !a.completed } : a) }
+                                    : o)
+                                })}
+                                className={cn('w-4 h-4 flex-shrink-0 rounded border flex items-center justify-center transition-colors', ai.completed ? 'bg-green-500 border-green-500' : 'border-slate-300 hover:border-green-400')}>
+                                {ai.completed && <CheckCircle className="w-3 h-3 text-white" />}
+                              </button>
+                              <span className={cn('font-medium text-slate-700', ai.completed && 'line-through text-slate-400')}>{ai.who}</span>
+                              <span className={cn('text-slate-600 flex-1', ai.completed && 'line-through text-slate-400')}>{ai.what}</span>
+                              {ai.dueDate && <span className="text-slate-400 flex-shrink-0">Due {formatDate(ai.dueDate)}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )
+            ))}
+            {oneOnOnes.length === 0 && !addingOon && (
+              <div className="bg-white rounded-xl border border-slate-200 p-16 text-center">
+                <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+                <p className="text-slate-500 font-medium">No 1:1 meetings recorded yet</p>
+                <p className="text-sm text-slate-400 mt-1">Document structured 1:1s to track discussions and action items</p>
+                <Button size="sm" className="mt-4" icon={<Plus className="w-3.5 h-3.5" />} onClick={openAddOon}>Record First 1:1</Button>
+              </div>
+            )}
+          </div>
+        )}
+
         {/* ── PERFORMANCE ── */}
         {activeTab === 'Performance' && (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
@@ -1367,6 +1533,225 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
       </div>
 
       {showEditModal && <EmployeeFormModal employee={employee} onClose={() => setShowEditModal(false)} />}
+    </div>
+  )
+}
+
+function OonForm({ form, setForm, onSave, onCancel, isNew, employeeScorecard }: {
+  form: Partial<OneOnOne>
+  setForm: React.Dispatch<React.SetStateAction<Partial<OneOnOne>>>
+  onSave: () => void; onCancel: () => void; isNew?: boolean
+  employeeScorecard: { overall: number; goalAchievement: number; atRiskCount: number }
+}) {
+  const INPUT = 'w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500'
+  const LABEL = 'text-xs font-medium text-slate-700 mb-1 block'
+  const ids = form.ids ?? []
+  const actionItems = form.actionItems ?? []
+
+  // ── Import panel state ─────────────────────────────────
+  const [importOpen, setImportOpen] = useState(false)
+  const [importText, setImportText] = useState('')
+  const [importing, setImporting] = useState(false)
+  const [importResult, setImportResult] = useState<{
+    fields: string[]; error?: string
+  } | null>(null)
+
+  const parseNotes = async () => {
+    if (!importText.trim()) return
+    setImporting(true)
+    setImportResult(null)
+    try {
+      const res = await fetch('/api/parse-meeting-notes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notes: importText }),
+      })
+      if (!res.ok) throw new Error('Parse failed')
+      const data = await res.json()
+      const filled: string[] = []
+      setForm(f => {
+        const next = { ...f }
+        if (data.companyUpdates?.trim()) { next.companyUpdates = data.companyUpdates; filled.push('Company Updates') }
+        if (data.scorecardHighlights?.trim()) { next.scorecardHighlights = data.scorecardHighlights; filled.push('Scorecard Notes') }
+        if (data.ids?.length) { next.ids = [...(f.ids ?? []), ...data.ids]; filled.push(`${data.ids.length} IDS item${data.ids.length !== 1 ? 's' : ''}`) }
+        if (data.feedback?.trim()) { next.feedback = data.feedback; filled.push('Feedback') }
+        if (data.actionItems?.length) { next.actionItems = [...(f.actionItems ?? []), ...data.actionItems]; filled.push(`${data.actionItems.length} action item${data.actionItems.length !== 1 ? 's' : ''}`) }
+        return next
+      })
+      setImportResult({ fields: filled })
+      setImportOpen(false)
+    } catch {
+      setImportResult({ fields: [], error: 'Could not parse notes — check your API key or try again.' })
+    } finally {
+      setImporting(false)
+    }
+  }
+
+  // ── IDS helpers ────────────────────────────────────────
+  const addIDS = () => setForm(f => ({
+    ...f, ids: [...(f.ids ?? []), { id: `ids-${Date.now()}`, issue: '', discussion: '', solve: '' }],
+  }))
+  const removeIDS = (id: string) => setForm(f => ({ ...f, ids: (f.ids ?? []).filter(i => i.id !== id) }))
+  const updateIDS = (id: string, field: keyof OneOnOneIDS, value: string) =>
+    setForm(f => ({ ...f, ids: (f.ids ?? []).map(i => i.id === id ? { ...i, [field]: value } : i) }))
+
+  const addActionItem = () => setForm(f => ({
+    ...f, actionItems: [...(f.actionItems ?? []), { id: `ai-${Date.now()}`, who: '', what: '', dueDate: '', completed: false }],
+  }))
+  const removeActionItem = (id: string) => setForm(f => ({ ...f, actionItems: (f.actionItems ?? []).filter(a => a.id !== id) }))
+  const updateActionItem = (id: string, field: keyof OneOnOneActionItem, value: string | boolean) =>
+    setForm(f => ({ ...f, actionItems: (f.actionItems ?? []).map(a => a.id === id ? { ...a, [field]: value } : a) }))
+
+  return (
+    <div className="bg-white rounded-xl border-2 border-brand-200 p-5 space-y-5">
+      <div className="flex items-center justify-between">
+        <h3 className="text-sm font-semibold text-slate-800 flex items-center gap-2">
+          <Users className="w-4 h-4 text-brand-600" />{isNew ? 'New 1:1 Meeting' : 'Edit 1:1 Meeting'}
+        </h3>
+        <button
+          onClick={() => { setImportOpen(v => !v); setImportResult(null) }}
+          className={cn(
+            'text-xs px-3 py-1.5 rounded-lg border font-medium flex items-center gap-1.5 transition-colors',
+            importOpen
+              ? 'bg-violet-600 text-white border-violet-600'
+              : 'bg-violet-50 text-violet-700 border-violet-200 hover:bg-violet-100'
+          )}>
+          <Zap className="w-3 h-3" />
+          {importOpen ? 'Close Import' : 'Import from AI Notes'}
+        </button>
+      </div>
+
+      {/* ── AI Import Panel ── */}
+      {importOpen && (
+        <div className="border border-violet-200 bg-violet-50 rounded-xl p-4 space-y-3">
+          <div>
+            <p className="text-xs font-semibold text-violet-800 mb-0.5">Paste notes from Otter.ai, Granola, Fathom, or Copilot</p>
+            <p className="text-[11px] text-violet-600">Paste the full transcript, summary, or any combination — AI will extract the relevant sections.</p>
+          </div>
+          <textarea
+            rows={6}
+            value={importText}
+            onChange={e => setImportText(e.target.value)}
+            className="w-full text-sm border border-violet-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-violet-400 resize-none"
+            placeholder="Paste your meeting transcript or AI-generated summary here..."
+          />
+          <div className="flex items-center gap-3">
+            <button
+              onClick={parseNotes}
+              disabled={importing || !importText.trim()}
+              className="text-xs px-4 py-2 bg-violet-600 text-white rounded-lg font-medium hover:bg-violet-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 transition-colors">
+              {importing ? (
+                <><span className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin" />Parsing...</>
+              ) : (
+                <><Zap className="w-3 h-3" />Parse with AI</>
+              )}
+            </button>
+            {!importing && importText && (
+              <button onClick={() => { setImportText(''); setImportResult(null) }} className="text-xs text-violet-500 hover:text-violet-700">
+                Clear
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* ── Import result banner ── */}
+      {importResult && !importOpen && (
+        importResult.error
+          ? (
+            <div className="flex items-start gap-2 bg-red-50 border border-red-200 rounded-lg px-3 py-2.5 text-xs text-red-700">
+              <AlertCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              {importResult.error}
+            </div>
+          ) : (
+            <div className="flex items-start gap-2 bg-green-50 border border-green-200 rounded-lg px-3 py-2.5 text-xs text-green-700">
+              <CheckCircle className="w-3.5 h-3.5 flex-shrink-0 mt-0.5" />
+              <span>
+                <strong>AI filled:</strong> {importResult.fields.join(' · ')}
+                {importResult.fields.length === 0 && 'No matching content found — try pasting more complete notes.'}
+              </span>
+            </div>
+          )
+      )}
+
+      <div>
+        <label className={LABEL}>Meeting Date *</label>
+        <input type="date" value={form.date ?? ''} onChange={e => setForm(f => ({ ...f, date: e.target.value }))} className={cn(INPUT, 'max-w-xs')} />
+      </div>
+      <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-xs text-amber-800">
+        <strong>Section 1 — Wins of the Week (2 min)</strong> · Verbal only — one personal win + one business win. No written notes needed.
+      </div>
+      <div>
+        <label className={LABEL}>Section 2 — Company Updates (2 min)</label>
+        <textarea rows={3} value={form.companyUpdates ?? ''} onChange={e => setForm(f => ({ ...f, companyUpdates: e.target.value }))} className={cn(INPUT, 'resize-none')} placeholder="Priorities, strategy changes, team updates..." />
+      </div>
+      <div>
+        <label className={LABEL}>Section 3 — Scorecard Review (3–7 min)</label>
+        <div className="grid grid-cols-3 gap-3 bg-slate-50 border border-slate-200 rounded-lg p-3 mb-2 text-center">
+          <div>
+            <p className={cn('text-lg font-bold', scoreToColor(employeeScorecard.overall))}>{employeeScorecard.overall}</p>
+            <p className="text-[10px] text-slate-500">Overall Score</p>
+          </div>
+          <div>
+            <p className={cn('text-lg font-bold', scoreToColor(employeeScorecard.goalAchievement))}>{employeeScorecard.goalAchievement}</p>
+            <p className="text-[10px] text-slate-500">Goal Achievement</p>
+          </div>
+          <div>
+            <p className={cn('text-lg font-bold', employeeScorecard.atRiskCount > 0 ? 'text-amber-600' : 'text-green-600')}>{employeeScorecard.atRiskCount}</p>
+            <p className="text-[10px] text-slate-500">Goals At Risk</p>
+          </div>
+        </div>
+        <textarea rows={3} value={form.scorecardHighlights ?? ''} onChange={e => setForm(f => ({ ...f, scorecardHighlights: e.target.value }))} className={cn(INPUT, 'resize-none')} placeholder="Notes on metrics, red vs. green trends..." />
+      </div>
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className={LABEL}>Section 4 — IDS: Identify, Discuss, Solve (8 min)</label>
+          <button onClick={addIDS} className="text-xs px-2.5 py-1 bg-brand-50 text-brand-700 rounded-md hover:bg-brand-100 flex items-center gap-1">
+            <Plus className="w-3 h-3" />Add Issue
+          </button>
+        </div>
+        {ids.length === 0 && <p className="text-xs text-slate-400 py-1">No issues added. Click "Add Issue" to log one.</p>}
+        <div className="space-y-3">
+          {ids.map((item, idx) => (
+            <div key={item.id} className="border border-slate-200 rounded-lg p-3 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-semibold text-slate-500">Issue {idx + 1}</span>
+                <button onClick={() => removeIDS(item.id)} className="text-slate-300 hover:text-red-500 transition-colors"><X className="w-3.5 h-3.5" /></button>
+              </div>
+              <div><label className={LABEL}>Identify — What is the issue?</label><textarea rows={1} value={item.issue} onChange={e => updateIDS(item.id, 'issue', e.target.value)} className={cn(INPUT, 'resize-none')} /></div>
+              <div><label className={LABEL}>Discuss — What's the root cause?</label><textarea rows={1} value={item.discussion} onChange={e => updateIDS(item.id, 'discussion', e.target.value)} className={cn(INPUT, 'resize-none')} /></div>
+              <div><label className={LABEL}>Solve — Agreed action</label><textarea rows={1} value={item.solve} onChange={e => updateIDS(item.id, 'solve', e.target.value)} className={cn(INPUT, 'resize-none')} /></div>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div>
+        <label className={LABEL}>Section 5 — Questions & Feedback (3–5 min)</label>
+        <textarea rows={3} value={form.feedback ?? ''} onChange={e => setForm(f => ({ ...f, feedback: e.target.value }))} className={cn(INPUT, 'resize-none')} placeholder="Check-in, coaching observations, direct feedback..." />
+      </div>
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label className={LABEL}>Section 6 — Action Items (2 min)</label>
+          <button onClick={addActionItem} className="text-xs px-2.5 py-1 bg-brand-50 text-brand-700 rounded-md hover:bg-brand-100 flex items-center gap-1">
+            <Plus className="w-3 h-3" />Add Item
+          </button>
+        </div>
+        {actionItems.length === 0 && <p className="text-xs text-slate-400 py-1">No action items yet.</p>}
+        <div className="space-y-2">
+          {actionItems.map(item => (
+            <div key={item.id} className="grid grid-cols-[1fr_2fr_auto_auto] gap-2 items-center">
+              <input value={item.who} onChange={e => updateActionItem(item.id, 'who', e.target.value)} placeholder="WHO" className={INPUT} />
+              <input value={item.what} onChange={e => updateActionItem(item.id, 'what', e.target.value)} placeholder="WHAT" className={INPUT} />
+              <input type="date" value={item.dueDate} onChange={e => updateActionItem(item.id, 'dueDate', e.target.value)} className={INPUT} />
+              <button onClick={() => removeActionItem(item.id)} className="text-slate-300 hover:text-red-500 transition-colors flex-shrink-0"><X className="w-3.5 h-3.5" /></button>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div className="flex gap-2 justify-end pt-2 border-t border-slate-100">
+        <Button variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>
+        <Button size="sm" onClick={onSave} disabled={!form.date?.trim()}>Save Meeting</Button>
+      </div>
     </div>
   )
 }

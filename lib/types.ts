@@ -143,6 +143,33 @@ export interface Accomplishment {
   recognizedBy?: string
 }
 
+export interface OneOnOneIDS {
+  id: string
+  issue: string
+  discussion: string
+  solve: string
+}
+
+export interface OneOnOneActionItem {
+  id: string
+  who: string
+  what: string
+  dueDate: string
+  completed: boolean
+  goalId?: string
+}
+
+export interface OneOnOne {
+  id: string
+  employeeId: string
+  date: string
+  companyUpdates: string
+  scorecardHighlights: string
+  ids: OneOnOneIDS[]
+  feedback: string
+  actionItems: OneOnOneActionItem[]
+}
+
 export interface Employee {
   id: string
   name: string
@@ -169,6 +196,7 @@ export interface Employee {
   needsCoaching: boolean
   tags: string[]
   accomplishments?: Accomplishment[]
+  oneOnOnes?: OneOnOne[]
 }
 
 export interface TeamMetrics {

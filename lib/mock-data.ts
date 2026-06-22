@@ -2,14 +2,16 @@ import type { Employee, TeamMetrics, GoalTrend, AIInsight, SkillMatrixEntry } fr
 
 export const CURRENT_USER = {
   id: 'mgr-001',
-  name: 'William Tipton',
-  title: 'Director of AIOps, Automation Solution Engineering',
-  email: 'willtip@gmail.com',
+  name: '',
+  title: '',
+  email: '',
   role: 'director' as const,
-  department: 'Automation Solution Engineering (ASE)',
+  department: '',
 }
 
-export const EMPLOYEES: Employee[] = [
+export const EMPLOYEES: Employee[] = []
+
+const _UNUSED_EMPLOYEES_PLACEHOLDER: Employee[] = [
   {
     id: 'emp-001',
     name: 'Sarah Chen',
@@ -683,34 +685,29 @@ export const EMPLOYEES: Employee[] = [
 ]
 
 export const TEAM_METRICS: TeamMetrics = {
-  totalMembers: 10,
-  teamHealthScore: 79,
-  goalCompletionRate: 68,
-  skillsGrowthScore: 82,
-  promotionReadyCount: 2,
-  needsCoachingCount: 2,
-  activeProjects: 12,
-  completedTrainings: 18,
+  totalMembers: 0,
+  teamHealthScore: 0,
+  goalCompletionRate: 0,
+  skillsGrowthScore: 0,
+  promotionReadyCount: 0,
+  needsCoachingCount: 0,
+  activeProjects: 0,
+  completedTrainings: 0,
 }
 
-export const GOAL_TRENDS: GoalTrend[] = [
-  { month: 'Jan', completed: 4, inProgress: 12, atRisk: 2, total: 18 },
-  { month: 'Feb', completed: 7, inProgress: 14, atRisk: 3, total: 24 },
-  { month: 'Mar', completed: 11, inProgress: 16, atRisk: 2, total: 29 },
-  { month: 'Apr', completed: 14, inProgress: 18, atRisk: 3, total: 35 },
-  { month: 'May', completed: 18, inProgress: 16, atRisk: 2, total: 36 },
-  { month: 'Jun', completed: 20, inProgress: 19, atRisk: 4, total: 43 },
-]
+export const GOAL_TRENDS: GoalTrend[] = []
 
 export const PERFORMANCE_DISTRIBUTION = [
-  { range: '90-100', label: 'Outstanding', count: 2, color: '#22c55e' },
-  { range: '80-89', label: 'Exceeds', count: 3, color: '#3b82f6' },
-  { range: '70-79', label: 'Meets', count: 3, color: '#6366f1' },
-  { range: '60-69', label: 'Developing', count: 2, color: '#f59e0b' },
+  { range: '90-100', label: 'Outstanding', count: 0, color: '#22c55e' },
+  { range: '80-89', label: 'Exceeds', count: 0, color: '#3b82f6' },
+  { range: '70-79', label: 'Meets', count: 0, color: '#6366f1' },
+  { range: '60-69', label: 'Developing', count: 0, color: '#f59e0b' },
   { range: 'Below 60', label: 'Needs Focus', count: 0, color: '#ef4444' },
 ]
 
-export const AI_INSIGHTS: AIInsight[] = [
+export const AI_INSIGHTS: AIInsight[] = []
+
+const _UNUSED_AI_INSIGHTS_PLACEHOLDER: AIInsight[] = [
   {
     id: 'ai-1',
     type: 'promotion',
