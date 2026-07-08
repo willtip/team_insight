@@ -49,6 +49,12 @@ const INTEGRATION_FIELDS: Record<string, Field[]> = {
     { key: 'clientId', label: 'Client ID', placeholder: 'Enter Client ID' },
     { key: 'clientSecret', label: 'Client Secret', type: 'password', placeholder: 'Enter Client Secret' },
   ],
+  'Degreed': [
+    { key: 'clientId', label: 'Client ID', placeholder: 'Degreed OAuth Client ID' },
+    { key: 'clientSecret', label: 'Client Secret', type: 'password', placeholder: 'Degreed OAuth Client Secret' },
+    { key: 'baseUrl', label: 'API Base URL', type: 'url', placeholder: 'https://api.degreed.com' },
+    { key: 'authUrl', label: 'OAuth Token URL', type: 'url', placeholder: 'https://degreed.com/oauth/token' },
+  ],
 }
 
 interface Props {
@@ -80,8 +86,33 @@ export default function IntegrationConfigModal({ name, onClose, onSaved }: Props
     setTimeout(() => setSaved(false), 2000)
   }
 
-  const handleTest = () => {
+  const handleTest = async () => {
     setTestStatus('testing')
+
+    // For Degreed, call the real test-connection endpoint
+    if (name === 'Degreed') {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:8000'
+        const res = await fetch(`${apiBase}/api/v1/degreed/test-connection`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            client_id: values.clientId ?? '',
+            client_secret: values.clientSecret ?? '',
+            base_url: values.baseUrl || 'https://api.degreed.com',
+            auth_url: values.authUrl || 'https://degreed.com/oauth/token',
+          }),
+        })
+        const data = await res.json()
+        setTestStatus(data.connected ? 'success' : 'failed')
+      } catch {
+        setTestStatus('failed')
+      }
+      setTimeout(() => setTestStatus('idle'), 3000)
+      return
+    }
+
+    // Generic mock test for other integrations
     setTimeout(() => {
       setTestStatus(Math.random() > 0.3 ? 'success' : 'failed')
       setTimeout(() => setTestStatus('idle'), 3000)

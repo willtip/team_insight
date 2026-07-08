@@ -33,6 +33,10 @@ services:
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-development}
+      DEGREED_CLIENT_ID: ${DEGREED_CLIENT_ID:-}
+      DEGREED_CLIENT_SECRET: ${DEGREED_CLIENT_SECRET:-}
+      DEGREED_BASE_URL: ${DEGREED_BASE_URL:-https://api.degreed.com}
+      DEGREED_AUTH_URL: ${DEGREED_AUTH_URL:-https://degreed.com/oauth/token}
     ports:
       - "8000:8000"
     depends_on:

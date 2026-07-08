@@ -14,6 +14,7 @@ import {
   BrainCircuit,
   ChevronRight,
   Shield,
+  BookOpen,
 } from 'lucide-react'
 import { cn, initials, avatarColor } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/mock-data'
@@ -27,6 +28,7 @@ const NAV_ITEMS = [
   { href: '/insights', label: 'AI Insights', icon: BrainCircuit, badge: '5' },
   { href: '/notes', label: 'Director Notes', icon: MessageSquare, badge: '2' },
   { href: '/reports', label: 'Reports', icon: FileText },
+  { href: '/degreed', label: 'Degreed', icon: BookOpen },
 ]
 
 const BOTTOM_ITEMS = [

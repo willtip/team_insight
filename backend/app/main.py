@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from app.routers import employees, goals, skills, projects, insights, notes, reports, auth
+from app.routers import employees, goals, skills, projects, insights, notes, reports, auth, degreed
 
 app = FastAPI(
     title="Team Insight AI API",
@@ -34,6 +34,7 @@ app.include_router(projects.router, prefix="/api/v1/projects", tags=["Projects"]
 app.include_router(insights.router, prefix="/api/v1/insights", tags=["AI Insights"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["Director Notes"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(degreed.router, prefix="/api/v1/degreed", tags=["Degreed"])
 
 
 @app.get("/api/health")

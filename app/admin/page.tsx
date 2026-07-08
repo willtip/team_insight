@@ -27,6 +27,7 @@ const INTEGRATIONS = [
   { name: 'Pluralsight', status: 'connected', icon: '📚', description: 'Training completion auto-sync' },
   { name: 'LinkedIn Learning', status: 'disconnected', icon: '💼', description: 'Course completion import' },
   { name: 'Workday', status: 'pending', icon: '🏢', description: 'HR data and org hierarchy sync' },
+  { name: 'Degreed', status: 'disconnected', icon: '🎓', description: 'Skills, ratings, and learning assignments sync' },
 ]
 
 const NOTIF_STORAGE_KEY = 'admin-notifications'
