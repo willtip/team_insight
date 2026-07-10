@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react'
+import InfoTooltip from '@/components/ui/InfoTooltip'
 
 interface StatCardProps {
   title: string
@@ -10,9 +11,10 @@ interface StatCardProps {
   trend?: { value: string; direction: 'up' | 'down' | 'stable'; positive?: boolean }
   highlight?: boolean
   className?: string
+  info?: string
 }
 
-export default function StatCard({ title, value, subtitle, icon, iconBg = 'bg-brand-50', trend, highlight, className }: StatCardProps) {
+export default function StatCard({ title, value, subtitle, icon, iconBg = 'bg-brand-50', trend, highlight, className, info }: StatCardProps) {
   const TrendIcon = trend?.direction === 'up' ? TrendingUp : trend?.direction === 'down' ? TrendingDown : Minus
 
   return (
@@ -25,17 +27,20 @@ export default function StatCard({ title, value, subtitle, icon, iconBg = 'bg-br
         <div className={cn('p-2 rounded-lg', iconBg)}>
           {icon}
         </div>
-        {trend && (
-          <div className={cn(
-            'flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full',
-            trend.positive === false
-              ? trend.direction === 'up' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
-              : trend.direction === 'up' ? 'bg-green-50 text-green-600' : trend.direction === 'down' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500'
-          )}>
-            <TrendIcon className="w-3 h-3" />
-            {trend.value}
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {trend && (
+            <div className={cn(
+              'flex items-center gap-1 text-xs font-medium px-2 py-1 rounded-full',
+              trend.positive === false
+                ? trend.direction === 'up' ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'
+                : trend.direction === 'up' ? 'bg-green-50 text-green-600' : trend.direction === 'down' ? 'bg-red-50 text-red-600' : 'bg-slate-50 text-slate-500'
+            )}>
+              <TrendIcon className="w-3 h-3" />
+              {trend.value}
+            </div>
+          )}
+          {info && <InfoTooltip text={info} />}
+        </div>
       </div>
       <div>
         <p className="text-2xl font-bold text-slate-900">{value}</p>

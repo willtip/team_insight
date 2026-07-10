@@ -72,6 +72,7 @@ export default function Dashboard() {
             icon={<Users className="w-5 h-5 text-brand-600" />}
             iconBg="bg-brand-50"
             trend={{ value: '+1 this Q', direction: 'up' }}
+            info="Total number of engineers currently on the ASE team, including full-time staff and contractors."
           />
           <StatCard
             title="Team Health Score"
@@ -81,6 +82,7 @@ export default function Dashboard() {
             iconBg="bg-rose-50"
             trend={{ value: '+4 pts', direction: 'up' }}
             highlight
+            info="A composite 0-100 score reflecting overall team well-being, based on goal progress, workload balance, engagement, and retention risk."
           />
           <StatCard
             title="Goal Completion"
@@ -89,6 +91,7 @@ export default function Dashboard() {
             icon={<Target className="w-5 h-5 text-green-600" />}
             iconBg="bg-green-50"
             trend={{ value: '+12% vs Q1', direction: 'up' }}
+            info="Percentage of this quarter's goals that are completed or on track, out of all active goals assigned to the team."
           />
           <StatCard
             title="Skills Growth"
@@ -97,6 +100,7 @@ export default function Dashboard() {
             icon={<TrendingUp className="w-5 h-5 text-indigo-600" />}
             iconBg="bg-indigo-50"
             trend={{ value: '+8 pts YoY', direction: 'up' }}
+            info="Average increase in team skill proficiency levels compared to the previous baseline assessment."
           />
         </div>
 
@@ -107,6 +111,7 @@ export default function Dashboard() {
             subtitle="Ready now or 6 months"
             icon={<Award className="w-5 h-5 text-amber-500" />}
             iconBg="bg-amber-50"
+            info="Number of engineers rated 'Ready Now' or 'Ready in 6 Months' based on performance history and readiness criteria."
           />
           <StatCard
             title="Needs Coaching"
@@ -115,6 +120,7 @@ export default function Dashboard() {
             icon={<AlertCircle className="w-5 h-5 text-orange-500" />}
             iconBg="bg-orange-50"
             trend={{ value: 'Action needed', direction: 'stable', positive: false }}
+            info="Number of engineers currently on an active coaching plan due to performance gaps or development needs."
           />
           <StatCard
             title="Active Projects"
@@ -122,6 +128,7 @@ export default function Dashboard() {
             subtitle="Cross-team initiatives"
             icon={<Briefcase className="w-5 h-5 text-teal-600" />}
             iconBg="bg-teal-50"
+            info="Count of cross-team initiatives and projects currently in progress with team member contributions."
           />
           <StatCard
             title="Trainings Done"
@@ -130,6 +137,7 @@ export default function Dashboard() {
             icon={<BookOpen className="w-5 h-5 text-violet-600" />}
             iconBg="bg-violet-50"
             trend={{ value: '+6 this Q', direction: 'up' }}
+            info="Total number of training courses, certifications, and learning modules completed by the team so far this year."
           />
         </div>
 
