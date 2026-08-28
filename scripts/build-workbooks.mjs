@@ -9,15 +9,19 @@
  *   Team_Skills_Assessment_Matrix_EXAMPLE.xlsx   — populated worked example
  *   Skills_Self_Assessment_INTAKE.xlsx           — the engineer-facing form
  */
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, writeFile, rm } from 'node:fs/promises'
 import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
 const ExcelJS = require('exceljs')
 
-// Compiled from lib/ by the npm script that wraps this file.
-const LIB = process.env.TI_LIB_DIR
+// The wrapping npm script always compiles lib/ into .tmp-lib next to this
+// script's own repo root — found relative to __dirname rather than an env var,
+// so this works the same in bash, PowerShell and cmd.exe.
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const LIB = path.join(ROOT, '.tmp-lib')
 const { AAP_SKILL_CATALOG, ROLE_PROFILES, PROFICIENCY_ANCHORS, CATALOG_SOURCES, DEFAULT_THRESHOLDS } =
   require(path.join(LIB, 'skill-catalog.js'))
 const { EMPLOYEES } = require(path.join(LIB, 'mock-data.js'))
@@ -676,6 +680,11 @@ const main = async () => {
     console.log(`  ✓ ${name}`)
   }
   console.log(`\ndone → ${path.resolve(OUT)}`)
+
+  // Clean up the tsc staging dir in Node rather than a shell `rm -rf`, which
+  // doesn't exist as such on Windows (cmd has no `rm`; PowerShell's alias
+  // doesn't take -rf flags).
+  await rm(LIB, { recursive: true, force: true })
 }
 
 main().catch(e => { console.error('FAILED:', e); process.exit(1) })
