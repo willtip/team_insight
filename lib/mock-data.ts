@@ -10,9 +10,7 @@ export const CURRENT_USER = {
   department: '',
 }
 
-export const EMPLOYEES: Employee[] = []
-
-const _UNUSED_EMPLOYEES_PLACEHOLDER: Employee[] = [
+export const EMPLOYEES: Employee[] = [
   {
     id: 'emp-001',
     name: 'Sarah Chen',
