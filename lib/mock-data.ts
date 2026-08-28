@@ -1,4 +1,5 @@
-import type { Employee, TeamMetrics, GoalTrend, AIInsight, SkillMatrixEntry } from './types'
+import { SEED_ASSESSMENTS, SEED_ROLE_PROFILES } from './seed-assessments'
+import type { Employee, TeamMetrics, GoalTrend, AIInsight } from './types'
 
 export const CURRENT_USER = {
   id: 'mgr-001',
@@ -28,16 +29,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['AIOps', 'Observability', 'Mentor', 'High Impact'],
     promotionReadiness: 'Ready in 6 Months',
-    skills: [
-      { id: 's1', name: 'AIOps', category: 'AI Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'Observability', category: 'Infrastructure', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's3', name: 'Python', category: 'Languages', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-04-15', score: 4 },
-      { id: 's4', name: 'MLOps', category: 'AI Automation', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's5', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's6', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-05-10', score: 2 },
-      { id: 's7', name: 'Ansible', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's8', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-15', score: 3 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-001'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-001'],
     goals: [
       {
         id: 'g1', employeeId: 'emp-001', title: 'Deploy AI Incident Correlation Engine v2', description: 'Upgrade ML correlation model to reduce false positives by 40% using transformer-based anomaly detection.', strategicAlignment: 'AIOps Platform OKR Q2', dueDate: '2026-06-30', priority: 'Critical', progress: 85, status: 'In Progress', category: 'Quarterly', createdAt: '2026-04-01', updatedAt: '2026-06-10',
@@ -115,16 +108,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['Data Pipelines', 'ML Features', 'Backend'],
     promotionReadiness: 'Ready in 12 Months',
-    skills: [
-      { id: 's1', name: 'Python', category: 'Languages', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'MLOps', category: 'AI Automation', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's3', name: 'AIOps', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's4', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-02-15', score: 2 },
-      { id: 's5', name: 'Ansible', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's6', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-05-01', score: 1 },
-      { id: 's7', name: 'Observability', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's8', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-03-01', score: 1 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-002'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-002'],
     goals: [
       { id: 'g5', employeeId: 'emp-002', title: 'Build Real-Time AIOps Feature Store', description: 'Deliver low-latency feature store for infra telemetry enabling sub-100ms model inference at scale.', strategicAlignment: 'AI Data Platform Initiative', dueDate: '2026-09-30', priority: 'High', progress: 35, status: 'In Progress', category: 'Annual', createdAt: '2026-02-01', updatedAt: '2026-06-08' },
       { id: 'g6', employeeId: 'emp-002', title: 'MLOps Pipeline for Model Retraining', description: 'Automated retraining pipeline triggered by model drift detection with rollback capability.', strategicAlignment: 'ML Model Reliability', dueDate: '2026-12-31', priority: 'Medium', progress: 20, status: 'In Progress', category: 'Personal Development', createdAt: '2026-01-15', updatedAt: '2026-05-01' },
@@ -181,16 +166,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['GenAI', 'LLMs', 'Full Stack', 'Fast Learner'],
     promotionReadiness: 'Ready in 12 Months',
-    skills: [
-      { id: 's1', name: 'Python', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 3 },
-      { id: 's2', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-05-20', score: 3 },
-      { id: 's3', name: 'TypeScript', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's4', name: 'MLOps', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-15', score: 2 },
-      { id: 's5', name: 'AIOps', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's6', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-03-01', score: 1 },
-      { id: 's7', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's8', name: 'Ansible', category: 'Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-02-01', score: 1 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-003'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-003'],
     goals: [
       { id: 'g8', employeeId: 'emp-003', title: 'Scale Runbook Assistant to 500+ Runbooks', description: 'Expand LLM-based runbook assistant from 80 to 500+ runbooks with feedback loop for accuracy improvement.', strategicAlignment: 'AI-Assisted Operations OKR', dueDate: '2026-08-31', priority: 'High', progress: 65, status: 'In Progress', category: 'Annual', createdAt: '2026-02-01', updatedAt: '2026-06-10' },
       { id: 'g9', employeeId: 'emp-003', title: 'Implement RAG Evaluation Framework', description: 'Build automated evaluation pipeline to measure runbook assistant accuracy, hallucination rate, and latency.', strategicAlignment: 'AI Quality & Reliability', dueDate: '2026-09-30', priority: 'Medium', progress: 30, status: 'In Progress', category: 'Personal Development', createdAt: '2026-03-01', updatedAt: '2026-05-15' },
@@ -248,16 +225,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['Ansible', 'Terraform', 'IaC', 'Automation'],
     promotionReadiness: 'Development Needed',
-    skills: [
-      { id: 's1', name: 'Ansible', category: 'Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'Terraform', category: 'Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's3', name: 'Python', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's4', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's5', name: 'CI/CD', category: 'Automation', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's6', name: 'AIOps', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-04-01', score: 1 },
-      { id: 's7', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Beginner', lastUpdated: '2026-01-01', score: 1 },
-      { id: 's8', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-02-01', score: 2 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-004'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-004'],
     goals: [
       { id: 'g11', employeeId: 'emp-004', title: 'AI-Augmented Ansible Playbook Generation', description: 'Integrate LLM-based playbook generation for standard remediation tasks, reducing manual authoring by 60%.', strategicAlignment: 'AI-Augmented Automation', dueDate: '2026-07-31', priority: 'Critical', progress: 70, status: 'In Progress', category: 'Quarterly', createdAt: '2026-04-01', updatedAt: '2026-06-11' },
       { id: 'g12', employeeId: 'emp-004', title: 'Self-Healing Infrastructure POC', description: 'Prototype automated remediation for top 10 known failure patterns using Ansible + AI decision engine.', strategicAlignment: 'Autonomous Operations Strategy', dueDate: '2026-12-31', priority: 'High', progress: 25, status: 'Not Started', category: 'Annual', createdAt: '2026-01-15', updatedAt: '2026-03-01' },
@@ -312,16 +281,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['Frontend', 'AIOps Dashboards', 'Visualization'],
     promotionReadiness: 'Ready in 12 Months',
-    skills: [
-      { id: 's1', name: 'TypeScript', category: 'Languages', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'Python', category: 'Languages', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's3', name: 'Observability', category: 'Infrastructure', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-05-15', score: 3 },
-      { id: 's4', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-05-20', score: 2 },
-      { id: 's5', name: 'AIOps', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's6', name: 'CI/CD', category: 'Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-03-01', score: 1 },
-      { id: 's7', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's8', name: 'Ansible', category: 'Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-01-01', score: 1 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-005'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-005'],
     goals: [
       { id: 'g13', employeeId: 'emp-005', title: 'Ship AIOps Operator Dashboard v2', description: 'Redesign unified ops dashboard with AI-surfaced anomalies, predictive alerts, and NL search.', strategicAlignment: 'Operator Experience OKR', dueDate: '2026-08-31', priority: 'High', progress: 55, status: 'In Progress', category: 'Annual', createdAt: '2026-02-01', updatedAt: '2026-06-10' },
       { id: 'g14', employeeId: 'emp-005', title: 'Build NL Query Interface for Ops Data', description: 'Conversational interface allowing engineers to ask questions about infrastructure health in plain English.', strategicAlignment: 'AI Innovation Initiative', dueDate: '2026-09-30', priority: 'Medium', progress: 40, status: 'In Progress', category: 'Personal Development', createdAt: '2026-03-01', updatedAt: '2026-05-20' },
@@ -376,16 +337,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['GenAI', 'LLMOps', 'ML Engineering', 'Platform'],
     promotionReadiness: 'Ready in 6 Months',
-    skills: [
-      { id: 's1', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'MLOps', category: 'AI Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's3', name: 'Python', category: 'Languages', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's4', name: 'AIOps', category: 'AI Automation', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-04-15', score: 3 },
-      { id: 's5', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's6', name: 'Observability', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's7', name: 'Terraform', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-02-01', score: 2 },
-      { id: 's8', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-15', score: 2 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-006'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-006'],
     goals: [
       { id: 'g15', employeeId: 'emp-006', title: 'Deploy Predictive Capacity Model to Production', description: 'ML model predicting infrastructure capacity needs 72h ahead with 85%+ accuracy across 5 cloud regions.', strategicAlignment: 'Autonomous Operations Strategy', dueDate: '2026-09-30', priority: 'Critical', progress: 70, status: 'In Progress', category: 'Annual', createdAt: '2026-02-01', updatedAt: '2026-06-10' },
       { id: 'g16', employeeId: 'emp-006', title: 'Build LLM Evaluation & Safety Framework', description: 'Standardized evaluation harness for all ASE LLM applications: accuracy, hallucination rate, latency, safety.', strategicAlignment: 'AI Quality & Governance', dueDate: '2026-07-31', priority: 'High', progress: 90, status: 'In Progress', category: 'Quarterly', createdAt: '2026-04-01', updatedAt: '2026-06-12' },
@@ -442,16 +395,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['CI/CD', 'GitOps', 'Automation', 'Growing Fast'],
     promotionReadiness: 'Ready in 12 Months',
-    skills: [
-      { id: 's1', name: 'CI/CD', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-05-01', score: 2 },
-      { id: 's2', name: 'Python', category: 'Languages', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-15', score: 2 },
-      { id: 's3', name: 'Ansible', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's4', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-03-01', score: 1 },
-      { id: 's5', name: 'AIOps', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-05-01', score: 1 },
-      { id: 's6', name: 'Terraform', category: 'Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-03-01', score: 1 },
-      { id: 's7', name: 'Observability', category: 'Infrastructure', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-02-01', score: 1 },
-      { id: 's8', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-04-01', score: 1 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-007'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-007'],
     goals: [
       { id: 'g17', employeeId: 'emp-007', title: 'Automate CI/CD for 15 Global Infra Services', description: 'Migrate manual deployment workflows to fully automated GitOps-based pipelines with quality gates.', strategicAlignment: 'Automation Coverage OKR', dueDate: '2026-08-31', priority: 'High', progress: 60, status: 'In Progress', category: 'Annual', createdAt: '2026-02-15', updatedAt: '2026-06-08' },
       { id: 'g18', employeeId: 'emp-007', title: 'Build First AIOps Automation Workflow', description: 'Independently design and ship one AI-triggered automation: alert → classify → auto-remediate pattern.', strategicAlignment: 'AIOps Skill Development', dueDate: '2026-07-31', priority: 'Medium', progress: 75, status: 'In Progress', category: 'Personal Development', createdAt: '2026-03-01', updatedAt: '2026-06-10' },
@@ -506,16 +451,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: true,
     tags: ['Architecture', 'Automation Strategy', 'Standards', 'Veteran'],
     promotionReadiness: 'Development Needed',
-    skills: [
-      { id: 's1', name: 'Ansible', category: 'Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'Terraform', category: 'Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's3', name: 'CI/CD', category: 'Automation', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-04-01', score: 4 },
-      { id: 's4', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's5', name: 'Python', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 3 },
-      { id: 's6', name: 'AIOps', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-04-01', score: 1 },
-      { id: 's7', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-01-01', score: 1 },
-      { id: 's8', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-02-01', score: 3 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-008'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-008'],
     goals: [
       { id: 'g19', employeeId: 'emp-008', title: 'Define ASE 3-Year AI Automation Roadmap', description: 'Comprehensive technical strategy for AI-augmented automation, aligned with Global Infra leadership.', strategicAlignment: 'ASE Technical Strategy', dueDate: '2026-07-31', priority: 'Critical', progress: 45, status: 'At Risk', category: 'Annual', createdAt: '2026-01-15', updatedAt: '2026-05-30' },
       { id: 'g20', employeeId: 'emp-008', title: 'Resolve Career Path — IC vs EM', description: 'Make a clear decision on Principal Engineer vs Engineering Manager track with coaching support from William.', strategicAlignment: 'Career Development', dueDate: '2026-09-30', priority: 'High', progress: 20, status: 'In Progress', category: 'Personal Development', createdAt: '2026-03-01', updatedAt: '2026-06-01' },
@@ -569,16 +506,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: false,
     tags: ['AI Security', 'DevSecOps', 'Compliance', 'Automation'],
     promotionReadiness: 'Ready in 12 Months',
-    skills: [
-      { id: 's1', name: 'CI/CD', category: 'Automation', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-05-01', score: 3 },
-      { id: 's2', name: 'Python', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's3', name: 'Terraform', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's4', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-15', score: 2 },
-      { id: 's5', name: 'AIOps', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's6', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's7', name: 'Ansible', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 2 },
-      { id: 's8', name: 'Observability', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-02-01', score: 2 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-009'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-009'],
     goals: [
       { id: 'g21', employeeId: 'emp-009', title: 'AI Model Security Review Process', description: 'Define and enforce mandatory security review gates for all AI models deployed to production by ASE.', strategicAlignment: 'AI Governance & Security', dueDate: '2026-07-31', priority: 'Critical', progress: 80, status: 'In Progress', category: 'Quarterly', createdAt: '2026-04-01', updatedAt: '2026-06-10' },
       { id: 'g22', employeeId: 'emp-009', title: 'LLM Prompt Injection Defense Framework', description: 'Research and implement defenses against prompt injection attacks across ASE\'s 4 LLM-powered products.', strategicAlignment: 'AI Security OKR', dueDate: '2026-10-31', priority: 'High', progress: 45, status: 'In Progress', category: 'Annual', createdAt: '2026-02-15', updatedAt: '2026-06-09' },
@@ -633,16 +562,8 @@ export const EMPLOYEES: Employee[] = [
     needsCoaching: true,
     tags: ['ServiceNow', 'ITSM AI', 'Automation'],
     promotionReadiness: 'Development Needed',
-    skills: [
-      { id: 's1', name: 'ServiceNow', category: 'ITSM', currentLevel: 'Expert', targetLevel: 'Expert', lastUpdated: '2026-05-01', score: 4 },
-      { id: 's2', name: 'Python', category: 'Languages', currentLevel: 'Advanced', targetLevel: 'Advanced', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's3', name: 'AIOps', category: 'AI Automation', currentLevel: 'Advanced', targetLevel: 'Expert', lastUpdated: '2026-04-01', score: 3 },
-      { id: 's4', name: 'GenAI/LLMs', category: 'AI Automation', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's5', name: 'Observability', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-03-01', score: 2 },
-      { id: 's6', name: 'Ansible', category: 'Automation', currentLevel: 'Intermediate', targetLevel: 'Intermediate', lastUpdated: '2026-01-01', score: 2 },
-      { id: 's7', name: 'Kubernetes', category: 'Infrastructure', currentLevel: 'Intermediate', targetLevel: 'Advanced', lastUpdated: '2026-02-01', score: 2 },
-      { id: 's8', name: 'MLOps', category: 'AI Automation', currentLevel: 'Beginner', targetLevel: 'Intermediate', lastUpdated: '2026-04-01', score: 1 },
-    ],
+    skills: SEED_ASSESSMENTS['emp-010'],
+    roleProfileId: SEED_ROLE_PROFILES['emp-010'],
     goals: [
       { id: 'g23', employeeId: 'emp-010', title: 'AI Ticket Auto-Resolution: 50% P3/P4 Target', description: 'Expand AI auto-resolution from 34% to 50% of P3/P4 tickets through improved LLM routing and playbook coverage.', strategicAlignment: 'ITSM Automation OKR', dueDate: '2026-09-30', priority: 'High', progress: 30, status: 'In Progress', category: 'Annual', createdAt: '2026-02-01', updatedAt: '2026-06-01' },
       { id: 'g24', employeeId: 'emp-010', title: 'Resolve Ownership Conflict with NOC Team', description: 'Resolve ongoing dispute with NOC leadership over ServiceNow AI customization authority and change management process.', strategicAlignment: 'Organizational Health', dueDate: '2026-06-30', priority: 'Critical', progress: 40, status: 'At Risk', category: 'Personal Development', createdAt: '2026-05-01', updatedAt: '2026-06-10' },
@@ -790,29 +711,6 @@ export const AI_INSIGHTS: AIInsight[] = [
   },
 ]
 
-export function getSkillMatrixData(): SkillMatrixEntry[] {
-  const skillNames = [
-    'AIOps', 'GenAI/LLMs', 'MLOps', 'Python', 'Ansible',
-    'Terraform', 'Kubernetes', 'CI/CD', 'Observability', 'ServiceNow',
-    'TypeScript', 'Observability',
-  ]
-  const entries: SkillMatrixEntry[] = []
-
-  EMPLOYEES.forEach(emp => {
-    skillNames.forEach(skillName => {
-      const skill = emp.skills.find(s => s.name === skillName)
-      entries.push({
-        employeeName: emp.name.split(' ')[0],
-        employeeId: emp.id,
-        skill: skillName,
-        level: skill ? skill.score : 0,
-        category: skill?.category ?? 'Other',
-      })
-    })
-  })
-
-  return entries
-}
 
 export function getAllGoals() {
   return EMPLOYEES.flatMap(e => e.goals)

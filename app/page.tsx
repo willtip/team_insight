@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button'
 import Avatar from '@/components/ui/Avatar'
 import { TEAM_METRICS, AI_INSIGHTS } from '@/lib/mock-data'
 import { useEmployees } from '@/lib/employee-store'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
 import { cn, scoreToColor } from '@/lib/utils'
 import {
   Users, Heart, Target, TrendingUp, Award, AlertCircle,
@@ -22,6 +23,7 @@ import Link from 'next/link'
 
 export default function Dashboard() {
   const { employees } = useEmployees()
+  const { catalog } = useSkillCatalog()
   const urgentInsight = AI_INSIGHTS.find(i => i.severity === 'critical')
   const topEmployees = [...employees].sort((a, b) => b.performanceScore.overall - a.performanceScore.overall).slice(0, 3)
 
@@ -192,10 +194,13 @@ export default function Dashboard() {
               }
             >
               <CardTitle>Skills Coverage Matrix</CardTitle>
-              <CardSubtitle>Team skill levels across key AIOps disciplines</CardSubtitle>
+              <CardSubtitle>
+                Critical platform skills, rated 0-5 — open the full matrix for all domains
+              </CardSubtitle>
             </CardHeader>
             <div className="overflow-x-auto">
-              <SkillsHeatmap employees={employees} compact />
+              {/* Summary card: the critical head of the catalog, not all 69 rows. */}
+              <SkillsHeatmap employees={employees} catalog={catalog} compact criticalOnly maxSkills={12} />
             </div>
           </Card>
 

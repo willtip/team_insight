@@ -7,6 +7,7 @@ import EmployeeFormModal from '@/components/employees/EmployeeFormModal'
 import DeleteConfirmModal from '@/components/employees/DeleteConfirmModal'
 import Button from '@/components/ui/Button'
 import { useEmployees } from '@/lib/employee-store'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
 import { Search, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { Pencil, Trash2 } from 'lucide-react'
@@ -20,6 +21,7 @@ const FILTERS = {
 
 export default function EmployeesPage() {
   const { employees, deleteEmployee } = useEmployees()
+  const { skillById } = useSkillCatalog()
   const [search, setSearch] = useState('')
   const [readinessFilter, setReadinessFilter] = useState('All')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -37,7 +39,7 @@ export default function EmployeesPage() {
         e.name.toLowerCase().includes(q) ||
         e.title.toLowerCase().includes(q) ||
         e.tags.some(t => t.toLowerCase().includes(q)) ||
-        e.skills.some(s => s.name.toLowerCase().includes(q))
+        e.skills.some(s => skillById.get(s.skillId)?.name.toLowerCase().includes(q))
       )
     }
     if (readinessFilter !== 'All') result = result.filter(e => e.promotionReadiness === readinessFilter)
@@ -50,7 +52,7 @@ export default function EmployeesPage() {
       return a.name.localeCompare(b.name)
     })
     return result
-  }, [employees, search, readinessFilter, statusFilter, levelFilter, sortBy])
+  }, [employees, search, readinessFilter, statusFilter, levelFilter, sortBy, skillById])
 
   const stats = {
     total: employees.length,

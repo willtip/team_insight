@@ -6,14 +6,17 @@ import Header from '@/components/layout/Header'
 import Avatar from '@/components/ui/Avatar'
 import Button from '@/components/ui/Button'
 import Progress from '@/components/ui/Progress'
+import Link from 'next/link'
 import ScoreRing from '@/components/ui/ScoreRing'
 import SkillsRadar from '@/components/charts/SkillsRadar'
 import ContributionRadar from '@/components/charts/ContributionRadar'
 import EmployeeFormModal from '@/components/employees/EmployeeFormModal'
 import { useEmployees } from '@/lib/employee-store'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
+import { resolveEmployeeSkills, summarizeEmployee } from '@/lib/skill-analytics'
 import {
-  cn, formatDate, skillLevelColor, goalStatusColor, goalPriorityColor,
-  promotionReadinessColor, scoreToColor,
+  cn, formatDate, skillLevelColor, skillPriorityColor, goalStatusColor, goalPriorityColor,
+  promotionReadinessColor, scoreToColor, proficiencyLabel, clampLevel,
 } from '@/lib/utils'
 import {
   MapPin, Mail, Calendar, Building2, ArrowLeft, Star,
@@ -23,16 +26,13 @@ import {
   Lightbulb, Flame, Pencil, Share2, Trophy, Trash2,
 } from 'lucide-react'
 import type {
-  Accomplishment, SkillLevel, Goal, ProjectContribution,
+  Accomplishment, ProficiencyLevel, Goal, ProjectContribution,
   DirectorNote, Certification, Training, Conference, MentoringRelation,
   GoalStatus, GoalPriority, GoalCategory, NoteCategory,
 } from '@/lib/types'
 
 const TABS = ['Overview', 'Goals', 'Skills', 'Projects', 'Development', 'Accomplishments', 'Notes', 'Performance'] as const
 type Tab = typeof TABS[number]
-
-const SKILL_LEVELS: SkillLevel[] = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-const LEVEL_SCORE: Record<SkillLevel, number> = { Beginner: 1, Intermediate: 2, Advanced: 3, Expert: 4 }
 
 const ACCOMPLISHMENT_CATEGORIES = ['Technical', 'Leadership', 'Collaboration', 'Innovation', 'Other'] as const
 const ACCOM_COLORS: Record<string, string> = {
@@ -84,9 +84,13 @@ function EditBtn({ onClick }: { onClick: () => void }) {
 }
 
 export default function EmployeeProfilePage({ params }: { params: { id: string } }) {
-  const { employees, updateEmployee } = useEmployees()
+  const { employees, updateEmployee, updateSkillAssessment } = useEmployees()
+  const { catalog, roleProfiles, thresholds } = useSkillCatalog()
   const employee = employees.find(e => e.id === params.id)
   if (!employee) return notFound()
+
+  const skillRows = resolveEmployeeSkills(employee, catalog)
+  const skillSummary = summarizeEmployee(employee, catalog, roleProfiles, thresholds)
 
   const router = useRouter()
   const [activeTab, setActiveTab] = useState<Tab>('Overview')
@@ -389,13 +393,13 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
     if (status === 'In Progress') return <Clock className="w-3.5 h-3.5 text-blue-500" />
     return <Clock className="w-3.5 h-3.5 text-slate-400" />
   }
+  // Manager's view, so the click cycles the reviewer rating, which supersedes self.
   const cycleSkillLevel = (skillId: string) => {
-    const skill = employee.skills.find(s => s.id === skillId)
+    const skill = employee.skills.find(s => s.skillId === skillId)
     if (!skill) return
-    const nextLevel = SKILL_LEVELS[(SKILL_LEVELS.indexOf(skill.currentLevel) + 1) % SKILL_LEVELS.length]
-    updateEmployee(employee.id, {
-      skills: employee.skills.map(s => s.id === skillId ? { ...s, currentLevel: nextLevel, score: LEVEL_SCORE[nextLevel] } : s)
-    })
+    const current = skill.reviewerRating ?? skill.selfRating ?? 0
+    const next = clampLevel((current + 1) % 6)
+    updateSkillAssessment(employee.id, skillId, { reviewerRating: next })
   }
 
   // ── Forms ──────────────────────────────────────────────
@@ -719,16 +723,22 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
                   <h3 className="text-sm font-semibold text-slate-800">Skills Profile</h3>
                   <button onClick={() => setActiveTab('Skills')} className="text-xs text-brand-600 hover:underline">Details →</button>
                 </div>
-                <SkillsRadar employee={employee} />
+                <SkillsRadar employee={employee} catalog={catalog} />
                 <div className="mt-2 grid grid-cols-2 gap-x-4 gap-y-1">
-                  {employee.skills.slice(0, 4).map(skill => (
-                    <div key={skill.id} className="flex items-center justify-between text-xs">
-                      <span className="text-slate-600 truncate">{skill.name}</span>
-                      <span className={cn('px-1.5 py-0.5 rounded text-[10px] font-medium', skillLevelColor(skill.currentLevel))}>
-                        {skill.currentLevel}
-                      </span>
-                    </div>
-                  ))}
+                  {skillRows
+                    .filter(r => r.final !== undefined)
+                    .sort((a, b) => b.final! - a.final!)
+                    .slice(0, 4)
+                    .map(r => (
+                      <div key={r.skillId} className="flex items-center justify-between text-xs gap-2">
+                        <span className="text-slate-600 truncate" title={r.definition.name}>
+                          {r.definition.name}
+                        </span>
+                        <span className={cn('px-1.5 py-0.5 rounded text-[10px] font-medium flex-shrink-0', skillLevelColor(r.final))}>
+                          {r.final}
+                        </span>
+                      </div>
+                    ))}
                 </div>
               </div>
               <div className="bg-white rounded-xl border border-slate-200 p-5">
@@ -817,44 +827,150 @@ export default function EmployeeProfilePage({ params }: { params: { id: string }
         {/* ── SKILLS ── */}
         {activeTab === 'Skills' && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-            <div className="lg:col-span-1 bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-800 mb-3">Skills Radar</h3>
-              <SkillsRadar employee={employee} />
+            <div className="lg:col-span-1 space-y-5">
+              <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <h3 className="text-sm font-semibold text-slate-800 mb-3">Capability by domain</h3>
+                <SkillsRadar employee={employee} catalog={catalog} />
+              </div>
+
+              <div className="bg-white rounded-xl border border-slate-200 p-5">
+                <h3 className="text-sm font-semibold text-slate-800 mb-3">Assessment summary</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {([
+                    ['Assessed', `${skillSummary.assessed}/${skillSummary.catalogSize}`],
+                    ['Avg level', `${skillSummary.avgLevel.toFixed(1)}/5`],
+                    ['Breadth (2+)', String(skillSummary.breadth)],
+                    ['Depth (4+)', String(skillSummary.depth)],
+                    ['At target', `${Math.round(skillSummary.targetAttainment * 100)}%`],
+                    ['High gaps', String(skillSummary.highGaps)],
+                  ] as const).map(([label, value]) => (
+                    <div key={label}>
+                      <p className="text-[10px] uppercase tracking-wide text-slate-400">{label}</p>
+                      <p className="text-sm font-semibold text-slate-800">{value}</p>
+                    </div>
+                  ))}
+                </div>
+
+                {skillSummary.roleFit && (
+                  <div className="mt-4 pt-3 border-t border-slate-100 space-y-2">
+                    <p className="text-xs font-medium text-slate-700">
+                      {skillSummary.roleFit.profile.name}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 w-12">Breadth</span>
+                      <Progress
+                        value={Math.min(100, (skillSummary.roleFit.breadth / skillSummary.roleFit.breadthTarget) * 100)}
+                        color="auto" showLabel
+                        label={`${skillSummary.roleFit.breadth}/${skillSummary.roleFit.breadthTarget}`}
+                      />
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400 w-12">Depth</span>
+                      <Progress
+                        value={Math.min(100, (skillSummary.roleFit.depth / skillSummary.roleFit.depthTarget) * 100)}
+                        color="auto" showLabel
+                        label={`${skillSummary.roleFit.depth}/${skillSummary.roleFit.depthTarget}`}
+                      />
+                    </div>
+                    {skillSummary.roleFit.depthAreasMissing.length > 0 && (
+                      <p className="text-[11px] text-amber-600">
+                        {skillSummary.roleFit.depthAreasMissing.length} role depth area
+                        {skillSummary.roleFit.depthAreasMissing.length === 1 ? '' : 's'} still below level 4
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <p className="text-[11px] text-slate-400 mt-3">
+                  Weighted capability index{' '}
+                  <strong className="text-slate-600">
+                    {Math.round(skillSummary.capabilityIndex * 100)}%
+                  </strong>{' '}
+                  of what the role requires.
+                </p>
+              </div>
             </div>
+
             <div className="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-5">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-semibold text-slate-800">All Skills</h3>
-                <p className="text-xs text-slate-400">Click a level badge to cycle up</p>
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-800">Rated skills</h3>
+                  <p className="text-xs text-slate-400">
+                    Click a level badge to cycle the reviewer rating
+                  </p>
+                </div>
+                <Link href="/skills" className="text-xs text-brand-600 hover:underline">
+                  Full assessment →
+                </Link>
               </div>
+
               <div className="space-y-3">
-                {employee.skills.map(skill => (
-                  <div key={skill.id} className="flex items-center gap-4">
-                    <div className="w-28 flex-shrink-0">
-                      <p className="text-xs font-medium text-slate-800">{skill.name}</p>
-                      <p className="text-[10px] text-slate-400">{skill.category}</p>
+                {skillRows.filter(r => r.final !== undefined).map(r => (
+                  <div key={r.skillId} className="flex items-center gap-4">
+                    <div className="w-44 flex-shrink-0 min-w-0">
+                      <p className="text-xs font-medium text-slate-800 truncate" title={r.definition.observableCapability}>
+                        {r.definition.name}
+                      </p>
+                      <p className="text-[10px] text-slate-400 truncate">
+                        {r.definition.domain}
+                        {r.definition.critical && <span className="text-red-500"> · critical</span>}
+                      </p>
                     </div>
+
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <div className="flex gap-1 flex-1">
-                          {[1, 2, 3, 4].map(level => (
-                            <div key={level} className={cn('h-2 rounded-sm flex-1 transition-all', level <= skill.score ? 'bg-brand-500' : 'bg-slate-100')} />
+                          {[1, 2, 3, 4, 5].map(level => (
+                            <div
+                              key={level}
+                              title={level <= r.target ? `Target is ${r.target}` : undefined}
+                              className={cn(
+                                'h-2 rounded-sm flex-1 transition-all',
+                                level <= (r.final ?? 0) ? 'bg-brand-500'
+                                  : level <= r.target ? 'bg-brand-100' : 'bg-slate-100',
+                              )}
+                            />
                           ))}
                         </div>
-                        <button onClick={() => cycleSkillLevel(skill.id)}
-                          className={cn('text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity', skillLevelColor(skill.currentLevel))}
-                          title="Click to cycle level">
-                          {skill.currentLevel}
+                        <button
+                          onClick={() => cycleSkillLevel(r.skillId)}
+                          className={cn(
+                            'text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity',
+                            skillLevelColor(r.final),
+                          )}
+                          title="Click to cycle the reviewer rating"
+                        >
+                          {r.final} {proficiencyLabel(r.final)}
                         </button>
                       </div>
+                      {r.evidence && (
+                        <p className="text-[10px] text-slate-400 mt-1 truncate" title={r.evidence}>
+                          Evidence: {r.evidence}
+                        </p>
+                      )}
                     </div>
-                    <div className="text-right flex-shrink-0">
+
+                    <div className="text-right flex-shrink-0 w-16">
                       <p className="text-[10px] text-slate-400">Target</p>
-                      <span className={cn('text-xs px-1.5 py-0.5 rounded font-medium', skillLevelColor(skill.targetLevel))}>{skill.targetLevel}</span>
+                      <span className="text-xs font-semibold text-slate-700">{r.target}</span>
+                    </div>
+
+                    <div className="flex-shrink-0 w-20 text-center">
+                      {r.priority && (
+                        <span className={cn('text-[10px] px-1.5 py-0.5 rounded font-medium', skillPriorityColor(r.priority))}>
+                          {r.priority}
+                        </span>
+                      )}
                     </div>
                   </div>
                 ))}
-                {employee.skills.length === 0 && (
-                  <p className="text-sm text-slate-400 text-center py-8">No skills recorded. Edit profile to add skills.</p>
+
+                {skillSummary.assessed === 0 && (
+                  <p className="text-sm text-slate-400 text-center py-8">
+                    No skills rated yet. Use the{' '}
+                    <Link href="/skills" className="text-brand-600 hover:underline">Skills Matrix</Link>{' '}
+                    to assess against the catalog.
+                  </p>
                 )}
               </div>
             </div>
