@@ -3,7 +3,7 @@ import Avatar from '@/components/ui/Avatar'
 import Badge from '@/components/ui/Badge'
 import Progress from '@/components/ui/Progress'
 import ScoreRing from '@/components/ui/ScoreRing'
-import { cn, promotionReadinessColor, scoreToColor } from '@/lib/utils'
+import { cn, promotionReadinessColor, scoreToColor, DEPTH_THRESHOLD } from '@/lib/utils'
 import type { Employee } from '@/lib/types'
 import { TrendingUp, TrendingDown, Minus, Star, AlertCircle } from 'lucide-react'
 
@@ -95,8 +95,10 @@ export default function EmployeeCard({ employee }: EmployeeCardProps) {
             <p className="text-[10px] text-slate-400">Leadership</p>
           </div>
           <div className="text-center">
-            <p className="text-xs font-bold text-slate-800">{employee.skills.filter(s => s.currentLevel === 'Expert').length}</p>
-            <p className="text-[10px] text-slate-400">Expert Skills</p>
+            <p className="text-xs font-bold text-slate-800">
+              {employee.skills.filter(s => (s.reviewerRating ?? s.selfRating ?? 0) >= DEPTH_THRESHOLD).length}
+            </p>
+            <p className="text-[10px] text-slate-400">Depth Skills</p>
           </div>
         </div>
       </div>

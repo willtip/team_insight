@@ -1,9 +1,12 @@
 'use client'
 
-import { Search, HelpCircle } from 'lucide-react'
+import { Search, BookOpen } from 'lucide-react'
 import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 import NotificationsPanel from './NotificationsPanel'
 import QuarterSelector from './QuarterSelector'
+import { cn } from '@/lib/utils'
 
 interface HeaderProps {
   title: string
@@ -13,6 +16,8 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, actions }: HeaderProps) {
   const [searchValue, setSearchValue] = useState('')
+  const pathname = usePathname()
+  const onGuide = pathname === '/guide'
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-4">
@@ -39,10 +44,20 @@ export default function Header({ title, subtitle, actions }: HeaderProps) {
       {/* Notification bell */}
       <NotificationsPanel />
 
-      {/* Help */}
-      <button className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
-        <HelpCircle className="w-5 h-5" />
-      </button>
+      {/* User guide */}
+      <Link
+        href="/guide"
+        title="Open the user guide"
+        className={cn(
+          'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors',
+          onGuide
+            ? 'bg-brand-50 text-brand-700'
+            : 'text-slate-500 hover:text-brand-700 hover:bg-brand-50',
+        )}
+      >
+        <BookOpen className="w-4 h-4" />
+        <span className="hidden lg:inline">Guide</span>
+      </Link>
 
       {/* Quarter selector */}
       <QuarterSelector defaultValue="Q2 2026" />

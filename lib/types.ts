@@ -1,6 +1,25 @@
 export type UserRole = 'director' | 'manager' | 'employee' | 'admin'
 
-export type SkillLevel = 'Beginner' | 'Intermediate' | 'Advanced' | 'Expert'
+/**
+ * Anchored proficiency scale, 0-5. The numeric level is the source of truth;
+ * see PROFICIENCY_ANCHORS in `lib/skill-catalog.ts` for what earns each rung.
+ */
+export type ProficiencyLevel = 0 | 1 | 2 | 3 | 4 | 5
+
+/** Index === ProficiencyLevel. */
+export const PROFICIENCY_LABELS = [
+  'Not exposed',
+  'Aware',
+  'Guided practitioner',
+  'Independent',
+  'Advanced/lead',
+  'Strategic expert',
+] as const
+
+export type SkillLevel = (typeof PROFICIENCY_LABELS)[number]
+
+/** Rating urgency derived from the gap to target and whether the skill is critical. */
+export type SkillPriority = 'High' | 'Medium' | 'Low' | 'Maintain'
 
 export type GoalStatus = 'Not Started' | 'In Progress' | 'At Risk' | 'Completed' | 'Deferred'
 
@@ -20,14 +39,41 @@ export type NoteCategory =
   | 'Concerns'
   | 'Follow-Up Actions'
 
-export interface Skill {
+/**
+ * One person's rating against one catalog skill.
+ *
+ * Nothing here is denormalized: name, domain, criticality, target and weight all
+ * resolve through `skillId` into the catalog, so renaming or re-weighting a skill
+ * is a single edit rather than a rewrite of every employee.
+ */
+export interface SkillAssessment {
+  /** FK -> SkillDefinition.id */
+  skillId: string
+  selfRating?: ProficiencyLevel
+  reviewerRating?: ProficiencyLevel
+  /** Overrides the catalog target for this person only. */
+  targetOverride?: ProficiencyLevel
+  evidence?: string
+  evidenceUrl?: string
+  assessedAt?: string
+  assessedBy?: string
+}
+
+/** A gap converted into work. Mirrors the workbook's Development Plan sheet. */
+export interface DevelopmentPlanItem {
   id: string
-  name: string
-  category: string
-  currentLevel: SkillLevel
-  targetLevel: SkillLevel
-  lastUpdated: string
-  score: number // 1-4 mapped from level
+  employeeId: string
+  skillId: string
+  objective: string
+  experienceAssignment: string
+  coach: string
+  course: string
+  dueDate: string
+  successEvidence: string
+  status: 'Planned' | 'In Progress' | 'Complete'
+  createdAt: string
+  /** Optional link into the existing goal model. */
+  linkedGoalId?: string
 }
 
 export interface Goal {
@@ -158,7 +204,10 @@ export interface Employee {
   avatar?: string
   bio: string
   careerAspirations: string
-  skills: Skill[]
+  skills: SkillAssessment[]
+  /** FK -> RoleProfile.id. Drives breadth/depth expectations. */
+  roleProfileId?: string
+  developmentPlan?: DevelopmentPlanItem[]
   goals: Goal[]
   projectContributions: ProjectContribution[]
   development: ProfessionalDevelopment
@@ -188,14 +237,6 @@ export interface GoalTrend {
   inProgress: number
   atRisk: number
   total: number
-}
-
-export interface SkillMatrixEntry {
-  employeeName: string
-  employeeId: string
-  skill: string
-  level: number // 0-4
-  category: string
 }
 
 export interface AIMessage {

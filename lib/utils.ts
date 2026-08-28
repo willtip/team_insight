@@ -1,36 +1,89 @@
 import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import type { SkillLevel, GoalStatus, GoalPriority, PromotionReadiness } from './types'
+import { PROFICIENCY_LABELS } from './types'
+import type {
+  ProficiencyLevel, SkillLevel, SkillPriority,
+  GoalStatus, GoalPriority, PromotionReadiness,
+} from './types'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function skillLevelToScore(level: SkillLevel): number {
-  const map: Record<SkillLevel, number> = {
-    Beginner: 1,
-    Intermediate: 2,
-    Advanced: 3,
-    Expert: 4,
-  }
-  return map[level]
+/** Every selectable rung, for level pickers. */
+export const PROFICIENCY_LEVELS: ProficiencyLevel[] = [0, 1, 2, 3, 4, 5]
+
+/**
+ * Fallback thresholds for surfaces with no access to the catalog store.
+ * The configurable values live in `SkillThresholds` on the catalog store —
+ * prefer those anywhere the store is reachable.
+ */
+export const COVERAGE_THRESHOLD: ProficiencyLevel = 3
+export const DEPTH_THRESHOLD: ProficiencyLevel = 4
+export const BREADTH_THRESHOLD: ProficiencyLevel = 2
+
+export function proficiencyLabel(level: ProficiencyLevel | undefined): SkillLevel {
+  return PROFICIENCY_LABELS[clampLevel(level ?? 0)]
 }
 
-export function scoreToSkillLevel(score: number): SkillLevel {
-  if (score <= 1) return 'Beginner'
-  if (score <= 2) return 'Intermediate'
-  if (score <= 3) return 'Advanced'
-  return 'Expert'
+/** Compact label for dense grids and heat-map cells. */
+export function proficiencyShortLabel(level: ProficiencyLevel | undefined): string {
+  return ['—', 'Aware', 'Guided', 'Indep.', 'Lead', 'Strat.'][clampLevel(level ?? 0)]
 }
 
-export function skillLevelColor(level: SkillLevel): string {
-  const map: Record<SkillLevel, string> = {
-    Beginner: 'bg-slate-200 text-slate-700',
-    Intermediate: 'bg-blue-100 text-blue-700',
-    Advanced: 'bg-indigo-100 text-indigo-700',
-    Expert: 'bg-purple-100 text-purple-700',
+export function clampLevel(n: number): ProficiencyLevel {
+  const i = Math.max(0, Math.min(5, Math.round(n)))
+  return i as ProficiencyLevel
+}
+
+/**
+ * Coerce a rating from any source into the 0-5 scale.
+ * Accepts numbers, numeric strings, the current anchor labels, and the legacy
+ * four-adjective scale (so spreadsheet imports and old localStorage both work).
+ */
+export function parseProficiency(input: unknown): ProficiencyLevel | undefined {
+  if (input === null || input === undefined || input === '') return undefined
+  if (typeof input === 'number' && Number.isFinite(input)) return clampLevel(input)
+
+  const raw = String(input).trim()
+  if (raw === '') return undefined
+  if (/^-?\d+(\.\d+)?$/.test(raw)) return clampLevel(Number(raw))
+
+  const key = raw.toLowerCase()
+  const anchor = PROFICIENCY_LABELS.findIndex(l => l.toLowerCase() === key)
+  if (anchor >= 0) return anchor as ProficiencyLevel
+
+  const legacy: Record<string, ProficiencyLevel> = {
+    none: 0, 'not exposed': 0,
+    beginner: 1, novice: 1, aware: 1,
+    intermediate: 2, basic: 2, guided: 2, 'guided practitioner': 2,
+    advanced: 3, independent: 3, proficient: 3,
+    expert: 4, lead: 4, 'advanced/lead': 4,
+    strategic: 5, 'strategic expert': 5,
   }
-  return map[level]
+  return legacy[key]
+}
+
+export function skillLevelColor(level: ProficiencyLevel | undefined): string {
+  const map = [
+    'bg-slate-100 text-slate-500',
+    'bg-sky-100 text-sky-700',
+    'bg-blue-100 text-blue-700',
+    'bg-indigo-100 text-indigo-700',
+    'bg-violet-100 text-violet-700',
+    'bg-purple-200 text-purple-800',
+  ]
+  return map[clampLevel(level ?? 0)]
+}
+
+export function skillPriorityColor(priority: SkillPriority): string {
+  const map: Record<SkillPriority, string> = {
+    High: 'bg-red-100 text-red-700',
+    Medium: 'bg-amber-100 text-amber-700',
+    Low: 'bg-blue-100 text-blue-700',
+    Maintain: 'bg-green-100 text-green-700',
+  }
+  return map[priority]
 }
 
 export function goalStatusColor(status: GoalStatus): string {
@@ -79,15 +132,16 @@ export function scoreToBgColor(score: number): string {
 }
 
 export function heatmapColor(level: number): string {
-  // level 0-4
+  // level 0-5
   const colors = [
     'bg-slate-100',
-    'bg-blue-200',
-    'bg-blue-400',
-    'bg-blue-600',
-    'bg-blue-800',
+    'bg-blue-100',
+    'bg-blue-300',
+    'bg-blue-500',
+    'bg-blue-700',
+    'bg-indigo-900',
   ]
-  return colors[Math.min(level, 4)]
+  return colors[clampLevel(level)]
 }
 
 export function heatmapTextColor(level: number): string {

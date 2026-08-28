@@ -5,7 +5,9 @@ import { notFound } from 'next/navigation'
 import Avatar from '@/components/ui/Avatar'
 import Progress from '@/components/ui/Progress'
 import { useEmployees } from '@/lib/employee-store'
-import { cn, formatDate, skillLevelColor, goalStatusColor } from '@/lib/utils'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
+import { resolveEmployeeSkills, summarizeEmployee } from '@/lib/skill-analytics'
+import { cn, formatDate, skillLevelColor, goalStatusColor, proficiencyLabel } from '@/lib/utils'
 import {
   MapPin, Calendar, Building2, Target, Award, BookOpen,
   CheckCircle, Clock, AlertTriangle, TrendingUp, Star,
@@ -25,8 +27,15 @@ const ACCOM_COLORS: Record<string, string> = {
 
 export default function EmployeeViewPage({ params }: { params: { id: string } }) {
   const { employees } = useEmployees()
+  const { catalog, roleProfiles, thresholds } = useSkillCatalog()
   const employee = employees.find(e => e.id === params.id)
   if (!employee) return notFound()
+
+  const skillSummary = summarizeEmployee(employee, catalog, roleProfiles, thresholds)
+  const ratedSkills = resolveEmployeeSkills(employee, catalog)
+    .filter(r => r.final !== undefined)
+    .sort((a, b) => b.final! - a.final! || a.definition.name.localeCompare(b.definition.name))
+  const topSkills = ratedSkills.slice(0, 6)
 
   const [activeTab, setActiveTab] = useState<Tab>('Overview')
 
@@ -169,24 +178,26 @@ export default function EmployeeViewPage({ params }: { params: { id: string } })
             )}
 
             {/* Top skills */}
-            {employee.skills.length > 0 && (
+            {ratedSkills.length > 0 && (
               <div className="bg-white rounded-xl border border-slate-200 p-6">
                 <h2 className="text-sm font-semibold text-slate-800 flex items-center gap-2 mb-4">
-                  <Zap className="w-4 h-4 text-purple-500" />Top Skills
+                  <Zap className="w-4 h-4 text-purple-500" />Strongest Skills
                 </h2>
                 <div className="grid grid-cols-2 gap-2">
-                  {employee.skills.slice(0, 6).map(skill => (
-                    <div key={skill.id} className="flex items-center justify-between px-3 py-2 bg-slate-50 rounded-lg">
-                      <span className="text-xs text-slate-700 font-medium">{skill.name}</span>
-                      <span className={cn('text-xs px-1.5 py-0.5 rounded font-medium', skillLevelColor(skill.currentLevel))}>
-                        {skill.currentLevel}
+                  {topSkills.map(r => (
+                    <div key={r.skillId} className="flex items-center justify-between gap-2 px-3 py-2 bg-slate-50 rounded-lg">
+                      <span className="text-xs text-slate-700 font-medium truncate" title={r.definition.name}>
+                        {r.definition.name}
+                      </span>
+                      <span className={cn('text-xs px-1.5 py-0.5 rounded font-medium flex-shrink-0', skillLevelColor(r.final))}>
+                        {r.final}
                       </span>
                     </div>
                   ))}
                 </div>
-                {employee.skills.length > 6 && (
+                {ratedSkills.length > 6 && (
                   <button onClick={() => setActiveTab('Skills')} className="mt-3 text-xs text-brand-600 hover:underline block">
-                    +{employee.skills.length - 6} more skills →
+                    +{ratedSkills.length - 6} more skills →
                   </button>
                 )}
               </div>
@@ -259,28 +270,46 @@ export default function EmployeeViewPage({ params }: { params: { id: string } })
         {/* Skills */}
         {activeTab === 'Skills' && (
           <div className="bg-white rounded-xl border border-slate-200 p-6">
-            <h2 className="text-sm font-semibold text-slate-800 mb-4">Skills & Proficiency</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-sm font-semibold text-slate-800">Skills &amp; Proficiency</h2>
+              <p className="text-xs text-slate-400">
+                {skillSummary.assessed} of {skillSummary.catalogSize} assessed · avg{' '}
+                {skillSummary.avgLevel.toFixed(1)}/5
+              </p>
+            </div>
             <div className="space-y-3">
-              {employee.skills.map(skill => (
-                <div key={skill.id} className="flex items-center gap-4">
-                  <div className="w-32 flex-shrink-0">
-                    <p className="text-sm font-medium text-slate-800">{skill.name}</p>
-                    <p className="text-[10px] text-slate-400">{skill.category}</p>
+              {ratedSkills.map(r => (
+                <div key={r.skillId} className="flex items-center gap-4">
+                  <div className="w-48 flex-shrink-0 min-w-0">
+                    <p className="text-sm font-medium text-slate-800 truncate" title={r.definition.name}>
+                      {r.definition.name}
+                    </p>
+                    <p className="text-[10px] text-slate-400 truncate">{r.definition.domain}</p>
                   </div>
                   <div className="flex-1">
                     <div className="flex gap-1">
-                      {[1, 2, 3, 4].map(level => (
-                        <div key={level} className={cn('h-2.5 rounded-sm flex-1', level <= skill.score ? 'bg-brand-500' : 'bg-slate-100')} />
+                      {[1, 2, 3, 4, 5].map(level => (
+                        <div
+                          key={level}
+                          className={cn(
+                            'h-2.5 rounded-sm flex-1',
+                            level <= (r.final ?? 0) ? 'bg-brand-500'
+                              : level <= r.target ? 'bg-brand-100' : 'bg-slate-100',
+                          )}
+                        />
                       ))}
                     </div>
                   </div>
-                  <span className={cn('text-xs px-2 py-0.5 rounded font-medium flex-shrink-0', skillLevelColor(skill.currentLevel))}>
-                    {skill.currentLevel}
+                  <span className="text-[10px] text-slate-400 flex-shrink-0 w-14 text-right">
+                    target {r.target}
+                  </span>
+                  <span className={cn('text-xs px-2 py-0.5 rounded font-medium flex-shrink-0', skillLevelColor(r.final))}>
+                    {proficiencyLabel(r.final)}
                   </span>
                 </div>
               ))}
-              {employee.skills.length === 0 && (
-                <p className="text-sm text-slate-400 text-center py-8">No skills recorded yet</p>
+              {ratedSkills.length === 0 && (
+                <p className="text-sm text-slate-400 text-center py-8">No skills assessed yet</p>
               )}
             </div>
           </div>
