@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "workbooks": "tsc lib/skill-catalog.ts lib/seed-assessments.ts lib/mock-data.ts --outDir .tmp-lib --module commonjs --target es2020 --moduleResolution node --esModuleInterop --skipLibCheck --lib es2020,dom && TI_LIB_DIR=$PWD/.tmp-lib node scripts/build-workbooks.mjs build/workbooks && rm -rf .tmp-lib"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.105.0",
