@@ -7,6 +7,8 @@ import ScoreRing from '@/components/ui/ScoreRing'
 import Avatar from '@/components/ui/Avatar'
 import { TEAM_METRICS } from '@/lib/mock-data'
 import { useEmployees } from '@/lib/employee-store'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
+import { resolveEmployeeSkills } from '@/lib/skill-analytics'
 import { cn, scoreToColor, promotionReadinessColor, formatDate } from '@/lib/utils'
 import {
   FileText, Download, Users, Target, TrendingUp, Shield,
@@ -87,6 +89,7 @@ const FORMAT_OPTIONS = [
 
 export default function ReportsPage() {
   const { employees: EMPLOYEES } = useEmployees()
+  const { catalog } = useSkillCatalog()
   const [selectedReport, setSelectedReport] = useState<string | null>(null)
   const [selectedFormat, setSelectedFormat] = useState('PDF')
   const [generating, setGenerating] = useState(false)
@@ -145,10 +148,18 @@ export default function ReportsPage() {
 
       case 'skills-readiness':
         return [
-          ['Employee', 'Skill', 'Category', 'Current Level', 'Target Level', 'Score'].join(','),
-          ...EMPLOYEES.flatMap(e => e.skills.map(s => [
-            `"${e.name}"`, `"${s.name}"`, s.category, s.currentLevel, s.targetLevel, s.score,
-          ].join(','))),
+          ['Employee', 'Domain', 'Skill', 'Critical', 'Target', 'Self', 'Reviewer',
+            'Final', 'Gap', 'Priority', 'Evidence'].join(','),
+          ...EMPLOYEES.flatMap(e =>
+            resolveEmployeeSkills(e, catalog)
+              .filter(r => r.final !== undefined)
+              .map(r => [
+                `"${e.name}"`, `"${r.definition.domain}"`, `"${r.definition.name}"`,
+                r.definition.critical ? 'Yes' : 'No', r.target,
+                r.self ?? '', r.reviewer ?? '', r.final ?? '', r.gap ?? '',
+                r.priority ?? '', `"${(r.evidence ?? '').replace(/"/g, '""')}"`,
+              ].join(',')),
+          ),
         ].join('\n')
 
       case 'coaching-summary':

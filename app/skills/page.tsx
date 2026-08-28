@@ -1,449 +1,378 @@
 'use client'
 
-import { useState } from 'react'
-import Header from '@/components/layout/Header'
-import SkillsHeatmap from '@/components/charts/SkillsHeatmap'
-import Button from '@/components/ui/Button'
-import { useEmployees } from '@/lib/employee-store'
-import { cn, skillLevelColor } from '@/lib/utils'
+import { useEffect, useRef, useState } from 'react'
 import {
-  AlertTriangle, TrendingUp, Users, Shield, Zap,
-  BarChart3, Map, Download, Pencil, Trash2, Plus, X, Check
+  AlertTriangle, BarChart3, ClipboardList, Download, HelpCircle,
+  LayoutGrid, Loader2, Map, Upload, GraduationCap,
 } from 'lucide-react'
-import type { SkillLevel, Skill } from '@/lib/types'
+import Header from '@/components/layout/Header'
+import Button from '@/components/ui/Button'
+import { Card } from '@/components/ui/Card'
+import SkillsHeatmap from '@/components/charts/SkillsHeatmap'
+import SkillOverview from '@/components/skills/SkillOverview'
+import AssessmentGrid from '@/components/skills/AssessmentGrid'
+import GapAnalysis from '@/components/skills/GapAnalysis'
+import DevelopmentPlan from '@/components/skills/DevelopmentPlan'
+import CatalogEditor from '@/components/skills/CatalogEditor'
+import ScoringGuide from '@/components/skills/ScoringGuide'
+import ImportPreviewModal from '@/components/skills/ImportPreviewModal'
+import { useEmployees } from '@/lib/employee-store'
+import { useSkillCatalog } from '@/lib/skill-catalog-store'
+import {
+  buildWorkbook, downloadWorkbook, readWorkbook, previewToEdits,
+} from '@/lib/skill-workbook'
+import type { ImportPreview } from '@/lib/skill-workbook'
+import type { DevelopmentPlanItem } from '@/lib/types'
+import { cn } from '@/lib/utils'
 
-const CATEGORIES = ['All', 'Platform', 'Infrastructure', 'Languages', 'Emerging', 'Frontend', 'Design']
-const SKILL_CATEGORIES = ['Platform', 'Infrastructure', 'Languages', 'Emerging', 'Frontend', 'Design']
-const LEVELS: SkillLevel[] = ['Beginner', 'Intermediate', 'Advanced', 'Expert']
-const levelToScore = (l: SkillLevel) => LEVELS.indexOf(l) + 1
+type View = 'overview' | 'heatmap' | 'assessment' | 'gaps' | 'development' | 'framework'
 
-const SKILL_GAPS = [
-  { skill: 'AI Engineering', coverage: 30, risk: 'High', recommended: 'Hire + Upskill' },
-  { skill: 'OpenShift', coverage: 20, risk: 'Critical', recommended: 'Bus factor risk — 2 engineers only' },
-  { skill: 'Go', coverage: 30, risk: 'Medium', recommended: 'Training program' },
-  { skill: 'SRE', coverage: 40, risk: 'Medium', recommended: 'Expand on-call rotation' },
-  { skill: 'Architecture', coverage: 50, risk: 'Low', recommended: 'Architecture review program' },
-]
+const VIEWS = [
+  { id: 'overview', label: 'Overview', icon: LayoutGrid },
+  { id: 'heatmap', label: 'Heat Map', icon: Map },
+  { id: 'assessment', label: 'Assessment', icon: ClipboardList },
+  { id: 'gaps', label: 'Gaps & Risk', icon: AlertTriangle },
+  { id: 'development', label: 'Development', icon: GraduationCap },
+  { id: 'framework', label: 'Framework', icon: BarChart3 },
+] as const
 
-const inputCls = 'w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-500'
-const labelCls = 'block text-xs font-medium text-slate-600 mb-1'
+const VIEW_IDS = VIEWS.map(v => v.id) as readonly string[]
 
-type SkillEdit = { currentLevel: SkillLevel; targetLevel: SkillLevel }
+function isView(value: string | null): value is View {
+  return !!value && VIEW_IDS.includes(value)
+}
 
 export default function SkillsPage() {
-  const { employees: EMPLOYEES, updateEmployee } = useEmployees()
-  const [activeCategory, setActiveCategory] = useState('All')
-  const [view, setView] = useState<'heatmap' | 'gaps' | 'emerging'>('heatmap')
+  const {
+    employees, updateEmployee, applyAssessments, setDevelopmentPlan,
+  } = useEmployees()
+  const {
+    catalog, domains, roleProfiles,
+    addSkill, updateSkill, deleteSkill, replaceCatalog,
+    addRoleProfile, updateRoleProfile, deleteRoleProfile,
+    thresholds, updateThresholds,
+    resetToPreset,
+  } = useSkillCatalog()
 
-  const [editingSkillName, setEditingSkillName] = useState<string | null>(null)
-  const [skillEdits, setSkillEdits] = useState<Record<string, SkillEdit>>({})
-  const [deletingSkillName, setDeletingSkillName] = useState<string | null>(null)
+  const [view, setViewState] = useState<View>('overview')
+  const [guideOpen, setGuideOpen] = useState(false)
 
-  const [addingSkill, setAddingSkill] = useState(false)
-  const [newSkillName, setNewSkillName] = useState('')
-  const [newSkillCategory, setNewSkillCategory] = useState('Platform')
-  const [newSkillLevel, setNewSkillLevel] = useState<SkillLevel>('Beginner')
-  const [selectedEmployees, setSelectedEmployees] = useState<Set<string>>(new Set())
+  // Tabs are deep-linkable (?view=gaps), so a specific view can be shared,
+  // bookmarked, or linked to from the user guide.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    const requested = params.get('view')
+    if (isView(requested)) setViewState(requested)
+    if (params.get('guide') === '1') setGuideOpen(true)
+  }, [])
 
-  const teamSkillSummary = () => {
-    const skillMap: Record<string, { levels: number[]; category: string }> = {}
-    EMPLOYEES.forEach(emp => {
-      emp.skills.forEach(skill => {
-        if (!skillMap[skill.name]) skillMap[skill.name] = { levels: [], category: skill.category }
-        skillMap[skill.name].levels.push(skill.score)
+  const setView = (next: View) => {
+    setViewState(next)
+    const params = new URLSearchParams(window.location.search)
+    params.set('view', next)
+    window.history.replaceState(null, '', `${window.location.pathname}?${params}`)
+  }
+  const [selectedEmployee, setSelectedEmployee] = useState(employees[0]?.id ?? '')
+
+  const [domainFilter, setDomainFilter] = useState<string>('All')
+  const [criticalOnly, setCriticalOnly] = useState(false)
+  const [belowTargetOnly, setBelowTargetOnly] = useState(false)
+
+  const [busy, setBusy] = useState<'export' | 'import' | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [preview, setPreview] = useState<{ filename: string; data: ImportPreview } | null>(null)
+  const [applyCatalog, setApplyCatalog] = useState(true)
+  const fileInput = useRef<HTMLInputElement>(null)
+
+  const handleExport = async () => {
+    setBusy('export')
+    setError(null)
+    try {
+      const blob = await buildWorkbook(employees, catalog, roleProfiles, thresholds)
+      const stamp = new Date().toISOString().slice(0, 10)
+      downloadWorkbook(blob, `Team_Skills_Assessment_Matrix_${stamp}.xlsx`)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Export failed.')
+    } finally {
+      setBusy(null)
+    }
+  }
+
+  const handleFile = async (file: File) => {
+    setBusy('import')
+    setError(null)
+    try {
+      const data = await readWorkbook(file, employees, catalog)
+      setApplyCatalog(true)
+      setPreview({ filename: file.name, data })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not read that workbook.')
+    } finally {
+      setBusy(null)
+      if (fileInput.current) fileInput.current.value = ''
+    }
+  }
+
+  const applyImport = () => {
+    if (!preview) return
+    applyAssessments(previewToEdits(preview.data))
+
+    if (applyCatalog && preview.data.catalogChanges.length > 0) {
+      const next = catalog.map(s => {
+        const mine = preview.data.catalogChanges.filter(c => c.skillId === s.id)
+        if (mine.length === 0) return s
+        const updated = { ...s }
+        for (const c of mine) {
+          if (c.field === 'critical') updated.critical = c.to === 'Yes'
+          if (c.field === 'target') updated.targetLevel = Number(c.to) as typeof s.targetLevel
+          if (c.field === 'weight') updated.weight = Number(c.to)
+        }
+        return updated
       })
-    })
-    return Object.entries(skillMap).map(([name, { levels, category }]) => ({
-      name,
-      category,
-      avgLevel: Math.round((levels.reduce((a, b) => a + b, 0) / EMPLOYEES.length) * 10) / 10,
-      expertCount: levels.filter(l => l === 4).length,
-      advancedCount: levels.filter(l => l === 3).length,
-      coveragePercent: Math.round((levels.filter(l => l > 0).length / EMPLOYEES.length) * 100),
-    })).sort((a, b) => b.avgLevel - a.avgLevel)
+      replaceCatalog(next)
+    }
+
+    setPreview(null)
   }
 
-  const skills = teamSkillSummary()
+  const planGap = (employeeId: string, skillId: string) => {
+    const emp = employees.find(e => e.id === employeeId)
+    const def = catalog.find(s => s.id === skillId)
+    if (!emp || !def) return
 
-  const startEditSkill = (skillName: string) => {
-    const edits: Record<string, SkillEdit> = {}
-    EMPLOYEES.forEach(emp => {
-      const skill = emp.skills.find(s => s.name === skillName)
-      if (skill) edits[emp.id] = { currentLevel: skill.currentLevel, targetLevel: skill.targetLevel }
-    })
-    setSkillEdits(edits)
-    setEditingSkillName(skillName)
-    setAddingSkill(false)
-  }
+    const existing = emp.developmentPlan ?? []
+    if (existing.some(i => i.skillId === skillId)) {
+      setView('development')
+      return
+    }
 
-  const saveSkillEdits = () => {
-    EMPLOYEES.forEach(emp => {
-      const edit = skillEdits[emp.id]
-      if (!edit) return
-      updateEmployee(emp.id, {
-        skills: emp.skills.map(s => s.name === editingSkillName
-          ? { ...s, currentLevel: edit.currentLevel, targetLevel: edit.targetLevel, score: levelToScore(edit.currentLevel), lastUpdated: new Date().toISOString() }
-          : s
-        )
-      })
-    })
-    setEditingSkillName(null)
-    setSkillEdits({})
-  }
-
-  const deleteSkill = (skillName: string) => {
-    EMPLOYEES.forEach(emp => {
-      if (emp.skills.some(s => s.name === skillName)) {
-        updateEmployee(emp.id, { skills: emp.skills.filter(s => s.name !== skillName) })
-      }
-    })
-    setDeletingSkillName(null)
-  }
-
-  const saveNewSkill = () => {
-    if (!newSkillName.trim() || selectedEmployees.size === 0) return
-    selectedEmployees.forEach(empId => {
-      const emp = EMPLOYEES.find(e => e.id === empId)
-      if (!emp || emp.skills.some(s => s.name === newSkillName)) return
-      const newSkill: Skill = {
-        id: `skill-${Date.now()}-${empId}`,
-        name: newSkillName.trim(),
-        category: newSkillCategory,
-        currentLevel: newSkillLevel,
-        targetLevel: newSkillLevel,
-        lastUpdated: new Date().toISOString(),
-        score: levelToScore(newSkillLevel),
-      }
-      updateEmployee(empId, { skills: [...emp.skills, newSkill] })
-    })
-    setAddingSkill(false)
-    setNewSkillName('')
-    setNewSkillCategory('Platform')
-    setNewSkillLevel('Beginner')
-    setSelectedEmployees(new Set())
-  }
-
-  const toggleEmp = (empId: string) => {
-    setSelectedEmployees(prev => {
-      const next = new Set(prev)
-      next.has(empId) ? next.delete(empId) : next.add(empId)
-      return next
-    })
+    const item: DevelopmentPlanItem = {
+      id: `dev-${employeeId}-${skillId}-${Date.now()}`,
+      employeeId,
+      skillId,
+      objective: `Reach level ${def.targetLevel} — ${def.observableCapability}`,
+      experienceAssignment: '',
+      coach: '',
+      course: '',
+      dueDate: new Date(Date.now() + 90 * 86_400_000).toISOString().slice(0, 10),
+      successEvidence: def.exampleEvidence,
+      status: 'Planned',
+      createdAt: new Date().toISOString(),
+    }
+    setDevelopmentPlan(employeeId, [...existing, item])
+    setView('development')
   }
 
   return (
     <div className="flex flex-col min-h-screen">
       <Header
         title="Skills Matrix"
-        subtitle="Team-wide skill coverage, gaps, and growth opportunities"
+        subtitle="Evidence-based technical assessment against the automation skill catalog"
         actions={
           <div className="flex items-center gap-2">
-            <Button size="sm" variant="secondary" icon={<Download className="w-3.5 h-3.5" />}>Export</Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={() => setGuideOpen(true)}
+              icon={<HelpCircle className="w-3.5 h-3.5" />}
+            >
+              Scoring guide
+            </Button>
+            <input
+              ref={fileInput}
+              type="file"
+              accept=".xlsx"
+              className="hidden"
+              onChange={e => {
+                const f = e.target.files?.[0]
+                if (f) handleFile(f)
+              }}
+            />
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={() => fileInput.current?.click()}
+              loading={busy === 'import'}
+              icon={<Upload className="w-3.5 h-3.5" />}
+            >
+              Import
+            </Button>
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleExport}
+              loading={busy === 'export'}
+              icon={<Download className="w-3.5 h-3.5" />}
+            >
+              Export
+            </Button>
           </div>
         }
       />
 
       <div className="flex-1 p-6 space-y-5">
-        {/* Quick stats */}
-        <div className="grid grid-cols-4 gap-3">
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap className="w-4 h-4 text-purple-500" />
-              <span className="text-xs font-semibold text-slate-600">Expert Skills</span>
-            </div>
-            <p className="text-2xl font-bold text-slate-900">
-              {EMPLOYEES.reduce((acc, e) => acc + e.skills.filter(s => s.currentLevel === 'Expert').length, 0)}
-            </p>
-            <p className="text-xs text-slate-400">across the team</p>
+        {error && (
+          <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-lg">
+            <AlertTriangle className="w-4 h-4 text-red-500" />
+            <p className="text-xs text-red-700 flex-1">{error}</p>
+            <button onClick={() => setError(null)} className="text-xs text-red-600 font-medium">
+              Dismiss
+            </button>
           </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <AlertTriangle className="w-4 h-4 text-amber-500" />
-              <span className="text-xs font-semibold text-slate-600">Skill Gaps</span>
-            </div>
-            <p className="text-2xl font-bold text-amber-600">5</p>
-            <p className="text-xs text-slate-400">critical gaps identified</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <TrendingUp className="w-4 h-4 text-green-500" />
-              <span className="text-xs font-semibold text-slate-600">Growing Skills</span>
-            </div>
-            <p className="text-2xl font-bold text-green-600">8</p>
-            <p className="text-xs text-slate-400">skills trending up Q2</p>
-          </div>
-          <div className="bg-white rounded-xl border border-slate-200 p-4">
-            <div className="flex items-center gap-2 mb-1">
-              <Shield className="w-4 h-4 text-red-500" />
-              <span className="text-xs font-semibold text-slate-600">Bus Factor Risk</span>
-            </div>
-            <p className="text-2xl font-bold text-red-600">3</p>
-            <p className="text-xs text-slate-400">single-point skills</p>
-          </div>
-        </div>
+        )}
 
-        {/* View toggle and filters */}
-        <div className="bg-white rounded-xl border border-slate-200 p-4 flex flex-wrap items-center gap-4">
+        <Card padding="sm" className="flex flex-wrap items-center gap-4">
           <div className="flex bg-slate-100 rounded-lg p-0.5">
-            {([
-              { id: 'heatmap', label: 'Heat Map', icon: Map },
-              { id: 'gaps', label: 'Gap Analysis', icon: AlertTriangle },
-              { id: 'emerging', label: 'Skill Inventory', icon: BarChart3 },
-            ] as const).map(({ id, label, icon: Icon }) => (
+            {VIEWS.map(({ id, label, icon: Icon }) => (
               <button
                 key={id}
                 onClick={() => setView(id)}
-                className={cn('flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all', view === id ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700')}
+                className={cn(
+                  'flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-all',
+                  view === id ? 'bg-white shadow text-slate-900' : 'text-slate-500 hover:text-slate-700',
+                )}
               >
                 <Icon className="w-3.5 h-3.5" />
                 {label}
               </button>
             ))}
           </div>
+
           {view === 'heatmap' && (
-            <div className="flex items-center gap-2">
-              <span className="text-xs text-slate-500">Filter:</span>
-              {CATEGORIES.map(cat => (
-                <button key={cat} onClick={() => setActiveCategory(cat)} className={cn('text-xs px-2.5 py-1 rounded-full font-medium transition-all', activeCategory === cat ? 'bg-brand-600 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200')}>
-                  {cat}
-                </button>
-              ))}
+            <div className="flex items-center gap-3 flex-wrap">
+              <select
+                value={domainFilter}
+                onChange={e => setDomainFilter(e.target.value)}
+                className="text-xs border border-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500"
+              >
+                <option value="All">All domains</option>
+                {domains.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+              <label className="flex items-center gap-1.5 text-xs text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={criticalOnly}
+                  onChange={e => setCriticalOnly(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-brand-600"
+                />
+                Critical only
+              </label>
+              <label className="flex items-center gap-1.5 text-xs text-slate-600">
+                <input
+                  type="checkbox"
+                  checked={belowTargetOnly}
+                  onChange={e => setBelowTargetOnly(e.target.checked)}
+                  className="w-3.5 h-3.5 accent-brand-600"
+                />
+                Below target only
+              </label>
             </div>
           )}
-          {view === 'emerging' && (
-            <button onClick={() => { setAddingSkill(true); setEditingSkillName(null) }} className="ml-auto flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors">
-              <Plus className="w-3.5 h-3.5" /> Add Skill
-            </button>
-          )}
-        </div>
+        </Card>
 
-        {/* Heatmap */}
+        {view === 'overview' && (
+          <SkillOverview
+            employees={employees}
+            catalog={catalog}
+            roleProfiles={roleProfiles}
+            thresholds={thresholds}
+            onSelectEmployee={id => { setSelectedEmployee(id); setView('assessment') }}
+          />
+        )}
+
         {view === 'heatmap' && (
-          <div className="bg-white rounded-xl border border-slate-200 p-6">
+          <Card padding="lg">
             <div className="mb-4">
-              <h3 className="text-sm font-semibold text-slate-800">Team Skills Coverage</h3>
-              <p className="text-xs text-slate-500 mt-0.5">Hover any cell to see engineer and skill details</p>
+              <h3 className="text-sm font-semibold text-slate-800">Team skills coverage</h3>
+              <p className="text-xs text-slate-500 mt-0.5">
+                Cells show the final rating; an amber dot marks a rating below that skill&apos;s
+                target. Hover any cell for detail.
+              </p>
             </div>
-            <SkillsHeatmap employees={EMPLOYEES} filterCategory={activeCategory !== 'All' ? activeCategory : undefined} />
-          </div>
+            <SkillsHeatmap
+              employees={employees}
+              catalog={catalog}
+              grouped
+              filterDomain={domainFilter !== 'All' ? domainFilter : undefined}
+              criticalOnly={criticalOnly}
+              belowTargetOnly={belowTargetOnly}
+            />
+          </Card>
         )}
 
-        {/* Gap Analysis */}
+        {view === 'assessment' && (
+          <AssessmentGrid
+            employees={employees}
+            catalog={catalog}
+            roleProfiles={roleProfiles}
+            thresholds={thresholds}
+            selectedId={selectedEmployee}
+            onSelect={setSelectedEmployee}
+            onSave={applyAssessments}
+            onOpenGuide={() => setGuideOpen(true)}
+          />
+        )}
+
         {view === 'gaps' && (
-          <div className="space-y-4">
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-800 mb-4">Critical Skills Gaps</h3>
-              <div className="space-y-3">
-                {SKILL_GAPS.map(gap => (
-                  <div key={gap.skill} className="flex items-center gap-4 p-3 rounded-lg border border-slate-100 hover:bg-slate-50">
-                    <div className="w-32 flex-shrink-0">
-                      <p className="text-sm font-semibold text-slate-800">{gap.skill}</p>
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <div className="flex-1 bg-slate-100 rounded-full h-2">
-                          <div className={cn('h-full rounded-full', gap.coverage >= 60 ? 'bg-green-500' : gap.coverage >= 40 ? 'bg-amber-500' : 'bg-red-500')} style={{ width: `${gap.coverage}%` }} />
-                        </div>
-                        <span className="text-xs font-semibold text-slate-600">{gap.coverage}%</span>
-                      </div>
-                      <p className="text-[10px] text-slate-500">Team coverage</p>
-                    </div>
-                    <div className="w-20 text-center">
-                      <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', gap.risk === 'Critical' ? 'bg-red-100 text-red-700' : gap.risk === 'High' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700')}>
-                        {gap.risk}
-                      </span>
-                    </div>
-                    <div className="flex-1 text-xs text-slate-600">
-                      <span className="font-medium">Rec: </span>{gap.recommended}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 p-5">
-              <h3 className="text-sm font-semibold text-slate-800 mb-4">Upskilling Candidates — AI Engineering</h3>
-              <div className="space-y-2">
-                {EMPLOYEES.filter(e => {
-                  const aiSkill = e.skills.find(s => s.name === 'AI Engineering')
-                  return aiSkill && aiSkill.score <= 2
-                }).slice(0, 5).map(emp => {
-                  const aiSkill = emp.skills.find(s => s.name === 'AI Engineering')
-                  return (
-                    <div key={emp.id} className="flex items-center gap-3 p-2.5 bg-slate-50 rounded-lg">
-                      <div className="w-6 h-6 rounded-full bg-brand-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">{emp.name[0]}</div>
-                      <div className="flex-1">
-                        <p className="text-xs font-medium text-slate-800">{emp.name}</p>
-                        <p className="text-[10px] text-slate-400">{emp.title}</p>
-                      </div>
-                      <span className={cn('text-xs px-1.5 py-0.5 rounded font-medium', skillLevelColor(aiSkill?.currentLevel ?? 'Beginner'))}>{aiSkill?.currentLevel ?? 'None'}</span>
-                      <span className="text-xs text-slate-500">→</span>
-                      <span className={cn('text-xs px-1.5 py-0.5 rounded font-medium', skillLevelColor(aiSkill?.targetLevel ?? 'Intermediate'))}>{aiSkill?.targetLevel ?? 'Intermediate'}</span>
-                    </div>
-                  )
-                })}
-              </div>
-            </div>
-          </div>
+          <GapAnalysis
+            employees={employees}
+            catalog={catalog}
+            thresholds={thresholds}
+            onPlanGap={planGap}
+          />
         )}
 
-        {/* Skill Inventory */}
-        {view === 'emerging' && (
-          <div className="space-y-3">
-            {/* Add skill form */}
-            {addingSkill && (
-              <div className="bg-white rounded-xl border-2 border-brand-200 p-5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Plus className="w-4 h-4 text-brand-600" />
-                  <h4 className="text-sm font-semibold text-slate-800">Add New Skill</h4>
-                  <button onClick={() => { setAddingSkill(false); setSelectedEmployees(new Set()) }} className="ml-auto text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
-                </div>
-                <div className="space-y-4">
-                  <div className="grid grid-cols-3 gap-3">
-                    <div>
-                      <label className={labelCls}>Skill Name *</label>
-                      <input type="text" value={newSkillName} onChange={e => setNewSkillName(e.target.value)} className={inputCls} placeholder="e.g. Terraform" />
-                    </div>
-                    <div>
-                      <label className={labelCls}>Category</label>
-                      <select value={newSkillCategory} onChange={e => setNewSkillCategory(e.target.value)} className={inputCls}>
-                        {SKILL_CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                      </select>
-                    </div>
-                    <div>
-                      <label className={labelCls}>Default Level</label>
-                      <select value={newSkillLevel} onChange={e => setNewSkillLevel(e.target.value as SkillLevel)} className={inputCls}>
-                        {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                      </select>
-                    </div>
-                  </div>
-                  <div>
-                    <label className={cn(labelCls, 'mb-2')}>Add to engineers ({selectedEmployees.size} selected)</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {EMPLOYEES.map(emp => (
-                        <label key={emp.id} className={cn('flex items-center gap-2 p-2 rounded-lg border cursor-pointer transition-all', selectedEmployees.has(emp.id) ? 'bg-brand-50 border-brand-300' : 'bg-slate-50 border-slate-200 hover:border-slate-300')}>
-                          <input type="checkbox" checked={selectedEmployees.has(emp.id)} onChange={() => toggleEmp(emp.id)} className="w-3.5 h-3.5 accent-brand-600" />
-                          <span className="text-xs font-medium text-slate-700 truncate">{emp.name}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="flex gap-2">
-                    <button onClick={saveNewSkill} className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-600 text-white text-xs font-medium rounded-lg hover:bg-brand-700 transition-colors">
-                      <Check className="w-3.5 h-3.5" /> Add Skill
-                    </button>
-                    <button onClick={() => { setAddingSkill(false); setSelectedEmployees(new Set()) }} className="px-3 py-1.5 text-xs font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 transition-colors">Cancel</button>
-                  </div>
-                </div>
-              </div>
-            )}
+        {view === 'development' && (
+          <DevelopmentPlan
+            employees={employees}
+            catalog={catalog}
+            onChange={setDevelopmentPlan}
+          />
+        )}
 
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <div className="grid grid-cols-[200px_80px_100px_100px_100px_1fr_80px] gap-4 px-5 py-3 border-b border-slate-100 text-xs font-semibold text-slate-500 bg-slate-50">
-                <span>Skill</span>
-                <span>Category</span>
-                <span>Avg Level</span>
-                <span>Experts</span>
-                <span>Coverage</span>
-                <span>Distribution</span>
-                <span></span>
-              </div>
-
-              {skills.map(skill => (
-                <div key={skill.name}>
-                  {/* Skill summary row */}
-                  <div className={cn('grid grid-cols-[200px_80px_100px_100px_100px_1fr_80px] gap-4 px-5 py-3 border-b border-slate-100 items-center transition-colors', editingSkillName === skill.name ? 'bg-brand-50' : 'hover:bg-slate-50')}>
-                    <span className="text-sm font-medium text-slate-800">{skill.name}</span>
-                    <span className="text-xs text-slate-500">{skill.category}</span>
-                    <div>
-                      <span className="text-xs font-semibold text-slate-700">{skill.avgLevel}</span>
-                      <span className="text-xs text-slate-400">/4</span>
-                    </div>
-                    <span className="text-xs font-semibold text-purple-600">{skill.expertCount}</span>
-                    <div>
-                      <span className={cn('text-xs font-semibold', skill.coveragePercent >= 70 ? 'text-green-600' : skill.coveragePercent >= 40 ? 'text-amber-600' : 'text-red-600')}>
-                        {skill.coveragePercent}%
-                      </span>
-                    </div>
-                    <div className="flex gap-1 h-4 items-end">
-                      {[4, 3, 2, 1, 0].map(level => {
-                        const count = EMPLOYEES.reduce((acc, emp) => {
-                          const s = emp.skills.find(sk => sk.name === skill.name)
-                          return acc + (s?.score === level ? 1 : 0)
-                        }, 0)
-                        return (
-                          <div
-                            key={level}
-                            className={cn('rounded-sm min-w-[6px]', level === 4 ? 'bg-blue-700' : level === 3 ? 'bg-blue-500' : level === 2 ? 'bg-blue-300' : level === 1 ? 'bg-blue-200' : 'bg-slate-100')}
-                            style={{ height: `${Math.max(2, (count / EMPLOYEES.length) * 100)}%`, width: `${count / EMPLOYEES.length * 40 + 6}px` }}
-                            title={`${count} engineers at level ${level}`}
-                          />
-                        )
-                      })}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {editingSkillName === skill.name ? (
-                        <>
-                          <button onClick={saveSkillEdits} className="p-1 text-brand-600 hover:bg-brand-100 rounded" title="Save"><Check className="w-3.5 h-3.5" /></button>
-                          <button onClick={() => { setEditingSkillName(null); setSkillEdits({}) }} className="p-1 text-slate-400 hover:bg-slate-100 rounded" title="Cancel"><X className="w-3.5 h-3.5" /></button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => startEditSkill(skill.name)} className="p-1 text-slate-400 hover:text-brand-600 hover:bg-brand-50 rounded transition-colors" title="Edit levels"><Pencil className="w-3.5 h-3.5" /></button>
-                          {deletingSkillName === skill.name ? (
-                            <div className="flex items-center gap-1">
-                              <button onClick={() => deleteSkill(skill.name)} className="text-[10px] px-1.5 py-0.5 bg-red-600 text-white rounded">Yes</button>
-                              <button onClick={() => setDeletingSkillName(null)} className="text-[10px] px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded">No</button>
-                            </div>
-                          ) : (
-                            <button onClick={() => setDeletingSkillName(skill.name)} className="p-1 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded transition-colors" title="Delete skill"><Trash2 className="w-3.5 h-3.5" /></button>
-                          )}
-                        </>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Expanded per-engineer level editor */}
-                  {editingSkillName === skill.name && (
-                    <div className="bg-brand-50 border-b border-brand-100 px-5 py-3">
-                      <p className="text-xs font-semibold text-brand-700 mb-3">Edit skill levels per engineer</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        {EMPLOYEES.filter(emp => emp.skills.some(s => s.name === skill.name)).map(emp => {
-                          const edit = skillEdits[emp.id]
-                          if (!edit) return null
-                          return (
-                            <div key={emp.id} className="flex items-center gap-3 bg-white rounded-lg px-3 py-2 border border-brand-100">
-                              <div className="w-5 h-5 rounded-full bg-brand-500 flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">{emp.name[0]}</div>
-                              <span className="text-xs font-medium text-slate-700 flex-1 truncate">{emp.name}</span>
-                              <div className="flex items-center gap-1.5">
-                                <span className="text-[10px] text-slate-500">Current:</span>
-                                <select
-                                  value={edit.currentLevel}
-                                  onChange={e => setSkillEdits(prev => ({ ...prev, [emp.id]: { ...prev[emp.id], currentLevel: e.target.value as SkillLevel } }))}
-                                  className="text-xs border border-slate-200 rounded px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                                >
-                                  {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                                </select>
-                                <span className="text-[10px] text-slate-500">Target:</span>
-                                <select
-                                  value={edit.targetLevel}
-                                  onChange={e => setSkillEdits(prev => ({ ...prev, [emp.id]: { ...prev[emp.id], targetLevel: e.target.value as SkillLevel } }))}
-                                  className="text-xs border border-slate-200 rounded px-1.5 py-1 focus:outline-none focus:ring-1 focus:ring-brand-500"
-                                >
-                                  {LEVELS.map(l => <option key={l} value={l}>{l}</option>)}
-                                </select>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+        {view === 'framework' && (
+          <CatalogEditor
+            employees={employees}
+            catalog={catalog}
+            domains={domains}
+            roleProfiles={roleProfiles}
+            thresholds={thresholds}
+            onUpdateThresholds={updateThresholds}
+            onAddSkill={addSkill}
+            onUpdateSkill={updateSkill}
+            onDeleteSkill={deleteSkill}
+            onAddRoleProfile={addRoleProfile}
+            onUpdateRoleProfile={updateRoleProfile}
+            onDeleteRoleProfile={deleteRoleProfile}
+            onResetPreset={resetToPreset}
+            onAssignRole={(id, roleProfileId) =>
+              updateEmployee(id, { roleProfileId: roleProfileId || undefined })
+            }
+          />
         )}
       </div>
+
+      <ScoringGuide open={guideOpen} onClose={() => setGuideOpen(false)} />
+
+      {preview && (
+        <ImportPreviewModal
+          filename={preview.filename}
+          preview={preview.data}
+          applyCatalog={applyCatalog}
+          onToggleCatalog={setApplyCatalog}
+          onApply={applyImport}
+          onCancel={() => setPreview(null)}
+        />
+      )}
+
+      {busy === 'import' && !preview && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-slate-900/20">
+          <div className="bg-white rounded-lg px-4 py-3 shadow-lg flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin text-brand-600" />
+            <span className="text-sm text-slate-700">Reading workbook…</span>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

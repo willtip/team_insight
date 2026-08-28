@@ -1,7 +1,12 @@
 'use client'
 
-import { Bell, Search, HelpCircle, ChevronDown } from 'lucide-react'
+import { Search, BookOpen } from 'lucide-react'
 import { useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import NotificationsPanel from './NotificationsPanel'
+import QuarterSelector from './QuarterSelector'
+import { cn } from '@/lib/utils'
 
 interface HeaderProps {
   title: string
@@ -11,6 +16,8 @@ interface HeaderProps {
 
 export default function Header({ title, subtitle, actions }: HeaderProps) {
   const [searchValue, setSearchValue] = useState('')
+  const pathname = usePathname()
+  const onGuide = pathname === '/guide'
 
   return (
     <header className="sticky top-0 z-30 bg-white border-b border-slate-200 px-6 py-3 flex items-center gap-4">
@@ -35,22 +42,25 @@ export default function Header({ title, subtitle, actions }: HeaderProps) {
       {actions && <div className="flex items-center gap-2">{actions}</div>}
 
       {/* Notification bell */}
-      <button className="relative p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
-        <Bell className="w-5 h-5" />
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full ring-2 ring-white" />
-      </button>
+      <NotificationsPanel />
 
-      {/* Help */}
-      <button className="p-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-100 transition-colors">
-        <HelpCircle className="w-5 h-5" />
-      </button>
+      {/* User guide */}
+      <Link
+        href="/guide"
+        title="Open the user guide"
+        className={cn(
+          'flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg text-sm font-medium transition-colors',
+          onGuide
+            ? 'bg-brand-50 text-brand-700'
+            : 'text-slate-500 hover:text-brand-700 hover:bg-brand-50',
+        )}
+      >
+        <BookOpen className="w-4 h-4" />
+        <span className="hidden lg:inline">Guide</span>
+      </Link>
 
-      {/* Q2 badge */}
-      <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 bg-brand-50 border border-brand-200 rounded-lg">
-        <div className="w-2 h-2 bg-brand-500 rounded-full animate-pulse" />
-        <span className="text-xs font-medium text-brand-700">Q2 2026</span>
-        <ChevronDown className="w-3 h-3 text-brand-500" />
-      </div>
+      {/* Quarter selector */}
+      <QuarterSelector defaultValue="Q2 2026" />
     </header>
   )
 }

@@ -10,6 +10,9 @@ node_modules/
 /.next/
 /out/
 
+# TypeScript incremental build cache
+*.tsbuildinfo
+
 # Production
 /build
 dist/
@@ -26,8 +29,10 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
-lib64/
+# Scoped to the backend: a bare `lib/` here also swallows the Next.js `lib/`
+# directory, silently un-tracking frontend modules.
+backend/lib/
+backend/lib64/
 parts/
 sdist/
 var/
