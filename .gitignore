@@ -13,6 +13,9 @@ node_modules/
 # TypeScript incremental build cache
 *.tsbuildinfo
 
+# Staging dir for the workbook generator (npm run workbooks)
+.tmp-lib/
+
 # Production
 /build
 dist/
