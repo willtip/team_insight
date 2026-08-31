@@ -186,16 +186,29 @@ export async function buildWorkbook(
     roles,
     'Role Profiles',
     'Every role needs a common engineering foundation, meaningful platform capability, and one or more areas of depth.',
-    ['Profile', 'Primary outcome', 'Depth areas', 'Working breadth',
-      'AI-era expectation', 'Evidence', 'Breadth target', 'Depth target'],
+    ['Profile', 'Primary outcome', 'Depth areas', 'Working breadth', 'AI-era expectation',
+      'Evidence', 'Breadth target', 'Depth target', 'Breadth as % of catalog', 'Depth as % of catalog'],
   )
+  const catalogCount = `COUNTA('Skill Catalog'!$A$${FIRST_ROW}:$A$500)`
   roleProfiles.forEach((p, i) => {
-    roles.getRow(FIRST_ROW + i).values = [
+    const n = FIRST_ROW + i
+    const row = roles.getRow(n)
+    row.values = [
       p.name, p.primaryOutcome, p.depthAreas, p.workingBreadth,
       p.aiExpectation, p.evidence, p.breadthTarget, p.depthTarget,
     ]
+    row.getCell(9).value = {
+      formula: `IFERROR($G${n}/${catalogCount},"")`,
+      result: catalog.length ? p.breadthTarget / catalog.length : '',
+    }
+    row.getCell(10).value = {
+      formula: `IFERROR($H${n}/${catalogCount},"")`,
+      result: catalog.length ? p.depthTarget / catalog.length : '',
+    }
+    row.getCell(9).numFmt = '0%'
+    row.getCell(10).numFmt = '0%'
   })
-  widths(roles, [30, 42, 52, 46, 46, 40, 14, 13])
+  widths(roles, [30, 42, 52, 46, 46, 40, 14, 13, 16, 16])
 
   // --- Scoring Guide -------------------------------------------------------
   const guide = wb.addWorksheet('Scoring Guide')
@@ -272,6 +285,18 @@ export interface ImportChange {
   to: string
 }
 
+/** One row on the Role Profiles sheet, matched against the app's profiles by name. */
+export interface RoleProfileChange {
+  name: string
+  action: 'add' | 'update'
+  /** Set when matched to an existing profile — the id `updateRoleProfile` needs. */
+  existingId?: string
+  /** Full field set to write, whether creating or updating. */
+  profile: Omit<RoleProfile, 'id' | 'depthSkillIds'>
+  /** Populated for 'update' only — which fields actually differ, and how. */
+  fieldChanges: { field: string; from: string; to: string }[]
+}
+
 export interface ImportPreview {
   changes: ImportChange[]
   rowsRead: number
@@ -279,6 +304,8 @@ export interface ImportPreview {
   unknownSkillCodes: number[]
   /** Catalog rows whose criticality, target or weight differ from the file. */
   catalogChanges: { skillId: string; name: string; field: string; from: string; to: string }[]
+  /** Role Profiles sheet rows that would add a new profile or change an existing one. */
+  roleProfileChanges: RoleProfileChange[]
   errors: string[]
 }
 
@@ -294,11 +321,30 @@ function cellText(v: unknown): string {
   return String(v)
 }
 
+/** Parses a target-count cell, tolerating blanks. */
+function cellNumber(v: unknown): number | undefined {
+  const n = Number(cellText(v).trim())
+  return Number.isFinite(n) && cellText(v).trim() !== '' ? n : undefined
+}
+
+/**
+ * Falls back a missing breadth/depth target to a percentage-of-catalog cell.
+ * Excel stores a `0%`-formatted cell as the underlying fraction (e.g. 0.65),
+ * but tolerates someone typing a bare "65" meaning 65% too.
+ */
+function targetFromPercent(pctCellText: string, catalogSize: number): number | undefined {
+  const raw = Number(pctCellText.trim().replace(/%$/, ''))
+  if (!Number.isFinite(raw) || pctCellText.trim() === '') return undefined
+  const fraction = raw > 1 ? raw / 100 : raw
+  return Math.round(fraction * catalogSize)
+}
+
 /** Reads an uploaded workbook and reports what would change — never writes. */
 export async function readWorkbook(
   file: File,
   employees: Employee[],
   catalog: SkillDefinition[],
+  roleProfiles: RoleProfile[] = [],
 ): Promise<ImportPreview> {
   const ExcelJS = await loadExcel()
   const wb: Workbook = new ExcelJS.Workbook()
@@ -306,11 +352,66 @@ export async function readWorkbook(
 
   const preview: ImportPreview = {
     changes: [], rowsRead: 0, unmatchedEmployees: [],
-    unknownSkillCodes: [], catalogChanges: [], errors: [],
+    unknownSkillCodes: [], catalogChanges: [], roleProfileChanges: [], errors: [],
   }
 
   const byCode = new Map(catalog.map(s => [s.code, s]))
   const byName = new Map(employees.map(e => [e.name.trim().toLowerCase(), e]))
+
+  // --- Role Profiles sheet (optional) --------------------------------------
+  // Column order matches both this file's own export and the standalone
+  // Team_Skills_Assessment_Matrix workbook, so either can be re-imported:
+  // Profile, Primary outcome, Depth areas, Working breadth, AI-era expectation,
+  // Evidence, Breadth target, Depth target, [Breadth %, Depth %].
+  const rolesSheet = wb.getWorksheet('Role Profiles')
+  if (rolesSheet) {
+    const byRoleName = new Map(roleProfiles.map(p => [p.name.trim().toLowerCase(), p]))
+    rolesSheet.eachRow((row, n) => {
+      if (n < FIRST_ROW) return
+      const name = cellText(row.getCell(1).value).trim()
+      if (!name) return
+
+      const breadthTarget =
+        cellNumber(row.getCell(7).value) ?? targetFromPercent(cellText(row.getCell(9).value), catalog.length) ?? 0
+      const depthTarget =
+        cellNumber(row.getCell(8).value) ?? targetFromPercent(cellText(row.getCell(10).value), catalog.length) ?? 0
+
+      const candidate: Omit<RoleProfile, 'id' | 'depthSkillIds'> = {
+        name,
+        primaryOutcome: cellText(row.getCell(2).value).trim(),
+        depthAreas: cellText(row.getCell(3).value).trim(),
+        workingBreadth: cellText(row.getCell(4).value).trim(),
+        aiExpectation: cellText(row.getCell(5).value).trim(),
+        evidence: cellText(row.getCell(6).value).trim(),
+        breadthTarget,
+        depthTarget,
+      }
+
+      const existing = byRoleName.get(name.toLowerCase())
+      if (!existing) {
+        preview.roleProfileChanges.push({ name, action: 'add', profile: candidate, fieldChanges: [] })
+        return
+      }
+
+      const fieldChanges: { field: string; from: string; to: string }[] = []
+      const compare = (field: string, from: string | number, to: string | number) => {
+        if (String(from) !== String(to)) fieldChanges.push({ field, from: String(from), to: String(to) })
+      }
+      compare('Primary outcome', existing.primaryOutcome, candidate.primaryOutcome)
+      compare('Depth areas', existing.depthAreas, candidate.depthAreas)
+      compare('Working breadth', existing.workingBreadth, candidate.workingBreadth)
+      compare('AI-era expectation', existing.aiExpectation, candidate.aiExpectation)
+      compare('Evidence', existing.evidence, candidate.evidence)
+      compare('Breadth target', existing.breadthTarget, candidate.breadthTarget)
+      compare('Depth target', existing.depthTarget, candidate.depthTarget)
+
+      if (fieldChanges.length > 0) {
+        preview.roleProfileChanges.push({
+          name, action: 'update', existingId: existing.id, profile: candidate, fieldChanges,
+        })
+      }
+    })
+  }
 
   // --- Skill Catalog sheet (optional) --------------------------------------
   const catSheet = wb.getWorksheet('Skill Catalog')

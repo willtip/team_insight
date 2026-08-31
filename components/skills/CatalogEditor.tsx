@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from 'react'
 import {
-  Plus, Trash2, RotateCcw, ChevronDown, ChevronRight, ExternalLink, Pencil, Users,
+  Plus, Trash2, RotateCcw, ChevronDown, ChevronRight, ExternalLink, Pencil, Users, Upload,
 } from 'lucide-react'
 import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
@@ -36,6 +36,8 @@ interface CatalogEditorProps {
 
   onResetPreset: () => void
   onAssignRole: (employeeId: string, roleProfileId: string) => void
+  /** Opens the shared workbook file picker — the Role Profiles sheet round-trips through it. */
+  onRequestImport?: () => void
 }
 
 const GRID = 'grid grid-cols-[1fr_120px_70px_70px_70px_80px_64px] gap-3'
@@ -44,7 +46,7 @@ export default function CatalogEditor({
   employees, catalog, domains, roleProfiles, thresholds, onUpdateThresholds,
   onAddSkill, onUpdateSkill, onDeleteSkill,
   onAddRoleProfile, onUpdateRoleProfile, onDeleteRoleProfile,
-  onResetPreset, onAssignRole,
+  onResetPreset, onAssignRole, onRequestImport,
 }: CatalogEditorProps) {
   const [tab, setTab] = useState<'catalog' | 'roles'>('catalog')
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
@@ -138,9 +140,22 @@ export default function CatalogEditor({
                 Add skill
               </Button>
             ) : (
-              <Button size="sm" onClick={() => setRoleEditor(true)} icon={<Plus className="w-3.5 h-3.5" />}>
-                New role profile
-              </Button>
+              <>
+                {onRequestImport && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    onClick={onRequestImport}
+                    icon={<Upload className="w-3.5 h-3.5" />}
+                    title="Import roles from an Excel workbook's Role Profiles sheet"
+                  >
+                    Import roles
+                  </Button>
+                )}
+                <Button size="sm" onClick={() => setRoleEditor(true)} icon={<Plus className="w-3.5 h-3.5" />}>
+                  New role profile
+                </Button>
+              </>
             )}
           </div>
         </div>

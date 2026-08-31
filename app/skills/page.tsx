@@ -82,6 +82,7 @@ export default function SkillsPage() {
   const [error, setError] = useState<string | null>(null)
   const [preview, setPreview] = useState<{ filename: string; data: ImportPreview } | null>(null)
   const [applyCatalog, setApplyCatalog] = useState(true)
+  const [applyRoleProfiles, setApplyRoleProfiles] = useState(true)
   const fileInput = useRef<HTMLInputElement>(null)
 
   const handleExport = async () => {
@@ -102,8 +103,9 @@ export default function SkillsPage() {
     setBusy('import')
     setError(null)
     try {
-      const data = await readWorkbook(file, employees, catalog)
+      const data = await readWorkbook(file, employees, catalog, roleProfiles)
       setApplyCatalog(true)
+      setApplyRoleProfiles(true)
       setPreview({ filename: file.name, data })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Could not read that workbook.')
@@ -130,6 +132,13 @@ export default function SkillsPage() {
         return updated
       })
       replaceCatalog(next)
+    }
+
+    if (applyRoleProfiles) {
+      for (const rc of preview.data.roleProfileChanges) {
+        if (rc.action === 'add') addRoleProfile({ ...rc.profile, depthSkillIds: [] })
+        else if (rc.existingId) updateRoleProfile(rc.existingId, rc.profile)
+      }
     }
 
     setPreview(null)
@@ -348,6 +357,7 @@ export default function SkillsPage() {
             onAssignRole={(id, roleProfileId) =>
               updateEmployee(id, { roleProfileId: roleProfileId || undefined })
             }
+            onRequestImport={() => fileInput.current?.click()}
           />
         )}
       </div>
@@ -360,6 +370,8 @@ export default function SkillsPage() {
           preview={preview.data}
           applyCatalog={applyCatalog}
           onToggleCatalog={setApplyCatalog}
+          applyRoleProfiles={applyRoleProfiles}
+          onToggleRoleProfiles={setApplyRoleProfiles}
           onApply={applyImport}
           onCancel={() => setPreview(null)}
         />
