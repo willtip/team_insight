@@ -367,6 +367,23 @@ function findCol(headers: Map<string, number>, ...keywords: string[]): number | 
   return undefined
 }
 
+/**
+ * Finds a worksheet by name, tolerating case, surrounding whitespace and
+ * minor rewording (e.g. "Roles", "Role Profile") — someone hand-building a
+ * roles-only workbook to import rarely reproduces the exact export tab name.
+ * Tries an exact (normalized) match first, then falls back to a sheet whose
+ * name contains every keyword.
+ */
+function findSheet(wb: Workbook, exact: string, ...keywords: string[]): Worksheet | undefined {
+  const target = exact.trim().toLowerCase()
+  const byExact = wb.worksheets.find(ws => ws.name.trim().toLowerCase() === target)
+  if (byExact) return byExact
+  return wb.worksheets.find(ws => {
+    const name = ws.name.trim().toLowerCase()
+    return keywords.every(k => name.includes(k))
+  })
+}
+
 /** Reads an uploaded workbook and reports what would change — never writes. */
 export async function readWorkbook(
   file: File,
@@ -390,7 +407,7 @@ export async function readWorkbook(
   // Read by header name, not position: this file's own export and the
   // standalone Team_Skills_Assessment_Matrix workbook use the same labels,
   // but a future reorder of either would silently break a position-based read.
-  const rolesSheet = wb.getWorksheet('Role Profiles')
+  const rolesSheet = findSheet(wb, 'Role Profiles', 'role', 'profile')
   if (rolesSheet) {
     const rh = headerMap(rolesSheet)
     const rCol = {
@@ -457,7 +474,7 @@ export async function readWorkbook(
   }
 
   // --- Skill Catalog sheet (optional) --------------------------------------
-  const catSheet = wb.getWorksheet('Skill Catalog')
+  const catSheet = findSheet(wb, 'Skill Catalog', 'skill', 'catalog')
   if (catSheet) {
     const ch = headerMap(catSheet)
     const cCol = {
@@ -497,7 +514,7 @@ export async function readWorkbook(
   }
 
   // --- Assessment sheet ----------------------------------------------------
-  const sheet = wb.getWorksheet('Assessment')
+  const sheet = wb.worksheets.find(ws => ws.name.trim().toLowerCase() === 'assessment')
   if (!sheet) {
     // A workbook can legitimately carry only a Role Profiles and/or Skill
     // Catalog sheet (e.g. one sheet copied out of the full export) — only
@@ -505,7 +522,7 @@ export async function readWorkbook(
     // at all, or when it's specifically the engineer-facing self-assessment
     // form (which is never meant to be imported directly — its "Send to
     // Manager" sheet is pasted into the manager workbook's Intake sheet instead).
-    const looksLikeSelfAssessmentForm = !!wb.getWorksheet('My Assessment')
+    const looksLikeSelfAssessmentForm = wb.worksheets.some(ws => ws.name.trim().toLowerCase() === 'my assessment')
     if (looksLikeSelfAssessmentForm) {
       preview.errors.push(
         'This looks like a self-assessment intake form, not the manager workbook. ' +
