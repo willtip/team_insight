@@ -499,22 +499,20 @@ export async function readWorkbook(
   // --- Assessment sheet ----------------------------------------------------
   const sheet = wb.getWorksheet('Assessment')
   if (!sheet) {
-    // A file can legitimately carry only a Role Profiles or Skill Catalog sheet
-    // — someone copying just that tab out to share or re-import on its own is a
-    // normal thing to do, not a mistake. Only treat the missing sheet as an
-    // error when there's nothing else in the file to show for it, or when it's
-    // specifically the engineer-facing self-assessment form (which is never
-    // meant to be imported directly — its "Send to Manager" sheet is pasted
-    // into the manager workbook's Intake sheet instead).
+    // A workbook can legitimately carry only a Role Profiles and/or Skill
+    // Catalog sheet (e.g. one sheet copied out of the full export) — only
+    // treat the missing sheet as an error when nothing importable was found
+    // at all, or when it's specifically the engineer-facing self-assessment
+    // form (which is never meant to be imported directly — its "Send to
+    // Manager" sheet is pasted into the manager workbook's Intake sheet instead).
     const looksLikeSelfAssessmentForm = !!wb.getWorksheet('My Assessment')
-    const foundNothingElse = preview.roleProfileChanges.length === 0 && preview.catalogChanges.length === 0
     if (looksLikeSelfAssessmentForm) {
       preview.errors.push(
         'This looks like a self-assessment intake form, not the manager workbook. ' +
         'Copy its "Send to Manager" sheet into the manager workbook\'s Intake sheet, ' +
         'then import that workbook instead.',
       )
-    } else if (foundNothingElse) {
+    } else if (!rolesSheet && !catSheet) {
       preview.errors.push('No "Assessment", "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
     }
     return preview
