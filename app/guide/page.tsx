@@ -987,6 +987,10 @@ npm run dev`}</Pre>
                   q: 'Should I use this for performance ratings?',
                   a: 'No. It is built for capability planning and growth, not forced ranking or compensation. Levels describe demonstrated capability against role requirements — they are not a judgement of the person, and treating them as one will corrupt your data as people learn to rate strategically.',
                 },
+                {
+                  q: 'What does the "L3 / L4 / L5 / L6" level on an employee\'s profile mean?',
+                  a: 'That is their career/seniority level in your organization\'s job ladder (e.g. L3 = Engineer, L4 = Senior-track, L5 = Senior, L6 = Staff/Principal) — it is set on the Edit Profile form and is independent of the 0–5 skill rubric. Skill levels measure demonstrated capability per skill; the career level is just the person\'s title tier and plays no part in gap, coverage or bus-factor calculations.',
+                },
               ].map(item => (
                 <details key={item.q} className="group rounded-xl border border-slate-200 bg-white">
                   <summary className="flex items-center gap-2 px-4 py-3 cursor-pointer text-sm font-medium text-slate-800 list-none">

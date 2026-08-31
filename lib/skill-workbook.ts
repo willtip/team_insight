@@ -339,6 +339,34 @@ function targetFromPercent(pctCellText: string, catalogSize: number): number | u
   return Math.round(fraction * catalogSize)
 }
 
+/**
+ * Maps a sheet's header row to 1-based column indices by label, so a sheet is
+ * read by what its columns are *called* rather than a hardcoded position.
+ *
+ * Both workbook generators in this codebase (this file's own `buildWorkbook`,
+ * and the standalone `scripts/build-workbooks.mjs` package) put the same
+ * logical columns — Skill ID, Self rating, Evidence, etc. — at *different*
+ * positions on the Assessment sheet. Reading by position silently misreads
+ * one generator's file as the other's; reading by name works for both, and
+ * for any hand-reordered file besides.
+ */
+function headerMap(sheet: Worksheet, headerRow = FIRST_ROW - 1): Map<string, number> {
+  const map = new Map<string, number>()
+  sheet.getRow(headerRow).eachCell((cell, col) => {
+    const label = cellText(cell.value).trim().toLowerCase()
+    if (label) map.set(label, col)
+  })
+  return map
+}
+
+/** First header whose lowercased text contains every given keyword. */
+function findCol(headers: Map<string, number>, ...keywords: string[]): number | undefined {
+  for (const [label, col] of Array.from(headers)) {
+    if (keywords.every(k => label.includes(k))) return col
+  }
+  return undefined
+}
+
 /** Reads an uploaded workbook and reports what would change — never writes. */
 export async function readWorkbook(
   file: File,
@@ -359,30 +387,45 @@ export async function readWorkbook(
   const byName = new Map(employees.map(e => [e.name.trim().toLowerCase(), e]))
 
   // --- Role Profiles sheet (optional) --------------------------------------
-  // Column order matches both this file's own export and the standalone
-  // Team_Skills_Assessment_Matrix workbook, so either can be re-imported:
-  // Profile, Primary outcome, Depth areas, Working breadth, AI-era expectation,
-  // Evidence, Breadth target, Depth target, [Breadth %, Depth %].
+  // Read by header name, not position: this file's own export and the
+  // standalone Team_Skills_Assessment_Matrix workbook use the same labels,
+  // but a future reorder of either would silently break a position-based read.
   const rolesSheet = wb.getWorksheet('Role Profiles')
   if (rolesSheet) {
+    const rh = headerMap(rolesSheet)
+    const rCol = {
+      name: findCol(rh, 'profile') ?? 1,
+      outcome: findCol(rh, 'primary', 'outcome') ?? 2,
+      depthAreas: findCol(rh, 'depth', 'areas') ?? 3,
+      breadth: findCol(rh, 'working', 'breadth') ?? 4,
+      ai: findCol(rh, 'ai-era') ?? findCol(rh, 'ai', 'expectation') ?? 5,
+      evidence: findCol(rh, 'evidence') ?? 6,
+      breadthTarget: findCol(rh, 'breadth', 'target') ?? 7,
+      depthTarget: findCol(rh, 'depth', 'target') ?? 8,
+      breadthPct: findCol(rh, 'breadth', '%') ?? 9,
+      depthPct: findCol(rh, 'depth', '%') ?? 10,
+    }
+
     const byRoleName = new Map(roleProfiles.map(p => [p.name.trim().toLowerCase(), p]))
     rolesSheet.eachRow((row, n) => {
       if (n < FIRST_ROW) return
-      const name = cellText(row.getCell(1).value).trim()
+      const name = cellText(row.getCell(rCol.name).value).trim()
       if (!name) return
 
       const breadthTarget =
-        cellNumber(row.getCell(7).value) ?? targetFromPercent(cellText(row.getCell(9).value), catalog.length) ?? 0
+        cellNumber(row.getCell(rCol.breadthTarget).value) ??
+        targetFromPercent(cellText(row.getCell(rCol.breadthPct).value), catalog.length) ?? 0
       const depthTarget =
-        cellNumber(row.getCell(8).value) ?? targetFromPercent(cellText(row.getCell(10).value), catalog.length) ?? 0
+        cellNumber(row.getCell(rCol.depthTarget).value) ??
+        targetFromPercent(cellText(row.getCell(rCol.depthPct).value), catalog.length) ?? 0
 
       const candidate: Omit<RoleProfile, 'id' | 'depthSkillIds'> = {
         name,
-        primaryOutcome: cellText(row.getCell(2).value).trim(),
-        depthAreas: cellText(row.getCell(3).value).trim(),
-        workingBreadth: cellText(row.getCell(4).value).trim(),
-        aiExpectation: cellText(row.getCell(5).value).trim(),
-        evidence: cellText(row.getCell(6).value).trim(),
+        primaryOutcome: cellText(row.getCell(rCol.outcome).value).trim(),
+        depthAreas: cellText(row.getCell(rCol.depthAreas).value).trim(),
+        workingBreadth: cellText(row.getCell(rCol.breadth).value).trim(),
+        aiExpectation: cellText(row.getCell(rCol.ai).value).trim(),
+        evidence: cellText(row.getCell(rCol.evidence).value).trim(),
         breadthTarget,
         depthTarget,
       }
@@ -416,14 +459,21 @@ export async function readWorkbook(
   // --- Skill Catalog sheet (optional) --------------------------------------
   const catSheet = wb.getWorksheet('Skill Catalog')
   if (catSheet) {
+    const ch = headerMap(catSheet)
+    const cCol = {
+      id: findCol(ch, 'skill', 'id') ?? 1,
+      critical: findCol(ch, 'critical') ?? 7,
+      target: findCol(ch, 'target') ?? 8,
+      weight: findCol(ch, 'weight') ?? 9,
+    }
     catSheet.eachRow((row, n) => {
       if (n < FIRST_ROW) return
-      const code = Number(cellText(row.getCell(1).value))
+      const code = Number(cellText(row.getCell(cCol.id).value))
       const def = byCode.get(code)
       if (!def) return
-      const critical = cellText(row.getCell(7).value).trim().toLowerCase() === 'yes'
-      const target = parseProficiency(cellText(row.getCell(8).value))
-      const weight = Number(cellText(row.getCell(9).value))
+      const critical = cellText(row.getCell(cCol.critical).value).trim().toLowerCase() === 'yes'
+      const target = parseProficiency(cellText(row.getCell(cCol.target).value))
+      const weight = Number(cellText(row.getCell(cCol.weight).value))
 
       if (critical !== def.critical) {
         preview.catalogChanges.push({
@@ -449,8 +499,39 @@ export async function readWorkbook(
   // --- Assessment sheet ----------------------------------------------------
   const sheet = wb.getWorksheet('Assessment')
   if (!sheet) {
-    preview.errors.push('No "Assessment" sheet found in this workbook.')
+    // A file can legitimately carry only a Role Profiles or Skill Catalog sheet
+    // — someone copying just that tab out to share or re-import on its own is a
+    // normal thing to do, not a mistake. Only treat the missing sheet as an
+    // error when there's nothing else in the file to show for it, or when it's
+    // specifically the engineer-facing self-assessment form (which is never
+    // meant to be imported directly — its "Send to Manager" sheet is pasted
+    // into the manager workbook's Intake sheet instead).
+    const looksLikeSelfAssessmentForm = !!wb.getWorksheet('My Assessment')
+    const foundNothingElse = preview.roleProfileChanges.length === 0 && preview.catalogChanges.length === 0
+    if (looksLikeSelfAssessmentForm) {
+      preview.errors.push(
+        'This looks like a self-assessment intake form, not the manager workbook. ' +
+        'Copy its "Send to Manager" sheet into the manager workbook\'s Intake sheet, ' +
+        'then import that workbook instead.',
+      )
+    } else if (foundNothingElse) {
+      preview.errors.push('No "Assessment", "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
+    }
     return preview
+  }
+
+  // Read by header name rather than fixed position: this file's own export and
+  // the standalone Team_Skills_Assessment_Matrix workbook put Skill ID, Self
+  // rating, Reviewer rating and Evidence at different column positions, so a
+  // position-based read silently misattributes one generator's columns to the
+  // other's — every row would appear to match, but the values would be wrong.
+  const ah = headerMap(sheet)
+  const aCol = {
+    employee: findCol(ah, 'employee') ?? 1,
+    skillId: findCol(ah, 'skill', 'id') ?? 5,
+    self: findCol(ah, 'self', 'rating') ?? 10,
+    reviewer: findCol(ah, 'reviewer', 'rating') ?? 11,
+    evidence: findCol(ah, 'evidence') ?? 14,
   }
 
   const missingPeople = new Set<string>()
@@ -458,8 +539,8 @@ export async function readWorkbook(
 
   sheet.eachRow((row, n) => {
     if (n < FIRST_ROW) return
-    const empName = cellText(row.getCell(1).value).trim()
-    const codeText = cellText(row.getCell(5).value).trim()
+    const empName = cellText(row.getCell(aCol.employee).value).trim()
+    const codeText = cellText(row.getCell(aCol.skillId).value).trim()
     if (!empName && !codeText) return
 
     preview.rowsRead++
@@ -488,10 +569,10 @@ export async function readWorkbook(
       })
     }
 
-    push('selfRating', current.selfRating, parseProficiency(cellText(row.getCell(10).value)))
-    push('reviewerRating', current.reviewerRating, parseProficiency(cellText(row.getCell(11).value)))
+    push('selfRating', current.selfRating, parseProficiency(cellText(row.getCell(aCol.self).value)))
+    push('reviewerRating', current.reviewerRating, parseProficiency(cellText(row.getCell(aCol.reviewer).value)))
 
-    const evidence = cellText(row.getCell(14).value).trim()
+    const evidence = cellText(row.getCell(aCol.evidence).value).trim()
     if (evidence || current.evidence) push('evidence', current.evidence, evidence)
   })
 
