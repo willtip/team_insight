@@ -449,7 +449,12 @@ export async function readWorkbook(
   // --- Assessment sheet ----------------------------------------------------
   const sheet = wb.getWorksheet('Assessment')
   if (!sheet) {
-    preview.errors.push('No "Assessment" sheet found in this workbook.')
+    // A workbook can legitimately carry only a Role Profiles and/or Skill
+    // Catalog sheet (e.g. one sheet copied out of the full export), so only
+    // treat this as an error when nothing importable was found at all.
+    if (!rolesSheet && !catSheet) {
+      preview.errors.push('No "Assessment", "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
+    }
     return preview
   }
 
