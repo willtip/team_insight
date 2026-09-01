@@ -10,7 +10,7 @@ import PerformanceDistribution from '@/components/charts/PerformanceDistribution
 import SkillsHeatmap from '@/components/charts/SkillsHeatmap'
 import Button from '@/components/ui/Button'
 import Avatar from '@/components/ui/Avatar'
-import { TEAM_METRICS, AI_INSIGHTS } from '@/lib/mock-data'
+import { AI_INSIGHTS } from '@/lib/mock-data'
 import { useEmployees } from '@/lib/employee-store'
 import { useSkillCatalog } from '@/lib/skill-catalog-store'
 import { cn, scoreToColor } from '@/lib/utils'
@@ -28,10 +28,30 @@ export default function Dashboard() {
   const topEmployees = [...employees].sort((a, b) => b.performanceScore.overall - a.performanceScore.overall).slice(0, 3)
 
   const teamMetrics = {
-    ...TEAM_METRICS,
     totalMembers: employees.length,
     promotionReadyCount: employees.filter(e => e.promotionReadiness === 'Ready Now' || e.promotionReadiness === 'Ready in 6 Months').length,
     needsCoachingCount: employees.filter(e => e.needsCoaching).length,
+    teamHealthScore: employees.length
+      ? Math.round(employees.reduce((sum, e) => sum + (e.performanceScore?.overall ?? 0), 0) / employees.length)
+      : 0,
+    goalCompletionRate: (() => {
+      const allGoals = employees.flatMap(e => e.goals)
+      return allGoals.length
+        ? Math.round((allGoals.filter(g => g.status === 'Completed').length / allGoals.length) * 100)
+        : 0
+    })(),
+    skillsGrowthScore: (() => {
+      const allSkills = employees.flatMap(e => e.skills)
+      const rated = allSkills.filter(s => (s.reviewerRating ?? s.selfRating) != null)
+      return rated.length
+        ? Math.round((rated.reduce((sum, s) => sum + (s.reviewerRating ?? s.selfRating ?? 0), 0) / (rated.length * 5)) * 100)
+        : 0
+    })(),
+    activeProjects: employees.reduce((sum, e) => sum + e.projectContributions.length, 0),
+    completedTrainings: employees.reduce(
+      (sum, e) => sum + e.development.training.filter(t => t.status === 'Completed').length,
+      0,
+    ),
   }
 
   return (

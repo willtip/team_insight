@@ -1,11 +1,23 @@
 """
 Team Insight AI - FastAPI Backend
 """
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
-from app.routers import employees, goals, skills, projects, insights, notes, reports, auth
+from app.core.redis import redis_client
+from app.db.session import engine
+from app.routers import employees, goals, skills, projects, insights, notes, reports, auth, one_on_ones
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    yield
+    await engine.dispose()
+    await redis_client.aclose()
+
 
 app = FastAPI(
     title="Team Insight AI API",
@@ -14,6 +26,7 @@ app = FastAPI(
     docs_url="/api/docs",
     redoc_url="/api/redoc",
     openapi_url="/api/openapi.json",
+    lifespan=lifespan,
 )
 
 # CORS
@@ -34,6 +47,7 @@ app.include_router(projects.router, prefix="/api/v1/projects", tags=["Projects"]
 app.include_router(insights.router, prefix="/api/v1/insights", tags=["AI Insights"])
 app.include_router(notes.router, prefix="/api/v1/notes", tags=["Director Notes"])
 app.include_router(reports.router, prefix="/api/v1/reports", tags=["Reports"])
+app.include_router(one_on_ones.router, prefix="/api/v1/one-on-ones", tags=["One-on-Ones"])
 
 
 @app.get("/api/health")

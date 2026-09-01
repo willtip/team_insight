@@ -1,4 +1,6 @@
 -- Team Insight AI — PostgreSQL Schema
+-- LEGACY REFERENCE ONLY: superseded by Alembic migrations in backend/alembic/versions.
+-- The db container no longer auto-applies this file; run `alembic upgrade head` instead.
 -- Run: psql -d team_insight_ai -f schema.sql
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

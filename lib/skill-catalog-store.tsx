@@ -1,12 +1,15 @@
 'use client'
 
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
+import { createContext, useCallback, useContext, useMemo } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { apiFetch, useApiToken } from './api-client'
 import { AAP_SKILL_CATALOG, ROLE_PROFILES, DEFAULT_THRESHOLDS } from './skill-catalog'
 import type { RoleProfile, SkillDefinition, SkillThresholds } from './skill-catalog'
 
-const CATALOG_KEY = 'asi-skill-catalog'
-const ROLES_KEY = 'asi-role-profiles'
-const THRESHOLDS_KEY = 'asi-skill-thresholds'
+const CATALOG_KEY = ['skill-catalog'] as const
+const ROLES_KEY = ['role-profiles'] as const
+const THRESHOLDS_KEY = ['skill-thresholds'] as const
+
 
 interface SkillCatalogStore {
   catalog: SkillDefinition[]
@@ -15,13 +18,13 @@ interface SkillCatalogStore {
   roleProfiles: RoleProfile[]
   roleProfileById: Map<string, RoleProfile>
 
-  addSkill: (data: Omit<SkillDefinition, 'id' | 'code'>) => string
+  addSkill: (data: Omit<SkillDefinition, 'id' | 'code'>) => void
   updateSkill: (id: string, updates: Partial<SkillDefinition>) => void
   /** Also strips the skill from every role profile's depth areas. */
   deleteSkill: (id: string) => void
   replaceCatalog: (next: SkillDefinition[]) => void
 
-  addRoleProfile: (data: Omit<RoleProfile, 'id'>) => string
+  addRoleProfile: (data: Omit<RoleProfile, 'id'>) => void
   updateRoleProfile: (id: string, updates: Partial<RoleProfile>) => void
   deleteRoleProfile: (id: string) => void
 
@@ -35,119 +38,179 @@ interface SkillCatalogStore {
 
 const SkillCatalogContext = createContext<SkillCatalogStore | null>(null)
 
-/** Slug from a name, kept unique against what already exists. */
-function slugify(name: string, taken: string[]): string {
-  const base =
-    name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'role'
-  if (!taken.includes(base)) return base
-  let n = 2
-  while (taken.includes(`${base}-${n}`)) n++
-  return `${base}-${n}`
+async function diffCollection<T extends { id: string }>(
+  oldItems: T[],
+  newItems: T[],
+  ops: {
+    create: (item: T) => Promise<unknown>
+    update: (id: string, item: T) => Promise<unknown>
+    remove: (id: string) => Promise<unknown>
+  },
+): Promise<void> {
+  const oldIds = new Set(oldItems.map((i) => i.id))
+  const newIds = new Set(newItems.map((i) => i.id))
+  const tasks: Promise<unknown>[] = []
+  for (const item of newItems) {
+    tasks.push(oldIds.has(item.id) ? ops.update(item.id, item) : ops.create(item))
+  }
+  for (const item of oldItems) {
+    if (!newIds.has(item.id)) tasks.push(ops.remove(item.id))
+  }
+  await Promise.all(tasks)
 }
 
 export function SkillCatalogProvider({ children }: { children: React.ReactNode }) {
-  const [catalog, setCatalog] = useState<SkillDefinition[]>(AAP_SKILL_CATALOG)
-  const [roleProfiles, setRoleProfiles] = useState<RoleProfile[]>(ROLE_PROFILES)
-  const [thresholds, setThresholds] = useState<SkillThresholds>(DEFAULT_THRESHOLDS)
-  const [hydrated, setHydrated] = useState(false)
+  const token = useApiToken()
+  const queryClient = useQueryClient()
 
-  useEffect(() => {
-    try {
-      const storedCatalog = localStorage.getItem(CATALOG_KEY)
-      if (storedCatalog) {
-        const parsed = JSON.parse(storedCatalog)
-        if (Array.isArray(parsed) && parsed.length) setCatalog(parsed)
-      }
-      const storedRoles = localStorage.getItem(ROLES_KEY)
-      if (storedRoles) {
-        const parsed = JSON.parse(storedRoles)
-        // An empty array is a legitimate state — the user deleted every profile.
-        if (Array.isArray(parsed)) setRoleProfiles(parsed)
-      }
-      const storedThresholds = localStorage.getItem(THRESHOLDS_KEY)
-      if (storedThresholds) {
-        const parsed = JSON.parse(storedThresholds)
-        if (parsed && typeof parsed === 'object') {
-          setThresholds({ ...DEFAULT_THRESHOLDS, ...parsed })
-        }
-      }
-    } catch {}
-    setHydrated(true)
-  }, [])
+  const catalogQuery = useQuery({
+    queryKey: CATALOG_KEY,
+    queryFn: () => apiFetch<SkillDefinition[]>('/api/v1/skills/catalog', { token }),
+    enabled: !!token,
+  })
+  const rolesQuery = useQuery({
+    queryKey: ROLES_KEY,
+    queryFn: () => apiFetch<RoleProfile[]>('/api/v1/skills/role-profiles', { token }),
+    enabled: !!token,
+  })
+  const thresholdsQuery = useQuery({
+    queryKey: THRESHOLDS_KEY,
+    queryFn: () => apiFetch<SkillThresholds>('/api/v1/skills/thresholds', { token }),
+    enabled: !!token,
+  })
 
-  useEffect(() => {
-    if (!hydrated) return
-    try { localStorage.setItem(CATALOG_KEY, JSON.stringify(catalog)) } catch {}
-  }, [catalog, hydrated])
+  const catalog = catalogQuery.data ?? []
+  const roleProfiles = rolesQuery.data ?? []
+  const thresholds = thresholdsQuery.data ?? DEFAULT_THRESHOLDS
 
-  useEffect(() => {
-    if (!hydrated) return
-    try { localStorage.setItem(ROLES_KEY, JSON.stringify(roleProfiles)) } catch {}
-  }, [roleProfiles, hydrated])
-
-  useEffect(() => {
-    if (!hydrated) return
-    try { localStorage.setItem(THRESHOLDS_KEY, JSON.stringify(thresholds)) } catch {}
-  }, [thresholds, hydrated])
+  const invalidateCatalog = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: CATALOG_KEY }),
+    [queryClient],
+  )
+  const invalidateRoles = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: ROLES_KEY }),
+    [queryClient],
+  )
+  const invalidateThresholds = useCallback(
+    () => queryClient.invalidateQueries({ queryKey: THRESHOLDS_KEY }),
+    [queryClient],
+  )
 
   // ---- Skills ----------------------------------------------------------
 
-  const addSkill = useCallback((data: Omit<SkillDefinition, 'id' | 'code'>): string => {
-    const id = `custom-${Date.now()}`
-    setCatalog(prev => [
-      ...prev,
-      { ...data, id, code: prev.reduce((m, s) => Math.max(m, s.code), 0) + 1, custom: true },
-    ])
-    return id
-  }, [])
+  const addSkillMutation = useMutation({
+    mutationFn: (data: Omit<SkillDefinition, 'id' | 'code'>) =>
+      apiFetch('/api/v1/skills/catalog', { method: 'POST', token, body: data }),
+    onSuccess: invalidateCatalog,
+  })
 
-  const updateSkill = useCallback((id: string, updates: Partial<SkillDefinition>) => {
-    setCatalog(prev => prev.map(s => (s.id === id ? { ...s, ...updates } : s)))
-  }, [])
+  const updateSkillMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<SkillDefinition> }) =>
+      apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'PATCH', token, body: updates }),
+    onSuccess: invalidateCatalog,
+  })
 
-  const deleteSkill = useCallback((id: string) => {
-    setCatalog(prev => prev.filter(s => s.id !== id))
-    // A depth area pointing at a deleted skill can never be met, so drop it.
-    setRoleProfiles(prev =>
-      prev.map(p =>
-        p.depthSkillIds.includes(id)
-          ? { ...p, depthSkillIds: p.depthSkillIds.filter(x => x !== id) }
-          : p,
-      ),
-    )
-  }, [])
+  const deleteSkillMutation = useMutation({
+    mutationFn: (id: string) => apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'DELETE', token }),
+    onSuccess: () => {
+      invalidateCatalog()
+      invalidateRoles()
+    },
+  })
 
-  const replaceCatalog = useCallback((next: SkillDefinition[]) => setCatalog(next), [])
+  const replaceCatalogMutation = useMutation({
+    mutationFn: (next: SkillDefinition[]) =>
+      diffCollection<SkillDefinition>(catalog, next, {
+        create: (s) => apiFetch('/api/v1/skills/catalog', { method: 'POST', token, body: s }),
+        update: (id, s) => apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'PATCH', token, body: s }),
+        remove: (id) => apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'DELETE', token }),
+      }),
+    onSuccess: invalidateCatalog,
+  })
 
   // ---- Role profiles ---------------------------------------------------
 
-  const addRoleProfile = useCallback((data: Omit<RoleProfile, 'id'>): string => {
-    let id = ''
-    setRoleProfiles(prev => {
-      id = slugify(data.name, prev.map(p => p.id))
-      return [...prev, { ...data, id }]
-    })
-    return id
-  }, [])
+  const addRoleProfileMutation = useMutation({
+    mutationFn: (data: Omit<RoleProfile, 'id'>) =>
+      apiFetch('/api/v1/skills/role-profiles', { method: 'POST', token, body: data }),
+    onSuccess: invalidateRoles,
+  })
+
+  const updateRoleProfileMutation = useMutation({
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<RoleProfile> }) =>
+      apiFetch(`/api/v1/skills/role-profiles/${id}`, { method: 'PATCH', token, body: updates }),
+    onSuccess: invalidateRoles,
+  })
+
+  const deleteRoleProfileMutation = useMutation({
+    mutationFn: (id: string) => apiFetch(`/api/v1/skills/role-profiles/${id}`, { method: 'DELETE', token }),
+    onSuccess: invalidateRoles,
+  })
+
+  const updateThresholdsMutation = useMutation({
+    mutationFn: (updates: Partial<SkillThresholds>) =>
+      apiFetch('/api/v1/skills/thresholds', { method: 'PATCH', token, body: updates }),
+    onSuccess: invalidateThresholds,
+  })
+
+  const resetToPresetMutation = useMutation({
+    mutationFn: async () => {
+      await Promise.all([
+        diffCollection<SkillDefinition>(catalog, AAP_SKILL_CATALOG, {
+          create: (s) => apiFetch('/api/v1/skills/catalog', { method: 'POST', token, body: s }),
+          update: (id, s) => apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'PATCH', token, body: s }),
+          remove: (id) => apiFetch(`/api/v1/skills/catalog/${id}`, { method: 'DELETE', token }),
+        }),
+        diffCollection<RoleProfile>(roleProfiles, ROLE_PROFILES, {
+          create: (p) => apiFetch('/api/v1/skills/role-profiles', { method: 'POST', token, body: p }),
+          update: (id, p) => apiFetch(`/api/v1/skills/role-profiles/${id}`, { method: 'PATCH', token, body: p }),
+          remove: (id) => apiFetch(`/api/v1/skills/role-profiles/${id}`, { method: 'DELETE', token }),
+        }),
+        apiFetch('/api/v1/skills/thresholds', { method: 'PATCH', token, body: DEFAULT_THRESHOLDS }),
+      ])
+    },
+    onSuccess: () => {
+      invalidateCatalog()
+      invalidateRoles()
+      invalidateThresholds()
+    },
+  })
+
+  const addSkill = useCallback((data: Omit<SkillDefinition, 'id' | 'code'>) => {
+    addSkillMutation.mutate(data)
+  }, [addSkillMutation])
+
+  const updateSkill = useCallback((id: string, updates: Partial<SkillDefinition>) => {
+    updateSkillMutation.mutate({ id, updates })
+  }, [updateSkillMutation])
+
+  const deleteSkill = useCallback((id: string) => {
+    deleteSkillMutation.mutate(id)
+  }, [deleteSkillMutation])
+
+  const replaceCatalog = useCallback((next: SkillDefinition[]) => {
+    replaceCatalogMutation.mutate(next)
+  }, [replaceCatalogMutation])
+
+  const addRoleProfile = useCallback((data: Omit<RoleProfile, 'id'>) => {
+    addRoleProfileMutation.mutate(data)
+  }, [addRoleProfileMutation])
 
   const updateRoleProfile = useCallback((id: string, updates: Partial<RoleProfile>) => {
-    // The id is the FK employees hold, so renaming must not change it.
-    setRoleProfiles(prev => prev.map(p => (p.id === id ? { ...p, ...updates, id } : p)))
-  }, [])
+    updateRoleProfileMutation.mutate({ id, updates })
+  }, [updateRoleProfileMutation])
 
   const deleteRoleProfile = useCallback((id: string) => {
-    setRoleProfiles(prev => prev.filter(p => p.id !== id))
-  }, [])
+    deleteRoleProfileMutation.mutate(id)
+  }, [deleteRoleProfileMutation])
 
   const updateThresholds = useCallback((updates: Partial<SkillThresholds>) => {
-    setThresholds(prev => ({ ...prev, ...updates }))
-  }, [])
+    updateThresholdsMutation.mutate(updates)
+  }, [updateThresholdsMutation])
 
   const resetToPreset = useCallback(() => {
-    setCatalog(AAP_SKILL_CATALOG)
-    setRoleProfiles(ROLE_PROFILES)
-    setThresholds(DEFAULT_THRESHOLDS)
-  }, [])
+    resetToPresetMutation.mutate()
+  }, [resetToPresetMutation])
 
   const value = useMemo<SkillCatalogStore>(() => {
     const domains: string[] = []

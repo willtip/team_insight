@@ -6,18 +6,24 @@ AI Service — integrates with Azure OpenAI / OpenAI API for:
 - Team health analysis
 - Skill gap recommendations
 """
+import os
 from typing import Optional
 import json
 from openai import AsyncAzureOpenAI, AsyncOpenAI
 
-# Initialize client — uses Azure OpenAI by default, falls back to OpenAI
-def get_openai_client(use_azure: bool = True):
+
+def get_openai_client(use_azure: Optional[bool] = None):
+    """Uses Azure OpenAI if AZURE_OPENAI_ENDPOINT is configured, otherwise falls back to OpenAI."""
+    azure_endpoint = os.environ.get("AZURE_OPENAI_ENDPOINT")
+    if use_azure is None:
+        use_azure = bool(azure_endpoint)
     if use_azure:
         return AsyncAzureOpenAI(
-            azure_endpoint="https://your-instance.openai.azure.com/",
+            azure_endpoint=azure_endpoint,
+            api_key=os.environ.get("AZURE_OPENAI_API_KEY"),
             api_version="2024-02-15-preview",
         )
-    return AsyncOpenAI()
+    return AsyncOpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
 SYSTEM_PROMPT = """You are Team Insight AI, an enterprise performance management assistant for engineering managers and directors.
@@ -44,6 +50,8 @@ You do NOT:
 - Speculate without data evidence
 
 Always cite specific metrics, scores, or events when making recommendations."""
+
+MODEL_NAME = os.environ.get("AZURE_OPENAI_DEPLOYMENT", "gpt-4o")
 
 
 async def generate_employee_summary(
@@ -82,7 +90,7 @@ Structure your response as:
 [Evidence-based assessment with timeline if applicable]"""
 
     response = await client.chat.completions.create(
-        model="gpt-4o",
+        model=MODEL_NAME,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
@@ -124,7 +132,7 @@ Return a JSON object with:
 }}"""
 
     response = await client.chat.completions.create(
-        model="gpt-4o",
+        model=MODEL_NAME,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
@@ -157,7 +165,7 @@ Include concrete recommendations with owner and timeline where appropriate.
 Reference specific engineers and metrics to support your answer."""
 
     response = await client.chat.completions.create(
-        model="gpt-4o",
+        model=MODEL_NAME,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},
@@ -195,7 +203,7 @@ Return a JSON array of insight objects:
 Sort by severity (critical first). Include only high-confidence, evidence-based insights."""
 
     response = await client.chat.completions.create(
-        model="gpt-4o",
+        model=MODEL_NAME,
         messages=[
             {"role": "system", "content": SYSTEM_PROMPT},
             {"role": "user", "content": prompt},

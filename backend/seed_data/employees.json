@@ -1,0 +1,5361 @@
+[
+  {
+    "id": "emp-001",
+    "name": "Sarah Chen",
+    "title": "Staff AI/Automation Engineer",
+    "level": "L6",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2020-03-15",
+    "location": "San Francisco, CA",
+    "email": "sarah.chen@company.com",
+    "employeeId": "ASE-1042",
+    "bio": "AIOps platform lead with deep expertise in AI-driven incident correlation and observability. Architected the intelligent alert correlation engine now processing 4M events/day across Global Infrastructure.",
+    "careerAspirations": "Wants to move into a Principal Engineer role driving AI automation strategy across the full Global Infrastructure organization.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "AIOps",
+      "Observability",
+      "Mentor",
+      "High Impact"
+    ],
+    "promotionReadiness": "Ready in 6 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 4,
+        "evidence": "Python engineering — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Software design and architecture — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 4,
+        "evidence": "Integration and contract testing — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 4,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Networking, DNS, TLS and proxies — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 5,
+        "evidence": "Cloud platform fundamentals — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Platform observability — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-06",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Prompt and context engineering — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 5,
+        "evidence": "RAG and enterprise grounding — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Tool-using agent architecture — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "AI-to-AAP orchestration — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "LLM and agent evaluation — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Responsible AI and model risk — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Tool protocol and MCP concepts — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "AIOps and intelligent remediation — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 4,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-02",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-architect-technical-lead",
+    "goals": [
+      {
+        "id": "g1",
+        "employeeId": "emp-001",
+        "title": "Deploy AI Incident Correlation Engine v2",
+        "description": "Upgrade ML correlation model to reduce false positives by 40% using transformer-based anomaly detection.",
+        "strategicAlignment": "AIOps Platform OKR Q2",
+        "dueDate": "2026-06-30",
+        "priority": "Critical",
+        "progress": 85,
+        "status": "In Progress",
+        "category": "Quarterly",
+        "createdAt": "2026-04-01",
+        "updatedAt": "2026-06-10"
+      },
+      {
+        "id": "g2",
+        "employeeId": "emp-001",
+        "title": "Achieve Principal Engineer Readiness",
+        "description": "Complete architecture review board participation and lead 2 cross-org AI automation initiatives.",
+        "strategicAlignment": "Career Development",
+        "dueDate": "2026-12-31",
+        "priority": "High",
+        "progress": 50,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-01-15",
+        "updatedAt": "2026-06-01"
+      },
+      {
+        "id": "g3",
+        "employeeId": "emp-001",
+        "title": "Reduce MTTR via AIOps Alert Correlation",
+        "description": "Drive MTTR reduction from 42min to under 18min across 12 infrastructure domains using AI correlation.",
+        "strategicAlignment": "Global Infra SRE OKR",
+        "dueDate": "2026-05-31",
+        "priority": "High",
+        "progress": 100,
+        "status": "Completed",
+        "category": "Quarterly",
+        "createdAt": "2026-03-01",
+        "updatedAt": "2026-05-28"
+      },
+      {
+        "id": "g4",
+        "employeeId": "emp-001",
+        "title": "Mentor 2 Engineers on AIOps Fundamentals",
+        "description": "Structured mentoring program: AIOps architecture, ML model operationalization, alert pipeline design.",
+        "strategicAlignment": "Team Development",
+        "dueDate": "2026-12-31",
+        "priority": "Medium",
+        "progress": 40,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-01-15",
+        "updatedAt": "2026-05-20"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc1",
+        "employeeId": "emp-001",
+        "projectName": "Intelligent Alert Correlation Platform",
+        "initiative": "AIOps Transformation",
+        "description": "Architected and delivered ML-powered alert correlation engine ingesting 4M events/day across Global Infrastructure.",
+        "businessImpact": "Reduced MTTR from 42 to 18 minutes across 12 infrastructure domains. Estimated $3.1M annual incident cost reduction.",
+        "technicalImpact": "Transformer-based anomaly detection with 91% correlation accuracy. Replaced 6 disparate monitoring tools.",
+        "leadershipScore": 5,
+        "collaborationScore": 4,
+        "innovationScore": 5,
+        "date": "2026-05-15",
+        "evidenceLinks": [
+          "https://confluence/ase/alert-correlation",
+          "https://github/aiops-platform"
+        ]
+      },
+      {
+        "id": "pc2",
+        "employeeId": "emp-001",
+        "projectName": "ServiceNow AI Integration",
+        "initiative": "ITSM Automation",
+        "description": "Led AI-enhanced ServiceNow integration for automated ticket classification and routing.",
+        "businessImpact": "Auto-resolved 34% of P3/P4 tickets without human intervention. Saved 1,200 engineer-hours/quarter.",
+        "technicalImpact": "LLM-based ticket classification with RAG on runbook knowledge base. 94% routing accuracy.",
+        "leadershipScore": 4,
+        "collaborationScore": 5,
+        "innovationScore": 4,
+        "date": "2026-05-28",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert1",
+          "name": "Google Cloud Professional ML Engineer",
+          "provider": "Google Cloud",
+          "dateEarned": "2025-09-12",
+          "expirationDate": "2027-09-12",
+          "credentialId": "GCP-MLE-98234"
+        },
+        {
+          "id": "cert2",
+          "name": "Certified Kubernetes Administrator",
+          "provider": "CNCF",
+          "dateEarned": "2025-03-20",
+          "expirationDate": "2027-03-20",
+          "credentialId": "CKA-2025-4421"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr1",
+          "courseName": "Advanced AIOps: ML for Infrastructure",
+          "platform": "Pluralsight",
+          "status": "Completed",
+          "completionDate": "2026-04-10",
+          "hoursCompleted": 14
+        },
+        {
+          "id": "tr2",
+          "courseName": "Building Production RAG Systems",
+          "platform": "deeplearning.ai",
+          "status": "In Progress",
+          "hoursCompleted": 8
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf1",
+          "eventName": "AIOps World 2025",
+          "date": "2025-11-12",
+          "role": "Speaker",
+          "keyLearnings": "Presented ML-based alert correlation. Key takeaway: causal AI approaches outperforming correlation-only models for infra events."
+        },
+        {
+          "id": "conf2",
+          "eventName": "SREcon Americas 2026",
+          "date": "2026-03-20",
+          "role": "Attendee",
+          "keyLearnings": "LLM-based runbook generation patterns. eBPF for low-overhead AIOps data collection."
+        }
+      ],
+      "mentoring": [
+        {
+          "id": "ment1",
+          "type": "Mentor",
+          "partnerName": "Aisha Thompson",
+          "startDate": "2026-02-01",
+          "outcomes": "Aisha completed automation pipeline training and is now leading CI/CD automation independently.",
+          "active": true
+        },
+        {
+          "id": "ment2",
+          "type": "Mentee",
+          "partnerName": "Priya Narayan (Principal)",
+          "startDate": "2025-09-01",
+          "endDate": "2026-03-01",
+          "outcomes": "Completed architecture review board shadowing. Presented AI platform strategy to VPE.",
+          "active": false
+        }
+      ]
+    },
+    "notes": [
+      {
+        "id": "n1",
+        "employeeId": "emp-001",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Succession Planning",
+        "title": "Strong Principal Candidate for ASE",
+        "content": "Sarah is the strongest Principal candidate on the team. The AI correlation engine delivery demonstrated both technical depth and org-level influence — she aligned 4 infra teams on a shared data model. Need to create more cross-org architecture opportunities before mid-year review.",
+        "createdAt": "2026-06-01",
+        "updatedAt": "2026-06-01",
+        "followUpDate": "2026-07-01",
+        "isPrivate": true,
+        "tags": [
+          "promotion",
+          "principal",
+          "succession"
+        ]
+      },
+      {
+        "id": "n2",
+        "employeeId": "emp-001",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Recognition",
+        "title": "Alert Correlation Delivery — Q2 Engineering Excellence",
+        "content": "Exceptional delivery. Nominated for Global Infrastructure Engineering Excellence Award Q2 2026. Impact story is compelling ($3.1M, MTTR halved).",
+        "createdAt": "2026-05-20",
+        "updatedAt": "2026-05-20",
+        "isPrivate": true,
+        "tags": [
+          "recognition",
+          "award",
+          "aiops"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 92,
+      "goalAchievement": 95,
+      "projectContributions": 96,
+      "professionalDevelopment": 88,
+      "leadershipBehaviors": 90,
+      "collaboration": 94,
+      "innovation": 92,
+      "growthScore": 89,
+      "leadershipReadiness": 91,
+      "promotionReadiness": 88,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-002",
+    "name": "Marcus Johnson",
+    "title": "Senior AI Solutions Engineer",
+    "level": "L5",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2021-07-12",
+    "location": "Austin, TX",
+    "email": "marcus.johnson@company.com",
+    "employeeId": "ASE-1089",
+    "bio": "Backend systems engineer building the data pipelines and feature stores powering ASE's AI models. Specializes in high-throughput telemetry ingestion and real-time ML feature engineering.",
+    "careerAspirations": "Targeting Staff Engineer with focus on AI data infrastructure and feature engineering platforms.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "Data Pipelines",
+      "ML Features",
+      "Backend"
+    ],
+    "promotionReadiness": "Ready in 12 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 4,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 5,
+        "evidence": "Automation service engineering — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Software design and architecture — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Unit and component testing — production evidence on file",
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Integration and contract testing — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 4,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Git and collaborative development — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AI-assisted automation development — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-software-engineer",
+    "goals": [
+      {
+        "id": "g5",
+        "employeeId": "emp-002",
+        "title": "Build Real-Time AIOps Feature Store",
+        "description": "Deliver low-latency feature store for infra telemetry enabling sub-100ms model inference at scale.",
+        "strategicAlignment": "AI Data Platform Initiative",
+        "dueDate": "2026-09-30",
+        "priority": "High",
+        "progress": 35,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-01",
+        "updatedAt": "2026-06-08"
+      },
+      {
+        "id": "g6",
+        "employeeId": "emp-002",
+        "title": "MLOps Pipeline for Model Retraining",
+        "description": "Automated retraining pipeline triggered by model drift detection with rollback capability.",
+        "strategicAlignment": "ML Model Reliability",
+        "dueDate": "2026-12-31",
+        "priority": "Medium",
+        "progress": 20,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-01-15",
+        "updatedAt": "2026-05-01"
+      },
+      {
+        "id": "g7",
+        "employeeId": "emp-002",
+        "title": "Reduce Telemetry Pipeline P95 Latency by 40%",
+        "description": "Optimize ingestion pipeline processing 500K metrics/sec to reduce P95 from 800ms to 480ms.",
+        "strategicAlignment": "AIOps Platform Performance",
+        "dueDate": "2026-06-30",
+        "priority": "Critical",
+        "progress": 60,
+        "status": "At Risk",
+        "category": "Quarterly",
+        "createdAt": "2026-04-01",
+        "updatedAt": "2026-06-09"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc3",
+        "employeeId": "emp-002",
+        "projectName": "Telemetry Ingestion Platform",
+        "initiative": "AIOps Data Infrastructure",
+        "description": "Backend engineering lead for real-time telemetry pipeline ingesting metrics from 12,000+ infrastructure assets.",
+        "businessImpact": "Enabled real-time ML inference on infra events, reducing detection-to-alert time from 8min to 45 seconds.",
+        "technicalImpact": "Kafka Streams topology with exactly-once semantics at 500K events/sec throughput.",
+        "leadershipScore": 3,
+        "collaborationScore": 4,
+        "innovationScore": 4,
+        "date": "2026-04-20",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert3",
+          "name": "AWS Certified Machine Learning Specialty",
+          "provider": "Amazon Web Services",
+          "dateEarned": "2025-06-15",
+          "expirationDate": "2027-06-15",
+          "credentialId": "AWS-MLS-77821"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr3",
+          "courseName": "Feature Store Engineering at Scale",
+          "platform": "Tecton Academy",
+          "status": "In Progress",
+          "hoursCompleted": 8
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf3",
+          "eventName": "Data + AI Summit 2025",
+          "date": "2025-10-05",
+          "role": "Attendee",
+          "keyLearnings": "Real-time feature engineering patterns. Streaming feature stores with Flink. Model drift detection strategies."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n3",
+        "employeeId": "emp-002",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Coaching",
+        "title": "Pipeline Latency Goal Needs Unblocking",
+        "content": "Marcus is blocked on a schema evolution issue causing latency spikes in the ingestion pipeline. Goal is at risk with 3 weeks to deadline. Pair him with Sarah for a debugging session — she has seen this pattern before with OTel collectors. Also need to ensure Marcus is tracking milestones more granularly so we catch risk earlier.",
+        "createdAt": "2026-06-09",
+        "updatedAt": "2026-06-09",
+        "followUpDate": "2026-06-20",
+        "isPrivate": true,
+        "tags": [
+          "at-risk",
+          "coaching",
+          "pipeline"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 78,
+      "goalAchievement": 72,
+      "projectContributions": 82,
+      "professionalDevelopment": 75,
+      "leadershipBehaviors": 70,
+      "collaboration": 85,
+      "innovation": 78,
+      "growthScore": 74,
+      "leadershipReadiness": 68,
+      "promotionReadiness": 71,
+      "trend": "stable",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-003",
+    "name": "Priya Patel",
+    "title": "AI Solutions Engineer",
+    "level": "L4",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2023-01-09",
+    "location": "New York, NY",
+    "email": "priya.patel@company.com",
+    "employeeId": "ASE-1134",
+    "bio": "Full-stack AI solutions engineer building the LLM-powered tools and automation workflows used by Global Infrastructure engineers. Led the Runbook Assistant from POC to production in 8 weeks.",
+    "careerAspirations": "Wants to become a Senior AI Solutions Engineer specializing in GenAI applications for infrastructure operations.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "GenAI",
+      "LLMs",
+      "Full Stack",
+      "Fast Learner"
+    ],
+    "promotionReadiness": "Ready in 12 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-02",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-content-engineer",
+    "goals": [
+      {
+        "id": "g8",
+        "employeeId": "emp-003",
+        "title": "Scale Runbook Assistant to 500+ Runbooks",
+        "description": "Expand LLM-based runbook assistant from 80 to 500+ runbooks with feedback loop for accuracy improvement.",
+        "strategicAlignment": "AI-Assisted Operations OKR",
+        "dueDate": "2026-08-31",
+        "priority": "High",
+        "progress": 65,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-01",
+        "updatedAt": "2026-06-10"
+      },
+      {
+        "id": "g9",
+        "employeeId": "emp-003",
+        "title": "Implement RAG Evaluation Framework",
+        "description": "Build automated evaluation pipeline to measure runbook assistant accuracy, hallucination rate, and latency.",
+        "strategicAlignment": "AI Quality & Reliability",
+        "dueDate": "2026-09-30",
+        "priority": "Medium",
+        "progress": 30,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-03-01",
+        "updatedAt": "2026-05-15"
+      },
+      {
+        "id": "g10",
+        "employeeId": "emp-003",
+        "title": "Ship Natural Language Query for CMDB",
+        "description": "POC allowing engineers to query the CMDB in plain English via LLM-to-GraphQL translation.",
+        "strategicAlignment": "AI Innovation Initiative",
+        "dueDate": "2026-07-15",
+        "priority": "High",
+        "progress": 80,
+        "status": "In Progress",
+        "category": "Quarterly",
+        "createdAt": "2026-04-15",
+        "updatedAt": "2026-06-12"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc4",
+        "employeeId": "emp-003",
+        "projectName": "AI Runbook Assistant",
+        "initiative": "LLM-Powered Operations",
+        "description": "Designed and built LLM-powered runbook assistant using RAG over 80+ operational procedures.",
+        "businessImpact": "Cut average incident resolution steps from 14 to 6 for L1/L2 responders. 89% accuracy on runbook retrieval.",
+        "technicalImpact": "LangChain RAG pipeline with Pinecone vector store, custom chunking strategy for technical docs, human feedback loop.",
+        "leadershipScore": 3,
+        "collaborationScore": 5,
+        "innovationScore": 5,
+        "date": "2026-06-01",
+        "evidenceLinks": [
+          "https://runbook-assistant.internal"
+        ]
+      }
+    ],
+    "development": {
+      "certifications": [],
+      "training": [
+        {
+          "id": "tr4",
+          "courseName": "Building Production RAG Applications",
+          "platform": "deeplearning.ai",
+          "status": "Completed",
+          "completionDate": "2026-05-30",
+          "hoursCompleted": 20
+        },
+        {
+          "id": "tr5",
+          "courseName": "LLM Evaluation and Monitoring",
+          "platform": "Weights & Biases",
+          "status": "In Progress",
+          "hoursCompleted": 6
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf4",
+          "eventName": "AI Engineer Summit 2026",
+          "date": "2026-05-20",
+          "role": "Attendee",
+          "keyLearnings": "Agentic RAG patterns. LLM routing strategies for cost optimization. Evaluation-driven development for AI apps."
+        }
+      ],
+      "mentoring": [
+        {
+          "id": "ment3",
+          "type": "Mentee",
+          "partnerName": "Sarah Chen",
+          "startDate": "2026-03-01",
+          "outcomes": "Guidance on AIOps architecture and production ML system design patterns.",
+          "active": true
+        }
+      ]
+    },
+    "notes": [
+      {
+        "id": "n4",
+        "employeeId": "emp-003",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Leadership Potential",
+        "title": "Exceptional Product Ownership on Runbook Assistant",
+        "content": "Priya took complete end-to-end ownership of the Runbook Assistant — gathered requirements from 3 NOC teams, ran UX research with on-call engineers, presented the architecture to the CISO. This is Senior-level behavior at L4. Her GenAI depth is already the best on the team outside David.",
+        "createdAt": "2026-06-05",
+        "updatedAt": "2026-06-05",
+        "isPrivate": true,
+        "tags": [
+          "leadership",
+          "genai",
+          "promotion-track"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 84,
+      "goalAchievement": 82,
+      "projectContributions": 88,
+      "professionalDevelopment": 80,
+      "leadershipBehaviors": 82,
+      "collaboration": 90,
+      "innovation": 92,
+      "growthScore": 87,
+      "leadershipReadiness": 79,
+      "promotionReadiness": 82,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-004",
+    "name": "James Wilson",
+    "title": "Senior Automation Engineer",
+    "level": "L5",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2019-11-04",
+    "location": "Seattle, WA",
+    "email": "james.wilson@company.com",
+    "employeeId": "ASE-0987",
+    "bio": "Infrastructure automation veteran with 6+ years automating enterprise infrastructure at scale. Owns the Ansible automation framework used by 200+ Global Infrastructure engineers.",
+    "careerAspirations": "Looking to deepen expertise in AI-augmented automation and intelligent self-healing infrastructure.",
+    "isHighPotential": false,
+    "needsCoaching": false,
+    "tags": [
+      "Ansible",
+      "Terraform",
+      "IaC",
+      "Automation"
+    ],
+    "promotionReadiness": "Development Needed",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AAP architecture and deployment topology — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 5,
+        "evidence": "Automation controller administration — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Automation mesh engineering — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 4,
+        "evidence": "Execution environment engineering — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Playbook and role engineering — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Event-Driven Ansible — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 4,
+        "evidence": "AAP API and automation controller SDK — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AAP RBAC and multi-tenancy — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 5,
+        "evidence": "AAP installation, upgrades and migration — production evidence on file",
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AAP capacity and performance engineering — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 4,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Kubernetes and OpenShift — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "CI/CD pipeline engineering — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Terraform and infrastructure as code — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "aap-platform-engineer",
+    "goals": [
+      {
+        "id": "g11",
+        "employeeId": "emp-004",
+        "title": "AI-Augmented Ansible Playbook Generation",
+        "description": "Integrate LLM-based playbook generation for standard remediation tasks, reducing manual authoring by 60%.",
+        "strategicAlignment": "AI-Augmented Automation",
+        "dueDate": "2026-07-31",
+        "priority": "Critical",
+        "progress": 70,
+        "status": "In Progress",
+        "category": "Quarterly",
+        "createdAt": "2026-04-01",
+        "updatedAt": "2026-06-11"
+      },
+      {
+        "id": "g12",
+        "employeeId": "emp-004",
+        "title": "Self-Healing Infrastructure POC",
+        "description": "Prototype automated remediation for top 10 known failure patterns using Ansible + AI decision engine.",
+        "strategicAlignment": "Autonomous Operations Strategy",
+        "dueDate": "2026-12-31",
+        "priority": "High",
+        "progress": 25,
+        "status": "Not Started",
+        "category": "Annual",
+        "createdAt": "2026-01-15",
+        "updatedAt": "2026-03-01"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc5",
+        "employeeId": "emp-004",
+        "projectName": "Global Infra Automation Framework",
+        "initiative": "Infrastructure Automation",
+        "description": "Designed and owns the Ansible automation framework standardizing 400+ playbooks across Global Infrastructure.",
+        "businessImpact": "Reduced manual infrastructure provisioning time by 78%. Enables 200+ engineers to automate safely.",
+        "technicalImpact": "Role-based Ansible architecture with molecule testing, GitOps promotion gates, and policy-as-code guardrails.",
+        "leadershipScore": 3,
+        "collaborationScore": 3,
+        "innovationScore": 3,
+        "date": "2026-03-30",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert4",
+          "name": "Red Hat Certified Architect",
+          "provider": "Red Hat",
+          "dateEarned": "2024-08-10",
+          "expirationDate": "2027-08-10",
+          "credentialId": "RHCA-99041"
+        },
+        {
+          "id": "cert5",
+          "name": "HashiCorp Certified: Terraform Associate",
+          "provider": "HashiCorp",
+          "dateEarned": "2025-11-05",
+          "expirationDate": "2027-11-05",
+          "credentialId": "TF-2025-9921"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr6",
+          "courseName": "AI-Augmented Automation Patterns",
+          "platform": "Pluralsight",
+          "status": "Planned"
+        }
+      ],
+      "conferences": [],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n5",
+        "employeeId": "emp-004",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Performance Observation",
+        "title": "Strong Technical Execution, Limited AI Adoption",
+        "content": "James is the most reliable execution engine on the team for traditional automation. However, in a team pivoting to AI-augmented operations, his reluctance to engage with LLM/AI tools is becoming a gap. The self-healing POC requires AI integration — this is a test of adaptability. Need a clear conversation about the direction of the team and what Staff-level expectations look like in an AI-first context.",
+        "createdAt": "2026-05-15",
+        "updatedAt": "2026-05-15",
+        "followUpDate": "2026-07-01",
+        "isPrivate": true,
+        "tags": [
+          "ai-adoption",
+          "development-gap",
+          "coaching"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 74,
+      "goalAchievement": 78,
+      "projectContributions": 80,
+      "professionalDevelopment": 65,
+      "leadershipBehaviors": 62,
+      "collaboration": 72,
+      "innovation": 55,
+      "growthScore": 65,
+      "leadershipReadiness": 60,
+      "promotionReadiness": 62,
+      "trend": "stable",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-005",
+    "name": "Emily Rodriguez",
+    "title": "AI Solutions Engineer",
+    "level": "L4",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2024-02-20",
+    "location": "Chicago, IL",
+    "email": "emily.rodriguez@company.com",
+    "employeeId": "ASE-1201",
+    "bio": "Frontend and visualization specialist building the AIOps dashboards and operator experience used by 300+ Global Infrastructure engineers. Background in data visualization and UX.",
+    "careerAspirations": "Building toward a full-stack AI Solutions Engineer role. Excited about AI-generated dashboards and natural language operations interfaces.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "Frontend",
+      "AIOps Dashboards",
+      "Visualization"
+    ],
+    "promotionReadiness": "Ready in 12 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Message queues and Kafka — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "integration-and-eda-engineer",
+    "goals": [
+      {
+        "id": "g13",
+        "employeeId": "emp-005",
+        "title": "Ship AIOps Operator Dashboard v2",
+        "description": "Redesign unified ops dashboard with AI-surfaced anomalies, predictive alerts, and NL search.",
+        "strategicAlignment": "Operator Experience OKR",
+        "dueDate": "2026-08-31",
+        "priority": "High",
+        "progress": 55,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-01",
+        "updatedAt": "2026-06-10"
+      },
+      {
+        "id": "g14",
+        "employeeId": "emp-005",
+        "title": "Build NL Query Interface for Ops Data",
+        "description": "Conversational interface allowing engineers to ask questions about infrastructure health in plain English.",
+        "strategicAlignment": "AI Innovation Initiative",
+        "dueDate": "2026-09-30",
+        "priority": "Medium",
+        "progress": 40,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-03-01",
+        "updatedAt": "2026-05-20"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc6",
+        "employeeId": "emp-005",
+        "projectName": "AIOps Operator Experience Platform",
+        "initiative": "Operator Experience",
+        "description": "Leading UI/UX and frontend engineering for the unified AIOps operations dashboard.",
+        "businessImpact": "Consolidates 9 separate monitoring UIs into 1. 300+ engineers onboarded. CSAT score: 4.6/5.",
+        "technicalImpact": "React + D3 visualization layer with real-time WebSocket updates for live incident streams.",
+        "leadershipScore": 4,
+        "collaborationScore": 4,
+        "innovationScore": 4,
+        "date": "2026-06-10",
+        "evidenceLinks": [
+          "https://ops-dashboard.internal"
+        ]
+      }
+    ],
+    "development": {
+      "certifications": [],
+      "training": [
+        {
+          "id": "tr7",
+          "courseName": "Data Visualization for Operations",
+          "platform": "Observable",
+          "status": "Completed",
+          "completionDate": "2026-03-15",
+          "hoursCompleted": 10
+        },
+        {
+          "id": "tr8",
+          "courseName": "Building AI-Powered UIs",
+          "platform": "Vercel AI SDK Docs",
+          "status": "In Progress",
+          "hoursCompleted": 5
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf5",
+          "eventName": "Grafana & Friends 2026",
+          "date": "2026-06-05",
+          "role": "Attendee",
+          "keyLearnings": "AI-generated dashboards with Grafana LLM plugin. Scenes framework for dynamic panels. Alerting UX best practices."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n6",
+        "employeeId": "emp-005",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Leadership Potential",
+        "title": "Driving Cross-Team Dashboard Adoption",
+        "content": "Emily proactively organized a dashboard UX working group pulling in 6 infra teams to align on operator experience needs. Ran user research sessions independently. Her ability to translate between engineering and operator communities is a real force multiplier.",
+        "createdAt": "2026-05-25",
+        "updatedAt": "2026-05-25",
+        "isPrivate": true,
+        "tags": [
+          "leadership",
+          "ux",
+          "collaboration"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 81,
+      "goalAchievement": 78,
+      "projectContributions": 83,
+      "professionalDevelopment": 78,
+      "leadershipBehaviors": 80,
+      "collaboration": 88,
+      "innovation": 82,
+      "growthScore": 85,
+      "leadershipReadiness": 76,
+      "promotionReadiness": 79,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-006",
+    "name": "David Kim",
+    "title": "Senior AI/ML Engineer",
+    "level": "L5",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2022-05-16",
+    "location": "Remote (Denver, CO)",
+    "email": "david.kim@company.com",
+    "employeeId": "ASE-1067",
+    "bio": "ML engineering lead for ASE, owning the model development lifecycle from experimentation to production. Specializes in GenAI applications, LLMOps, and predictive infrastructure models.",
+    "careerAspirations": "Wants to lead ASE's dedicated AI/ML Platform team as it grows. Deeply passionate about responsible AI and LLM evaluation frameworks.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "GenAI",
+      "LLMOps",
+      "ML Engineering",
+      "Platform"
+    ],
+    "promotionReadiness": "Ready in 6 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 3,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AI-assisted automation development — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 4,
+        "evidence": "RAG and enterprise grounding — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Tool-using agent architecture — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AI-to-AAP orchestration — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "LLM and agent evaluation — production evidence on file",
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Human-in-the-loop automation — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Tool protocol and MCP concepts — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 5,
+        "evidence": "AIOps and intelligent remediation — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-software-engineer",
+    "goals": [
+      {
+        "id": "g15",
+        "employeeId": "emp-006",
+        "title": "Deploy Predictive Capacity Model to Production",
+        "description": "ML model predicting infrastructure capacity needs 72h ahead with 85%+ accuracy across 5 cloud regions.",
+        "strategicAlignment": "Autonomous Operations Strategy",
+        "dueDate": "2026-09-30",
+        "priority": "Critical",
+        "progress": 70,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-01",
+        "updatedAt": "2026-06-10"
+      },
+      {
+        "id": "g16",
+        "employeeId": "emp-006",
+        "title": "Build LLM Evaluation & Safety Framework",
+        "description": "Standardized evaluation harness for all ASE LLM applications: accuracy, hallucination rate, latency, safety.",
+        "strategicAlignment": "AI Quality & Governance",
+        "dueDate": "2026-07-31",
+        "priority": "High",
+        "progress": 90,
+        "status": "In Progress",
+        "category": "Quarterly",
+        "createdAt": "2026-04-01",
+        "updatedAt": "2026-06-12"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc7",
+        "employeeId": "emp-006",
+        "projectName": "Predictive Infrastructure AI Models",
+        "initiative": "Autonomous Operations",
+        "description": "Developed and productionized 3 ML models: capacity prediction, failure forecasting, and workload classification.",
+        "businessImpact": "Capacity model prevents 4-6 outages/quarter via proactive scaling. Estimated $1.8M annual avoidance.",
+        "technicalImpact": "PyTorch time-series models on GPU cluster with automated retraining via Airflow DAGs. MLflow model registry.",
+        "leadershipScore": 4,
+        "collaborationScore": 4,
+        "innovationScore": 5,
+        "date": "2026-05-20",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert6",
+          "name": "AWS Certified Machine Learning Specialty",
+          "provider": "Amazon Web Services",
+          "dateEarned": "2025-08-20",
+          "expirationDate": "2027-08-20",
+          "credentialId": "AWS-MLS-55342"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr9",
+          "courseName": "LLM Safety and Alignment",
+          "platform": "deeplearning.ai",
+          "status": "Completed",
+          "completionDate": "2026-04-25",
+          "hoursCompleted": 12
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf6",
+          "eventName": "NeurIPS 2025",
+          "date": "2025-12-10",
+          "role": "Attendee",
+          "keyLearnings": "Mixture-of-experts for efficient inference. RLHF alternatives for instruction tuning. AI evaluation frameworks."
+        },
+        {
+          "id": "conf7",
+          "eventName": "AIOps World 2026",
+          "date": "2026-04-15",
+          "role": "Speaker",
+          "keyLearnings": "Presented predictive failure detection methodology. Strong interest from 3 other enterprise teams."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n7",
+        "employeeId": "emp-006",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Succession Planning",
+        "title": "AI/ML Team Lead When ASE Splits",
+        "content": "David is the clear choice to lead the AI/ML sub-team when ASE grows to split into AI Applications and AI Platform. His technical credibility is unmatched (the only Expert in GenAI/LLMs on the team) and 4 infra teams are already dependent on his models. Begin structuring new AI model initiatives under his ownership and give him informal team lead reps on the LLM framework project.",
+        "createdAt": "2026-06-01",
+        "updatedAt": "2026-06-01",
+        "isPrivate": true,
+        "tags": [
+          "succession",
+          "leadership",
+          "ai-platform",
+          "team-growth"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 90,
+      "goalAchievement": 88,
+      "projectContributions": 94,
+      "professionalDevelopment": 87,
+      "leadershipBehaviors": 86,
+      "collaboration": 88,
+      "innovation": 96,
+      "growthScore": 91,
+      "leadershipReadiness": 88,
+      "promotionReadiness": 87,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-007",
+    "name": "Aisha Thompson",
+    "title": "Automation Engineer",
+    "level": "L3",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2024-08-05",
+    "location": "Atlanta, GA",
+    "email": "aisha.thompson@company.com",
+    "employeeId": "ASE-1248",
+    "bio": "Early-career automation engineer growing rapidly in CI/CD, GitOps, and now beginning to explore AIOps patterns. Former coding bootcamp instructor with exceptional communication skills.",
+    "careerAspirations": "Wants to specialize in AI-augmented automation and eventually own a major automation domain within ASE.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "CI/CD",
+      "GitOps",
+      "Automation",
+      "Growing Fast"
+    ],
+    "promotionReadiness": "Ready in 12 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-content-engineer",
+    "goals": [
+      {
+        "id": "g17",
+        "employeeId": "emp-007",
+        "title": "Automate CI/CD for 15 Global Infra Services",
+        "description": "Migrate manual deployment workflows to fully automated GitOps-based pipelines with quality gates.",
+        "strategicAlignment": "Automation Coverage OKR",
+        "dueDate": "2026-08-31",
+        "priority": "High",
+        "progress": 60,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-15",
+        "updatedAt": "2026-06-08"
+      },
+      {
+        "id": "g18",
+        "employeeId": "emp-007",
+        "title": "Build First AIOps Automation Workflow",
+        "description": "Independently design and ship one AI-triggered automation: alert → classify → auto-remediate pattern.",
+        "strategicAlignment": "AIOps Skill Development",
+        "dueDate": "2026-07-31",
+        "priority": "Medium",
+        "progress": 75,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-03-01",
+        "updatedAt": "2026-06-10"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc8",
+        "employeeId": "emp-007",
+        "projectName": "CI/CD Automation for Global Infra",
+        "initiative": "Automation Coverage",
+        "description": "Designing and implementing GitOps-based automated deployment pipelines for Global Infrastructure services.",
+        "businessImpact": "Reduced manual deployment steps by 85% for 8 migrated services. Zero deployment failures post-migration.",
+        "technicalImpact": "ArgoCD + GitHub Actions with automated rollback, smoke tests, and Slack notifications integrated.",
+        "leadershipScore": 2,
+        "collaborationScore": 4,
+        "innovationScore": 3,
+        "date": "2026-06-01",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [],
+      "training": [
+        {
+          "id": "tr10",
+          "courseName": "GitOps Fundamentals",
+          "platform": "Codefresh Academy",
+          "status": "Completed",
+          "completionDate": "2026-04-20",
+          "hoursCompleted": 8
+        },
+        {
+          "id": "tr11",
+          "courseName": "Introduction to AIOps",
+          "platform": "Pluralsight",
+          "status": "In Progress",
+          "hoursCompleted": 5
+        }
+      ],
+      "conferences": [],
+      "mentoring": [
+        {
+          "id": "ment4",
+          "type": "Mentee",
+          "partnerName": "Sarah Chen",
+          "startDate": "2026-02-01",
+          "outcomes": "AIOps architecture foundations, automation design patterns, on-call readiness for production systems.",
+          "active": true
+        }
+      ]
+    },
+    "notes": [
+      {
+        "id": "n8",
+        "employeeId": "emp-007",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Recognition",
+        "title": "Exceptional Growth — Early L4 Review Candidate",
+        "content": "Aisha has grown faster than any L3 I have managed. 10 months in and she's independently leading the CI/CD automation for 15 services. Her communication and stakeholder management with the infra teams is outstanding — she runs her own standups and writes excellent runbooks. Flag for early L4 review at Q3 calibration. Growth score of 90 backs it up.",
+        "createdAt": "2026-06-08",
+        "updatedAt": "2026-06-08",
+        "isPrivate": true,
+        "tags": [
+          "high-potential",
+          "early-promotion",
+          "recognition",
+          "l4-track"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 79,
+      "goalAchievement": 76,
+      "projectContributions": 80,
+      "professionalDevelopment": 82,
+      "leadershipBehaviors": 70,
+      "collaboration": 86,
+      "innovation": 72,
+      "growthScore": 90,
+      "leadershipReadiness": 68,
+      "promotionReadiness": 75,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-008",
+    "name": "Ryan O'Brien",
+    "title": "Staff Automation Architect",
+    "level": "L6",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2018-06-11",
+    "location": "Boston, MA",
+    "email": "ryan.obrien@company.com",
+    "employeeId": "ASE-0781",
+    "bio": "Senior technical leader with 8 years at the company driving automation architecture across Global Infrastructure. Owns the technical strategy for ASE and chairs the Automation Standards Board.",
+    "careerAspirations": "Evaluating transition from individual contributor to engineering management as ASE scales.",
+    "isHighPotential": false,
+    "needsCoaching": true,
+    "tags": [
+      "Architecture",
+      "Automation Strategy",
+      "Standards",
+      "Veteran"
+    ],
+    "promotionReadiness": "Development Needed",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "AAP architecture and deployment topology — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Automation controller administration — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 5,
+        "evidence": "Automation mesh engineering — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Private automation hub — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Ansible collections engineering — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Playbook and role engineering — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Event-Driven Ansible — production evidence on file",
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AAP installation, upgrades and migration — production evidence on file",
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "AAP HA, backup and disaster recovery — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "AAP troubleshooting and support — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-01",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Terraform and infrastructure as code — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "ServiceNow and ITSM integration — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 4,
+        "evidence": "Event-driven architecture — production evidence on file",
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Message queues and Kafka — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 4,
+        "evidence": "Webhooks and callbacks — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Enterprise identity integration — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-06",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Self-service automation catalog — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Integration contracts and schema governance — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 3,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Automation platform product management — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 5,
+        "reviewerRating": 4,
+        "evidence": "Automation opportunity and value management — production evidence on file",
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Standards and reference architecture — production evidence on file",
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Technical communication and stakeholder management — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 5,
+        "reviewerRating": 5,
+        "evidence": "Coaching and knowledge transfer — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-architect-technical-lead",
+    "goals": [
+      {
+        "id": "g19",
+        "employeeId": "emp-008",
+        "title": "Define ASE 3-Year AI Automation Roadmap",
+        "description": "Comprehensive technical strategy for AI-augmented automation, aligned with Global Infra leadership.",
+        "strategicAlignment": "ASE Technical Strategy",
+        "dueDate": "2026-07-31",
+        "priority": "Critical",
+        "progress": 45,
+        "status": "At Risk",
+        "category": "Annual",
+        "createdAt": "2026-01-15",
+        "updatedAt": "2026-05-30"
+      },
+      {
+        "id": "g20",
+        "employeeId": "emp-008",
+        "title": "Resolve Career Path — IC vs EM",
+        "description": "Make a clear decision on Principal Engineer vs Engineering Manager track with coaching support from William.",
+        "strategicAlignment": "Career Development",
+        "dueDate": "2026-09-30",
+        "priority": "High",
+        "progress": 20,
+        "status": "In Progress",
+        "category": "Personal Development",
+        "createdAt": "2026-03-01",
+        "updatedAt": "2026-06-01"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc9",
+        "employeeId": "emp-008",
+        "projectName": "ASE Automation Standards Framework",
+        "initiative": "Technical Standards",
+        "description": "Led cross-org Automation Standards Board defining patterns, tooling choices, and governance for 400+ playbooks.",
+        "businessImpact": "Reduced automation incident rate by 62% across Global Infrastructure through standardized testing and review gates.",
+        "technicalImpact": "Published 28 Architecture Decision Records adopted across 8 infrastructure teams.",
+        "leadershipScore": 4,
+        "collaborationScore": 3,
+        "innovationScore": 3,
+        "date": "2026-04-01",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert7",
+          "name": "HashiCorp Certified: Vault Associate",
+          "provider": "HashiCorp",
+          "dateEarned": "2024-01-15",
+          "expirationDate": "2026-01-15",
+          "credentialId": "HCV-33891"
+        }
+      ],
+      "training": [],
+      "conferences": [
+        {
+          "id": "conf8",
+          "eventName": "HashiConf 2025",
+          "date": "2025-10-08",
+          "role": "Attendee",
+          "keyLearnings": "Terraform CDK patterns. Vault Dynamic Secrets for AI workloads. Boundary for zero-trust network access."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n9",
+        "employeeId": "emp-008",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Career Aspirations",
+        "title": "Career Crossroads — Active Coaching Needed",
+        "content": "Ryan is at a real inflection point. 8 years at L6, performance trending down, and the team is shifting to AI-first patterns he hasn't engaged with. Had a frank 1:1 — he is energized by the idea of managing and growing a team but anxious about giving up technical identity. Also flagging: his HashiCorp Vault cert expired January 2026 and the AI automation gaps are widening. Setting up EM shadow program with peers, and scheduling a joint 1:1 with skip to discuss options. Needs weekly check-ins for the next 60 days.",
+        "createdAt": "2026-05-10",
+        "updatedAt": "2026-06-05",
+        "followUpDate": "2026-06-20",
+        "isPrivate": true,
+        "tags": [
+          "career-path",
+          "coaching",
+          "performance",
+          "sensitive"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 70,
+      "goalAchievement": 65,
+      "projectContributions": 74,
+      "professionalDevelopment": 60,
+      "leadershipBehaviors": 72,
+      "collaboration": 68,
+      "innovation": 55,
+      "growthScore": 58,
+      "leadershipReadiness": 74,
+      "promotionReadiness": 55,
+      "trend": "down",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-009",
+    "name": "Zoe Martinez",
+    "title": "AI Security & Automation Engineer",
+    "level": "L4",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2023-09-11",
+    "location": "Miami, FL",
+    "email": "zoe.martinez@company.com",
+    "employeeId": "ASE-1188",
+    "bio": "Security-focused automation engineer ensuring ASE's AI systems and automation pipelines meet enterprise security and compliance standards. Owns the AI security review process for all production deployments.",
+    "careerAspirations": "Targeting a dedicated AI Security Engineer or Product Security role within Global Infrastructure.",
+    "isHighPotential": true,
+    "needsCoaching": false,
+    "tags": [
+      "AI Security",
+      "DevSecOps",
+      "Compliance",
+      "Automation"
+    ],
+    "promotionReadiness": "Ready in 12 Months",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 4,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 4,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 3,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-04",
+        "selfRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 1,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Automation service SLOs — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 4,
+        "evidence": "Operational readiness and service ownership — production evidence on file",
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Auditability and evidence retention — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-03",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-05",
+        "selfRating": 4,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-01",
+        "selfRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "automation-reliability-engineer",
+    "goals": [
+      {
+        "id": "g21",
+        "employeeId": "emp-009",
+        "title": "AI Model Security Review Process",
+        "description": "Define and enforce mandatory security review gates for all AI models deployed to production by ASE.",
+        "strategicAlignment": "AI Governance & Security",
+        "dueDate": "2026-07-31",
+        "priority": "Critical",
+        "progress": 80,
+        "status": "In Progress",
+        "category": "Quarterly",
+        "createdAt": "2026-04-01",
+        "updatedAt": "2026-06-10"
+      },
+      {
+        "id": "g22",
+        "employeeId": "emp-009",
+        "title": "LLM Prompt Injection Defense Framework",
+        "description": "Research and implement defenses against prompt injection attacks across ASE's 4 LLM-powered products.",
+        "strategicAlignment": "AI Security OKR",
+        "dueDate": "2026-10-31",
+        "priority": "High",
+        "progress": 45,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-15",
+        "updatedAt": "2026-06-09"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc10",
+        "employeeId": "emp-009",
+        "projectName": "DevSecOps Pipeline for AI Systems",
+        "initiative": "AI Security",
+        "description": "Built integrated security scanning pipeline covering SAST, DAST, dependency scanning, and AI model safety checks.",
+        "businessImpact": "Blocked 3 critical vulnerabilities from reaching production. Met SOC2 Type 2 AI system requirement.",
+        "technicalImpact": "GitHub Actions workflow integrating Snyk, Trivy, and custom LLM safety evaluation harness end-to-end.",
+        "leadershipScore": 3,
+        "collaborationScore": 4,
+        "innovationScore": 4,
+        "date": "2026-05-10",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert8",
+          "name": "Certified Information Security Manager (CISM)",
+          "provider": "ISACA",
+          "dateEarned": "2025-07-22",
+          "credentialId": "CISM-28891"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr12",
+          "courseName": "AI Red Teaming and Safety Testing",
+          "platform": "SANS",
+          "status": "Completed",
+          "completionDate": "2026-05-05",
+          "hoursCompleted": 16
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf9",
+          "eventName": "DEF CON AI Village 2025",
+          "date": "2025-08-10",
+          "role": "Attendee",
+          "keyLearnings": "LLM jailbreak techniques and defenses. Supply chain risks in open-source foundation models. AI watermarking."
+        },
+        {
+          "id": "conf10",
+          "eventName": "RSA Conference 2026",
+          "date": "2026-05-06",
+          "role": "Speaker",
+          "keyLearnings": "Presented \"Securing AIOps Pipelines\" to 400+ attendees. Strong industry interest in our AI review process."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [],
+    "performanceScore": {
+      "overall": 83,
+      "goalAchievement": 85,
+      "projectContributions": 84,
+      "professionalDevelopment": 84,
+      "leadershipBehaviors": 78,
+      "collaboration": 82,
+      "innovation": 82,
+      "growthScore": 82,
+      "leadershipReadiness": 76,
+      "promotionReadiness": 80,
+      "trend": "up",
+      "lastCalculated": "2026-06-01"
+    }
+  },
+  {
+    "id": "emp-010",
+    "name": "Alex Chen",
+    "title": "Senior AI Solutions Engineer",
+    "level": "L5",
+    "department": "Automation Solution Engineering",
+    "managerId": "mgr-001",
+    "managerName": "William Tipton",
+    "hireDate": "2021-01-19",
+    "location": "Portland, OR",
+    "email": "alex.chen@company.com",
+    "employeeId": "ASE-1028",
+    "bio": "AI solutions engineer specializing in ServiceNow automation and ITSM AI integrations. Owns the ServiceNow AI Platform that handles 12,000+ tickets/month with AI-assisted classification.",
+    "careerAspirations": "Interested in technical leadership of AI/ITSM automation across Global Infrastructure.",
+    "isHighPotential": false,
+    "needsCoaching": true,
+    "tags": [
+      "ServiceNow",
+      "ITSM AI",
+      "Automation"
+    ],
+    "promotionReadiness": "Development Needed",
+    "skills": [
+      {
+        "skillId": "aap-01",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-02",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-04",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-05",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-06",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-07",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-08",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-09",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-10",
+        "selfRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-11",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-12",
+        "selfRating": 3,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-13",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "aap-14",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-03",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-05",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-07",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-08",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-09",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-10",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-11",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "swe-12",
+        "selfRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-05",
+        "selfRating": 2,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-06",
+        "selfRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-08",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "plat-09",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-01",
+        "selfRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-03",
+        "selfRating": 4,
+        "reviewerRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-04",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Webhooks and callbacks — production evidence on file",
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-06",
+        "selfRating": 3,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "int-07",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-01",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-02",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-03",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "RAG and enterprise grounding — production evidence on file",
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-04",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-05",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "AI-to-AAP orchestration — production evidence on file",
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-06",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-07",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-08",
+        "selfRating": 4,
+        "reviewerRating": 4,
+        "evidence": "Responsible AI and model risk — production evidence on file",
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-09",
+        "selfRating": 3,
+        "reviewerRating": 3,
+        "assessedAt": "2026-03-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "ai-10",
+        "selfRating": 4,
+        "evidence": "AIOps and intelligent remediation — production evidence on file",
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-20",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-02",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-05-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-03",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-04",
+        "selfRating": 2,
+        "reviewerRating": 2,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "rel-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-01",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-08-05",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-02",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-06-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "sec-04",
+        "selfRating": 2,
+        "assessedAt": "2026-07-14",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-03",
+        "selfRating": 2,
+        "reviewerRating": 1,
+        "assessedAt": "2026-04-01",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-04",
+        "selfRating": 0,
+        "reviewerRating": 0,
+        "assessedAt": "2026-04-15",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-05",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      },
+      {
+        "skillId": "prod-06",
+        "selfRating": 1,
+        "reviewerRating": 1,
+        "assessedAt": "2026-05-10",
+        "assessedBy": "William Tipton"
+      }
+    ],
+    "roleProfileId": "integration-and-eda-engineer",
+    "goals": [
+      {
+        "id": "g23",
+        "employeeId": "emp-010",
+        "title": "AI Ticket Auto-Resolution: 50% P3/P4 Target",
+        "description": "Expand AI auto-resolution from 34% to 50% of P3/P4 tickets through improved LLM routing and playbook coverage.",
+        "strategicAlignment": "ITSM Automation OKR",
+        "dueDate": "2026-09-30",
+        "priority": "High",
+        "progress": 30,
+        "status": "In Progress",
+        "category": "Annual",
+        "createdAt": "2026-02-01",
+        "updatedAt": "2026-06-01"
+      },
+      {
+        "id": "g24",
+        "employeeId": "emp-010",
+        "title": "Resolve Ownership Conflict with NOC Team",
+        "description": "Resolve ongoing dispute with NOC leadership over ServiceNow AI customization authority and change management process.",
+        "strategicAlignment": "Organizational Health",
+        "dueDate": "2026-06-30",
+        "priority": "Critical",
+        "progress": 40,
+        "status": "At Risk",
+        "category": "Personal Development",
+        "createdAt": "2026-05-01",
+        "updatedAt": "2026-06-10"
+      }
+    ],
+    "projectContributions": [
+      {
+        "id": "pc11",
+        "employeeId": "emp-010",
+        "projectName": "ServiceNow AI Platform",
+        "initiative": "ITSM AI Transformation",
+        "description": "Built and operates AI-powered ticket management system processing 12,000+ tickets/month for Global Infrastructure.",
+        "businessImpact": "Auto-resolved 34% of P3/P4 incidents, saving 1,200 engineer-hours/quarter across NOC operations.",
+        "technicalImpact": "LLM-based ticket classification + routing with RAG on knowledge articles. 94% routing accuracy.",
+        "leadershipScore": 3,
+        "collaborationScore": 2,
+        "innovationScore": 4,
+        "date": "2026-04-15",
+        "evidenceLinks": []
+      }
+    ],
+    "development": {
+      "certifications": [
+        {
+          "id": "cert9",
+          "name": "ServiceNow Certified System Administrator",
+          "provider": "ServiceNow",
+          "dateEarned": "2024-05-12",
+          "credentialId": "SN-CSA-44821"
+        }
+      ],
+      "training": [
+        {
+          "id": "tr13",
+          "courseName": "Effective Collaboration for Technical Engineers",
+          "platform": "LinkedIn Learning",
+          "status": "In Progress",
+          "hoursCompleted": 3
+        }
+      ],
+      "conferences": [
+        {
+          "id": "conf11",
+          "eventName": "Knowledge 2026 (ServiceNow)",
+          "date": "2026-05-12",
+          "role": "Speaker",
+          "keyLearnings": "Presented ITSM AI implementation. Strong demand for session. GenAI for ITSM roadmap previewed by ServiceNow."
+        }
+      ],
+      "mentoring": []
+    },
+    "notes": [
+      {
+        "id": "n10",
+        "employeeId": "emp-010",
+        "authorId": "mgr-001",
+        "authorName": "William Tipton",
+        "category": "Concerns",
+        "title": "NOC Conflict Escalating — Mediation Required",
+        "content": "Alex has an escalating territorial dispute with the NOC team lead over who controls ServiceNow AI configuration and change management approvals. Alex has been making unilateral changes without the agreed approval process, which caused a production incident last week (ticket routing failure, 200 misrouted P2s). Three NOC leads have raised concerns with me independently. Mediation session scheduled June 18. Alex also needs to understand that this collaborative failure is blocking his path to Staff — you can't own a platform that serves other teams without strong stakeholder relationships. Formal coaching plan may follow if June 18 does not resolve.",
+        "createdAt": "2026-06-10",
+        "updatedAt": "2026-06-10",
+        "followUpDate": "2026-06-18",
+        "isPrivate": true,
+        "tags": [
+          "conflict",
+          "interpersonal",
+          "urgent",
+          "production-incident"
+        ]
+      }
+    ],
+    "performanceScore": {
+      "overall": 72,
+      "goalAchievement": 70,
+      "projectContributions": 78,
+      "professionalDevelopment": 65,
+      "leadershipBehaviors": 62,
+      "collaboration": 55,
+      "innovation": 80,
+      "growthScore": 66,
+      "leadershipReadiness": 64,
+      "promotionReadiness": 60,
+      "trend": "down",
+      "lastCalculated": "2026-06-01"
+    }
+  }
+]
