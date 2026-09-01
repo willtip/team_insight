@@ -384,6 +384,39 @@ function findSheet(wb: Workbook, exact: string, ...keywords: string[]): Workshee
   })
 }
 
+function rowLabels(ws: Worksheet, rowNum: number): string[] {
+  const labels: string[] = []
+  ws.getRow(rowNum).eachCell(cell => labels.push(cellText(cell.value).trim().toLowerCase()))
+  return labels
+}
+
+/** Header cells that must all appear (as substrings, in any column) for a row to count as that sheet's header. */
+const ROLE_HEADER_ANCHORS = ['profile', 'primary outcome']
+const CATALOG_HEADER_ANCHORS = ['skill id', 'critical']
+const ASSESSMENT_HEADER_ANCHORS = ['employee', 'skill id']
+
+/**
+ * Locates a sheet and its header row by content rather than name or fixed
+ * position. Tries the name-matched sheet first (the standard export layout,
+ * header on row `FIRST_ROW - 1`), then scans every sheet's first rows for one
+ * whose header cells contain every anchor — a hand-built file rarely
+ * reproduces either the export's tab name or its row-4 header.
+ */
+function locateSheet(
+  wb: Workbook, exactName: string, nameKeywords: string[], anchors: string[],
+): { sheet: Worksheet; headerRow: number } | undefined {
+  const named = findSheet(wb, exactName, ...nameKeywords)
+  const candidates = named ? [named, ...wb.worksheets.filter(ws => ws !== named)] : wb.worksheets
+  for (const ws of candidates) {
+    const maxScan = Math.min(ws.rowCount, 15)
+    for (let r = 1; r <= maxScan; r++) {
+      const labels = rowLabels(ws, r)
+      if (anchors.every(a => labels.some(l => l.includes(a)))) return { sheet: ws, headerRow: r }
+    }
+  }
+  return undefined
+}
+
 /** Reads an uploaded workbook and reports what would change — never writes. */
 export async function readWorkbook(
   file: File,
@@ -407,9 +440,13 @@ export async function readWorkbook(
   // Read by header name, not position: this file's own export and the
   // standalone Team_Skills_Assessment_Matrix workbook use the same labels,
   // but a future reorder of either would silently break a position-based read.
-  const rolesSheet = findSheet(wb, 'Role Profiles', 'role', 'profile')
-  if (rolesSheet) {
-    const rh = headerMap(rolesSheet)
+  // Sheet name and header row are auto-detected too, since a hand-built
+  // roles-only file rarely reproduces either the export's tab name or its
+  // row-4 header position.
+  const rolesLocated = locateSheet(wb, 'Role Profiles', ['role', 'profile'], ROLE_HEADER_ANCHORS)
+  if (rolesLocated) {
+    const { sheet: rolesSheet, headerRow: rolesHeaderRow } = rolesLocated
+    const rh = headerMap(rolesSheet, rolesHeaderRow)
     const rCol = {
       name: findCol(rh, 'profile') ?? 1,
       outcome: findCol(rh, 'primary', 'outcome') ?? 2,
@@ -425,7 +462,7 @@ export async function readWorkbook(
 
     const byRoleName = new Map(roleProfiles.map(p => [p.name.trim().toLowerCase(), p]))
     rolesSheet.eachRow((row, n) => {
-      if (n < FIRST_ROW) return
+      if (n <= rolesHeaderRow) return
       const name = cellText(row.getCell(rCol.name).value).trim()
       if (!name) return
 
@@ -474,9 +511,10 @@ export async function readWorkbook(
   }
 
   // --- Skill Catalog sheet (optional) --------------------------------------
-  const catSheet = findSheet(wb, 'Skill Catalog', 'skill', 'catalog')
-  if (catSheet) {
-    const ch = headerMap(catSheet)
+  const catLocated = locateSheet(wb, 'Skill Catalog', ['skill', 'catalog'], CATALOG_HEADER_ANCHORS)
+  if (catLocated) {
+    const { sheet: catSheet, headerRow: catHeaderRow } = catLocated
+    const ch = headerMap(catSheet, catHeaderRow)
     const cCol = {
       id: findCol(ch, 'skill', 'id') ?? 1,
       critical: findCol(ch, 'critical') ?? 7,
@@ -484,7 +522,7 @@ export async function readWorkbook(
       weight: findCol(ch, 'weight') ?? 9,
     }
     catSheet.eachRow((row, n) => {
-      if (n < FIRST_ROW) return
+      if (n <= catHeaderRow) return
       const code = Number(cellText(row.getCell(cCol.id).value))
       const def = byCode.get(code)
       if (!def) return
@@ -514,8 +552,8 @@ export async function readWorkbook(
   }
 
   // --- Assessment sheet ----------------------------------------------------
-  const sheet = wb.worksheets.find(ws => ws.name.trim().toLowerCase() === 'assessment')
-  if (!sheet) {
+  const assessmentLocated = locateSheet(wb, 'Assessment', ['assessment'], ASSESSMENT_HEADER_ANCHORS)
+  if (!assessmentLocated) {
     // A workbook can legitimately carry only a Role Profiles and/or Skill
     // Catalog sheet (e.g. one sheet copied out of the full export) — only
     // treat the missing sheet as an error when nothing importable was found
@@ -529,18 +567,19 @@ export async function readWorkbook(
         'Copy its "Send to Manager" sheet into the manager workbook\'s Intake sheet, ' +
         'then import that workbook instead.',
       )
-    } else if (!rolesSheet && !catSheet) {
+    } else if (!rolesLocated && !catLocated) {
       preview.errors.push('No "Assessment", "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
     }
     return preview
   }
+  const { sheet, headerRow: assessmentHeaderRow } = assessmentLocated
 
   // Read by header name rather than fixed position: this file's own export and
   // the standalone Team_Skills_Assessment_Matrix workbook put Skill ID, Self
   // rating, Reviewer rating and Evidence at different column positions, so a
   // position-based read silently misattributes one generator's columns to the
   // other's — every row would appear to match, but the values would be wrong.
-  const ah = headerMap(sheet)
+  const ah = headerMap(sheet, assessmentHeaderRow)
   const aCol = {
     employee: findCol(ah, 'employee') ?? 1,
     skillId: findCol(ah, 'skill', 'id') ?? 5,
@@ -553,7 +592,7 @@ export async function readWorkbook(
   const missingCodes = new Set<number>()
 
   sheet.eachRow((row, n) => {
-    if (n < FIRST_ROW) return
+    if (n <= assessmentHeaderRow) return
     const empName = cellText(row.getCell(aCol.employee).value).trim()
     const codeText = cellText(row.getCell(aCol.skillId).value).trim()
     if (!empName && !codeText) return
