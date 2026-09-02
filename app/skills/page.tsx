@@ -16,11 +16,11 @@ import DevelopmentPlan from '@/components/skills/DevelopmentPlan'
 import CatalogEditor from '@/components/skills/CatalogEditor'
 import ScoringGuide from '@/components/skills/ScoringGuide'
 import ImportPreviewModal from '@/components/skills/ImportPreviewModal'
+import AssessmentImportPanel from '@/components/skills/AssessmentImportPanel'
+import SelfAssessmentForm from '@/components/skills/SelfAssessmentForm'
 import { useEmployees } from '@/lib/employee-store'
 import { useSkillCatalog } from '@/lib/skill-catalog-store'
-import {
-  buildWorkbook, downloadWorkbook, readWorkbook, previewToEdits,
-} from '@/lib/skill-workbook'
+import { buildWorkbook, downloadWorkbook, readWorkbook } from '@/lib/skill-workbook'
 import type { ImportPreview } from '@/lib/skill-workbook'
 import type { DevelopmentPlanItem } from '@/lib/types'
 import { cn } from '@/lib/utils'
@@ -46,6 +46,7 @@ export default function SkillsPage() {
   const {
     employees, updateEmployee, applyAssessments, setDevelopmentPlan,
   } = useEmployees()
+
   const {
     catalog, domains, roleProfiles,
     addSkill, updateSkill, deleteSkill, replaceCatalog,
@@ -78,6 +79,8 @@ export default function SkillsPage() {
   const [criticalOnly, setCriticalOnly] = useState(false)
   const [belowTargetOnly, setBelowTargetOnly] = useState(false)
 
+  const [formOpen, setFormOpen] = useState(false)
+  const [formNotice, setFormNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState<'export' | 'import' | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [preview, setPreview] = useState<{ filename: string; data: ImportPreview } | null>(null)
@@ -103,7 +106,7 @@ export default function SkillsPage() {
     setBusy('import')
     setError(null)
     try {
-      const data = await readWorkbook(file, employees, catalog, roleProfiles)
+      const data = await readWorkbook(file, catalog, roleProfiles)
       setApplyCatalog(true)
       setApplyRoleProfiles(true)
       setPreview({ filename: file.name, data })
@@ -117,7 +120,6 @@ export default function SkillsPage() {
 
   const applyImport = () => {
     if (!preview) return
-    applyAssessments(previewToEdits(preview.data))
 
     if (applyCatalog && preview.data.catalogChanges.length > 0) {
       const next = catalog.map(s => {
@@ -310,6 +312,16 @@ export default function SkillsPage() {
         )}
 
         {view === 'assessment' && (
+          <AssessmentImportPanel onOpenForm={() => setFormOpen(true)} />
+        )}
+
+        {view === 'assessment' && formNotice && (
+          <p className="text-xs text-green-700 bg-green-50 border border-green-100 rounded-lg px-2.5 py-2">
+            {formNotice}
+          </p>
+        )}
+
+        {view === 'assessment' && (
           <AssessmentGrid
             employees={employees}
             catalog={catalog}
@@ -363,6 +375,16 @@ export default function SkillsPage() {
       </div>
 
       <ScoringGuide open={guideOpen} onClose={() => setGuideOpen(false)} />
+
+      {formOpen && (
+        <SelfAssessmentForm
+          employees={employees}
+          catalog={catalog}
+          defaultEmployeeId={selectedEmployee}
+          onClose={() => setFormOpen(false)}
+          onSubmitted={setFormNotice}
+        />
+      )}
 
       {preview && (
         <ImportPreviewModal

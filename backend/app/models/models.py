@@ -428,3 +428,53 @@ class ScoreWeightConfig(Base):
     innovation_weight = Column(Float, default=0.05)
     is_active = Column(Boolean, default=True)
     created_at = Column(DateTime, server_default=func.now())
+
+
+class AssessmentImportSourceEnum(str, enum.Enum):
+    XLSX = "xlsx"
+    CSV = "csv"
+    FORM = "form"
+
+
+class AssessmentImportStatusEnum(str, enum.Enum):
+    PENDING = "pending"
+    APPLIED = "applied"
+    DISCARDED = "discarded"
+
+
+class AssessmentImportBatch(Base):
+    """One upload (or form submission) of skill assessments, staged before it is written.
+
+    Rows live in a JSON column rather than a child table: a full-team file is ~700 rows
+    written once and read once, and this codebase already stores row-shaped data that way
+    (OneOnOne.action_items, ProjectContribution.evidence_links, RoleProfile.depth_skill_ids).
+
+    Staging server-side is what lets commit take a batch id instead of a client-supplied
+    row list, so the browser cannot rewrite what gets written between preview and apply.
+    """
+    __tablename__ = "assessment_import_batches"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    filename = Column(String)
+    source = Column(Enum(AssessmentImportSourceEnum), nullable=False)
+    status = Column(
+        Enum(AssessmentImportStatusEnum),
+        nullable=False,
+        default=AssessmentImportStatusEnum.PENDING,
+    )
+    uploaded_by = Column(String, ForeignKey("users.id"), nullable=False, index=True)
+    uploaded_at = Column(DateTime, server_default=func.now())
+    applied_at = Column(DateTime, nullable=True)
+    # Set when a self-assessment form was submitted on one person's behalf.
+    submitted_for_employee_id = Column(
+        String, ForeignKey("employees.id", ondelete="CASCADE"), nullable=True
+    )
+    rows_read = Column(Integer, default=0)
+    rows_applied = Column(Integer, default=0)
+    # Fixed-shape {status: count}. Keys are deliberately stable: the frontend api-client
+    # camelCases every key at every depth, so an open-ended dict here would be rewritten.
+    counts = Column(JSON, default=dict)
+    warnings = Column(JSON, default=list)  # batch-level messages, not row-level
+    rows = Column(JSON, default=list)  # list of resolved rows (see services/assessment_import.py)
+
+    uploader = relationship("User", foreign_keys=[uploaded_by])

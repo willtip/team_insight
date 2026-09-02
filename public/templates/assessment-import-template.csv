@@ -1,0 +1,8 @@
+Email,Employee ID,Employee,Skill ID,Skill,Target,Self,Reviewer,Evidence,Evidence URL,Date
+# Rows are matched on Email first, then Employee ID, then Employee name. One of the three is required.
+# Skill ID is the catalog code (a number). You may use the Skill name instead.
+# Ratings are 0-5. A BLANK cell leaves the stored value alone; a single - clears it.
+# Target only takes effect when it differs from the skill's catalog target.
+# Final, Gap and Priority are always recalculated and are not read from this file.
+sarah.chen@company.com,,,1,,4,3,4,Led the AAP topology review,https://wiki/example,2026-09-01
+,ASE-1089,,3,,,2,,,,

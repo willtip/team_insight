@@ -74,3 +74,55 @@ export function useApiToken(): string | undefined {
   const { data: session } = useSession()
   return session?.apiToken
 }
+
+interface ApiUploadOptions {
+  token?: string
+  /** Extra multipart fields sent alongside the file. */
+  fields?: Record<string, string>
+}
+
+/**
+ * POSTs a file as multipart/form-data.
+ *
+ * Separate from `apiFetch` because that one hardcodes a JSON content type and
+ * `JSON.stringify`s its body. Here the Content-Type header must be omitted entirely
+ * so the browser can set it *with* the multipart boundary.
+ */
+export async function apiUpload<T>(
+  path: string,
+  file: File,
+  options: ApiUploadOptions = {},
+): Promise<T> {
+  const { token, fields } = options
+  const body = new FormData()
+  body.append('file', file)
+  for (const [key, value] of Object.entries(fields ?? {})) body.append(key, value)
+
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    body,
+  })
+
+  if (!res.ok) {
+    const text = await res.text().catch(() => '')
+    throw new ApiError(res.status, detailFrom(text) || res.statusText)
+  }
+  return toCamelCase<T>(await res.json())
+}
+
+/** FastAPI wraps errors as `{"detail": "..."}`; surface that rather than raw JSON. */
+function detailFrom(text: string): string {
+  try {
+    const parsed = JSON.parse(text) as { detail?: unknown }
+    if (typeof parsed.detail === 'string') return parsed.detail
+    if (Array.isArray(parsed.detail)) {
+      return parsed.detail
+        .map(d => (typeof d === 'object' && d && 'msg' in d ? String((d as { msg: unknown }).msg) : String(d)))
+        .join('; ')
+    }
+  } catch {
+    // Not JSON — fall through to the raw text.
+  }
+  return text
+}
