@@ -222,8 +222,8 @@ export interface Employee {
   title: string
   level: string // L3, L4, L5, L6, etc.
   department: string
-  managerId: string
-  managerName: string
+  managerId?: string
+  managerName?: string
   hireDate: string
   location: string
   email: string

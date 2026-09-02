@@ -194,7 +194,6 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
         promotionReadiness: form.promotionReadiness, isHighPotential: form.isHighPotential,
         needsCoaching: form.needsCoaching, tags, skills: builtSkills,
         roleProfileId: form.roleProfileId || undefined,
-        managerId: 'mgr-001', managerName: 'William Tipton',
         employeeId: `ASE-${Date.now().toString().slice(-5)}`,
         goals: [], projectContributions: [], notes: [], accomplishments: [],
         development: { certifications: [], training: [], conferences: [], mentoring: [] },

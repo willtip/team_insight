@@ -30,6 +30,7 @@ services:
       AZURE_OPENAI_ENDPOINT: ${AZURE_OPENAI_ENDPOINT}
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       ENVIRONMENT: ${ENVIRONMENT:-development}
+      REDIS_URL: redis://redis:6379
     ports:
       - "8000:8000"
     depends_on:
