@@ -1,20 +1,22 @@
 """Shared helpers for building EmployeeDetail responses with all nested data eager-loaded."""
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import joinedload, selectinload
 
 from app.models.models import DirectorNote, Employee
 from app.schemas.schemas import DirectorNoteResponse, EmployeeDetail, ProfessionalDevelopmentResponse
 
+# joinedload for to-one relations (single extra JOIN, no round trip); selectinload for
+# one-to-many collections (each needs its own WHERE IN query regardless of strategy).
 DETAIL_RELATIONSHIPS = (
     selectinload(Employee.skills),
     selectinload(Employee.goals),
-    selectinload(Employee.performance_score),
-    selectinload(Employee.manager),
+    joinedload(Employee.performance_score),
+    joinedload(Employee.manager),
     selectinload(Employee.project_contributions),
     selectinload(Employee.certifications),
     selectinload(Employee.training_records),
     selectinload(Employee.conferences),
     selectinload(Employee.mentoring_relations),
-    selectinload(Employee.director_notes).selectinload(DirectorNote.author),
+    selectinload(Employee.director_notes).joinedload(DirectorNote.author),
 )
 
 
