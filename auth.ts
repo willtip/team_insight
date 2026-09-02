@@ -11,6 +11,25 @@ interface PlatformTokenResponse {
   user_id: string
 }
 
+/**
+ * Reads `exp` out of a JWT without verifying it — only to decide when to refresh.
+ * The backend re-verifies the signature on every call, so a bad value here can at
+ * worst cause an unnecessary refresh.
+ */
+function expiresAt(jwt: string): number | null {
+  try {
+    const payload = JSON.parse(
+      Buffer.from(jwt.split('.')[1], 'base64').toString('utf8'),
+    ) as { exp?: number }
+    return typeof payload.exp === 'number' ? payload.exp : null
+  } catch {
+    return null
+  }
+}
+
+/** Refresh once the platform token is inside this many seconds of expiring. */
+const REFRESH_WINDOW_SECONDS = 300
+
 const providers: Provider[] = [
   MicrosoftEntraID({
     clientId: process.env.AZURE_AD_CLIENT_ID ?? '',
@@ -68,6 +87,31 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.apiToken = user.apiToken
         token.role = user.role
         token.userId = user.id
+      } else if (typeof token.apiToken === 'string') {
+        // The NextAuth session lasts 30 days but the platform token only 8 hours.
+        // Without this the session stays "signed in" while every API call 401s, and
+        // the app renders an empty shell rather than asking for a fresh sign-in.
+        const exp = expiresAt(token.apiToken)
+        if (exp !== null && Date.now() / 1000 > exp - REFRESH_WINDOW_SECONDS) {
+          const res = await fetch(`${API_BASE}/api/v1/auth/refresh`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ refresh_token: token.apiToken }),
+          }).catch(() => null)
+
+          if (res?.ok) {
+            const data = (await res.json()) as PlatformTokenResponse
+            token.apiToken = data.access_token
+            token.role = data.role
+            token.userId = data.user_id
+          } else if (res && res.status === 401) {
+            // Revoked, or the account is gone. Drop the token so middleware sends
+            // them back to sign-in instead of showing a blank app.
+            delete token.apiToken
+          }
+          // A network failure leaves the old token in place, so a brief API outage
+          // doesn't sign everyone out.
+        }
       }
       return token
     },
