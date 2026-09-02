@@ -523,6 +523,7 @@ class EmployeeDetail(EmployeeBase):
     goals: List[GoalResponse] = []
     project_contributions: List[ProjectContributionResponse] = []
     development: ProfessionalDevelopmentResponse = ProfessionalDevelopmentResponse()
+    notes: List[DirectorNoteResponse] = []
     performance_score: Optional[PerformanceScoreResponse] = None
     created_at: datetime
 

@@ -112,6 +112,9 @@ async def create_employee(
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "employee_id already exists")
 
+    if employee.manager_id and await db.get(Employee, employee.manager_id) is None:
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Manager not found")
+
     db_employee = Employee(**employee.model_dump())
     db.add(db_employee)
     await db.flush()
