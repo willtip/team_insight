@@ -6,7 +6,7 @@ import type { RoleProfile, SkillDefinition, SkillThresholds } from './skill-cata
 import {
   collectGaps, resolveEmployeeSkills, summarizeEmployee,
 } from './skill-analytics'
-import type { Employee, ProficiencyLevel, SkillAssessment } from './types'
+import type { Employee } from './types'
 import { parseProficiency } from './utils'
 
 /**
@@ -14,7 +14,11 @@ import { parseProficiency } from './utils'
  *
  * Export writes live values *and* re-emits the reference workbook's formulas for
  * the derived columns, so the downloaded file keeps working as a standalone
- * offline template. Import reads a filled Assessment sheet back in.
+ * offline template.
+ *
+ * Import covers the Skill Catalog and Role Profiles sheets only. Ratings are imported
+ * server-side instead (see lib/assessment-import.ts) so a whole-team file is one
+ * transactional write with an audit record.
  */
 
 /** First data row in every sheet of the reference workbook. */
@@ -275,16 +279,6 @@ export function downloadWorkbook(blob: Blob, filename: string) {
 // Import
 // ---------------------------------------------------------------------------
 
-export interface ImportChange {
-  employeeId: string
-  employeeName: string
-  skillId: string
-  skillName: string
-  field: 'selfRating' | 'reviewerRating' | 'evidence'
-  from: string
-  to: string
-}
-
 /** One row on the Role Profiles sheet, matched against the app's profiles by name. */
 export interface RoleProfileChange {
   name: string
@@ -298,10 +292,6 @@ export interface RoleProfileChange {
 }
 
 export interface ImportPreview {
-  changes: ImportChange[]
-  rowsRead: number
-  unmatchedEmployees: string[]
-  unknownSkillCodes: number[]
   /** Catalog rows whose criticality, target or weight differ from the file. */
   catalogChanges: { skillId: string; name: string; field: string; from: string; to: string }[]
   /** Role Profiles sheet rows that would add a new profile or change an existing one. */
@@ -393,7 +383,6 @@ function rowLabels(ws: Worksheet, rowNum: number): string[] {
 /** Header cells that must all appear (as substrings, in any column) for a row to count as that sheet's header. */
 const ROLE_HEADER_ANCHORS = ['profile', 'primary outcome']
 const CATALOG_HEADER_ANCHORS = ['skill id', 'critical']
-const ASSESSMENT_HEADER_ANCHORS = ['employee', 'skill id']
 
 /**
  * Locates a sheet and its header row by content rather than name or fixed
@@ -420,7 +409,6 @@ function locateSheet(
 /** Reads an uploaded workbook and reports what would change — never writes. */
 export async function readWorkbook(
   file: File,
-  employees: Employee[],
   catalog: SkillDefinition[],
   roleProfiles: RoleProfile[] = [],
 ): Promise<ImportPreview> {
@@ -428,13 +416,9 @@ export async function readWorkbook(
   const wb: Workbook = new ExcelJS.Workbook()
   await wb.xlsx.load(await file.arrayBuffer())
 
-  const preview: ImportPreview = {
-    changes: [], rowsRead: 0, unmatchedEmployees: [],
-    unknownSkillCodes: [], catalogChanges: [], roleProfileChanges: [], errors: [],
-  }
+  const preview: ImportPreview = { catalogChanges: [], roleProfileChanges: [], errors: [] }
 
   const byCode = new Map(catalog.map(s => [s.code, s]))
-  const byName = new Map(employees.map(e => [e.name.trim().toLowerCase(), e]))
 
   // --- Role Profiles sheet (optional) --------------------------------------
   // Read by header name, not position: this file's own export and the
@@ -550,106 +534,8 @@ export async function readWorkbook(
       }
     })
   }
-
-  // --- Assessment sheet ----------------------------------------------------
-  const assessmentLocated = locateSheet(wb, 'Assessment', ['assessment'], ASSESSMENT_HEADER_ANCHORS)
-  if (!assessmentLocated) {
-    // A workbook can legitimately carry only a Role Profiles and/or Skill
-    // Catalog sheet (e.g. one sheet copied out of the full export) — only
-    // treat the missing sheet as an error when nothing importable was found
-    // at all, or when it's specifically the engineer-facing self-assessment
-    // form (which is never meant to be imported directly — its "Send to
-    // Manager" sheet is pasted into the manager workbook's Intake sheet instead).
-    const looksLikeSelfAssessmentForm = wb.worksheets.some(ws => ws.name.trim().toLowerCase() === 'my assessment')
-    if (looksLikeSelfAssessmentForm) {
-      preview.errors.push(
-        'This looks like a self-assessment intake form, not the manager workbook. ' +
-        'Copy its "Send to Manager" sheet into the manager workbook\'s Intake sheet, ' +
-        'then import that workbook instead.',
-      )
-    } else if (!rolesLocated && !catLocated) {
-      preview.errors.push('No "Assessment", "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
-    }
-    return preview
+  if (!rolesLocated && !catLocated) {
+    preview.errors.push('No "Role Profiles" or "Skill Catalog" sheet found in this workbook.')
   }
-  const { sheet, headerRow: assessmentHeaderRow } = assessmentLocated
-
-  // Read by header name rather than fixed position: this file's own export and
-  // the standalone Team_Skills_Assessment_Matrix workbook put Skill ID, Self
-  // rating, Reviewer rating and Evidence at different column positions, so a
-  // position-based read silently misattributes one generator's columns to the
-  // other's — every row would appear to match, but the values would be wrong.
-  const ah = headerMap(sheet, assessmentHeaderRow)
-  const aCol = {
-    employee: findCol(ah, 'employee') ?? 1,
-    skillId: findCol(ah, 'skill', 'id') ?? 5,
-    self: findCol(ah, 'self', 'rating') ?? 10,
-    reviewer: findCol(ah, 'reviewer', 'rating') ?? 11,
-    evidence: findCol(ah, 'evidence') ?? 14,
-  }
-
-  const missingPeople = new Set<string>()
-  const missingCodes = new Set<number>()
-
-  sheet.eachRow((row, n) => {
-    if (n <= assessmentHeaderRow) return
-    const empName = cellText(row.getCell(aCol.employee).value).trim()
-    const codeText = cellText(row.getCell(aCol.skillId).value).trim()
-    if (!empName && !codeText) return
-
-    preview.rowsRead++
-
-    const emp = byName.get(empName.toLowerCase())
-    if (!emp) { if (empName) missingPeople.add(empName); return }
-
-    const code = Number(codeText)
-    const def = byCode.get(code)
-    if (!def) { if (Number.isFinite(code)) missingCodes.add(code); return }
-
-    const current: SkillAssessment =
-      (emp.skills ?? []).find(s => s.skillId === def.id) ?? { skillId: def.id }
-
-    const push = (
-      field: ImportChange['field'],
-      from: ProficiencyLevel | string | undefined,
-      to: ProficiencyLevel | string | undefined,
-    ) => {
-      const f = from === undefined || from === '' ? '—' : String(from)
-      const t = to === undefined || to === '' ? '—' : String(to)
-      if (f === t) return
-      preview.changes.push({
-        employeeId: emp.id, employeeName: emp.name,
-        skillId: def.id, skillName: def.name, field, from: f, to: t,
-      })
-    }
-
-    push('selfRating', current.selfRating, parseProficiency(cellText(row.getCell(aCol.self).value)))
-    push('reviewerRating', current.reviewerRating, parseProficiency(cellText(row.getCell(aCol.reviewer).value)))
-
-    const evidence = cellText(row.getCell(aCol.evidence).value).trim()
-    if (evidence || current.evidence) push('evidence', current.evidence, evidence)
-  })
-
-  preview.unmatchedEmployees = Array.from(missingPeople)
-  preview.unknownSkillCodes = Array.from(missingCodes)
   return preview
-}
-
-/** Folds an approved preview into the batched-write shape the employee store takes. */
-export function previewToEdits(
-  preview: ImportPreview,
-): Record<string, Record<string, Partial<SkillAssessment>>> {
-  const out: Record<string, Record<string, Partial<SkillAssessment>>> = {}
-  const stamp = new Date().toISOString()
-
-  for (const c of preview.changes) {
-    const forEmployee = (out[c.employeeId] ??= {})
-    const patch = (forEmployee[c.skillId] ??= { assessedAt: stamp, assessedBy: 'Workbook import' })
-    if (c.field === 'evidence') {
-      patch.evidence = c.to === '—' ? undefined : c.to
-    } else {
-      patch[c.field] = c.to === '—' ? undefined : (Number(c.to) as ProficiencyLevel)
-    }
-  }
-  return out
 }

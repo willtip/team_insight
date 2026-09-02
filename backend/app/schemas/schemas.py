@@ -609,3 +609,83 @@ class DevLoginRequest(BaseModel):
     """Local-development-only login bypass (see ENVIRONMENT=development)."""
     email: EmailStr
     name: str = "Dev User"
+
+
+# ---- Assessment imports ----
+
+class ImportRowStatus(str, Enum):
+    OK = "ok"
+    UNCHANGED = "unchanged"
+    EMPTY = "empty"
+    DUPLICATE = "duplicate"
+    UNKNOWN_EMPLOYEE = "unknown_employee"
+    AMBIGUOUS_EMPLOYEE = "ambiguous_employee"
+    UNKNOWN_SKILL = "unknown_skill"
+    INVALID_VALUE = "invalid_value"
+    FORBIDDEN_FIELD = "forbidden_field"
+
+
+class ImportCounts(BaseModel):
+    """Fixed-shape so the frontend's recursive key camelCasing stays predictable."""
+    rows_read: int = 0
+    ok: int = 0
+    unchanged: int = 0
+    empty: int = 0
+    duplicate: int = 0
+    unknown_employee: int = 0
+    ambiguous_employee: int = 0
+    unknown_skill: int = 0
+    invalid_value: int = 0
+    forbidden_field: int = 0
+
+
+class ImportRow(BaseModel):
+    row_number: int
+    status: ImportRowStatus
+    employee_id: Optional[str] = None
+    employee_name: Optional[str] = None
+    skill_id: Optional[str] = None
+    skill_name: Optional[str] = None
+    matched_by: Optional[str] = None
+    values: dict = Field(default_factory=dict)
+    before: dict = Field(default_factory=dict)
+    messages: List[str] = Field(default_factory=list)
+    assessed_at: Optional[str] = None
+
+
+class ImportBatchSummary(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    filename: Optional[str] = None
+    source: str
+    status: str
+    uploaded_by: str
+    uploaded_at: Optional[datetime] = None
+    applied_at: Optional[datetime] = None
+    rows_read: int = 0
+    rows_applied: int = 0
+    counts: ImportCounts = Field(default_factory=ImportCounts)
+    warnings: List[str] = Field(default_factory=list)
+
+
+class ImportBatchResponse(ImportBatchSummary):
+    rows: List[ImportRow] = Field(default_factory=list)
+
+
+class ImportCommitResult(BaseModel):
+    batch_id: str
+    applied: int
+    skipped_unchanged: int
+    statements: int
+
+
+class SelfAssessmentItem(BaseModel):
+    skill_id: str
+    self_rating: Optional[int] = Field(None, ge=0, le=5)
+    evidence: Optional[str] = None
+
+
+class SelfAssessmentSubmit(BaseModel):
+    items: List[SelfAssessmentItem]
+    # Managers and above may submit on someone else's behalf; ignored for employees.
+    employee_id: Optional[str] = None

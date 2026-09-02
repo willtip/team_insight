@@ -826,7 +826,14 @@ npm run dev`}</Pre>
                 </p>
               </Step>
               <Step n={3} title="Import it back">
-                <p>Header → <strong>Import</strong>, then pick the file.</p>
+                <p>
+                  Skills Matrix → <strong>Assessment</strong> tab → <strong>Upload file</strong>,
+                  or drop the file on the import panel. It accepts <Code>.xlsx</Code>,{' '}
+                  <Code>.csv</Code> and <Code>.tsv</Code>, so a plain spreadsheet with
+                  Email, Skill ID, Target, Self, Reviewer and Evidence columns works too.
+                  Catalog and role-profile changes still go through the header{' '}
+                  <strong>Import</strong> button.
+                </p>
               </Step>
               <Step n={4} title="Review the diff before anything is written">
                 <p>
@@ -840,14 +847,14 @@ npm run dev`}</Pre>
             <Figure
               src="/docs/import-review.png"
               alt="The import review dialog listing each rating change before it is applied"
-              caption="Rows are matched on Skill ID plus employee name. Catalog changes are applied separately via the checkbox, so you can take ratings without taking target changes."
+              caption="Rows are matched on email, then employee ID, then name. Rows that need attention are listed separately from the ones that will apply, and nothing is written until you apply."
             />
 
             <Callout kind="warn" title="Do not edit the match keys">
               <p>
-                <strong>Skill ID</strong> (column E) and <strong>Employee</strong> (column A) are
-                how rows are matched on the way back in. Changing them means the row is skipped
-                and reported as unmatched. Everything else is fair game.
+                <strong>Skill ID</strong> and the columns identifying the person — Email,
+                Employee ID or Employee — are how rows are matched on the way back in. Changing
+                them means the row is skipped and reported. Everything else is fair game.
               </p>
             </Callout>
 
@@ -973,7 +980,7 @@ npm run dev`}</Pre>
                 },
                 {
                   q: 'Import says my employees are unmatched.',
-                  a: 'Rows are matched on the Employee column against the name in the app, case-insensitively. A renamed engineer, an added middle initial or a trailing space in the spreadsheet will all break the match. The review dialog lists every unmatched name so you can correct them.',
+                  a: 'Rows are matched on Email first, then Employee ID, then name. Name matching is the fallback and is the fragile one — a rename, an added middle initial or two people sharing a name will all fail to match, and a shared name is reported as ambiguous rather than guessed at. Add an Email or Employee ID column to make matching exact. The review dialog lists every unmatched row under "Needs attention".',
                 },
                 {
                   q: 'I deleted a catalog skill — what happened to the ratings?',

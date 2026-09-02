@@ -17,15 +17,10 @@ interface ImportPreviewModalProps {
   onCancel: () => void
 }
 
-const FIELD_LABEL: Record<string, string> = {
-  selfRating: 'Self',
-  reviewerRating: 'Reviewer',
-  evidence: 'Evidence',
-}
-
 /**
- * Import replaces stored ratings, so nothing is written until the reviewer has
- * seen exactly what changes.
+ * Catalog and role-profile changes from an uploaded workbook. Ratings take the
+ * server-side path (components/skills/AssessmentImportPanel.tsx), so nothing here
+ * touches an assessment.
  */
 export default function ImportPreviewModal({
   filename, preview, applyCatalog, onToggleCatalog,
@@ -35,7 +30,6 @@ export default function ImportPreviewModal({
   const updatedRoles = preview.roleProfileChanges.length - newRoles
 
   const totalCount =
-    preview.changes.length +
     (applyCatalog ? preview.catalogChanges.length : 0) +
     (applyRoleProfiles ? preview.roleProfileChanges.length : 0)
   const nothingToDo = totalCount === 0
@@ -49,7 +43,8 @@ export default function ImportPreviewModal({
           <div className="flex-1 min-w-0">
             <h2 className="text-base font-semibold text-slate-900">Review import</h2>
             <p className="text-xs text-slate-500 truncate">
-              {filename} · {preview.rowsRead} assessment rows read
+              {filename} · {preview.catalogChanges.length} catalog row
+              {preview.catalogChanges.length === 1 ? '' : 's'}
               {preview.roleProfileChanges.length > 0 &&
                 ` · ${preview.roleProfileChanges.length} role profile row${preview.roleProfileChanges.length === 1 ? '' : 's'}`}
             </p>
@@ -65,30 +60,6 @@ export default function ImportPreviewModal({
               <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0 mt-0.5" />
               <div className="text-xs text-red-700 space-y-0.5">
                 {preview.errors.map(e => <p key={e}>{e}</p>)}
-              </div>
-            </div>
-          )}
-
-          {(preview.unmatchedEmployees.length > 0 || preview.unknownSkillCodes.length > 0) && (
-            <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-100 rounded-lg">
-              <AlertTriangle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-              <div className="text-xs text-amber-800 space-y-1">
-                {preview.unmatchedEmployees.length > 0 && (
-                  <p>
-                    <strong>{preview.unmatchedEmployees.length} employee name(s)</strong> in the
-                    file match nobody on the team and will be skipped:{' '}
-                    {preview.unmatchedEmployees.slice(0, 6).join(', ')}
-                    {preview.unmatchedEmployees.length > 6 && ' …'}
-                  </p>
-                )}
-                {preview.unknownSkillCodes.length > 0 && (
-                  <p>
-                    <strong>{preview.unknownSkillCodes.length} skill ID(s)</strong> are not in the
-                    current catalog and will be skipped:{' '}
-                    {preview.unknownSkillCodes.slice(0, 12).join(', ')}
-                    {preview.unknownSkillCodes.length > 12 && ' …'}
-                  </p>
-                )}
               </div>
             </div>
           )}
@@ -165,44 +136,12 @@ export default function ImportPreviewModal({
             </div>
           )}
 
-          <div>
-            <p className="text-xs font-semibold text-slate-700 mb-2">
-              {preview.changes.length} rating change{preview.changes.length === 1 ? '' : 's'}
-            </p>
-            {preview.changes.length === 0 ? (
-              <p className="text-xs text-slate-400 py-4">
-                Every rating in this file already matches what the app holds.
-              </p>
-            ) : (
-              <div className="border border-slate-200 rounded-lg overflow-hidden">
-                <div className="grid grid-cols-[130px_1fr_80px_120px] gap-2 px-3 py-2 bg-slate-50 border-b border-slate-100 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-                  <span>Engineer</span><span>Skill</span><span>Field</span><span className="text-right">Change</span>
-                </div>
-                <div className="max-h-72 overflow-y-auto">
-                  {preview.changes.map((c, i) => (
-                    <div
-                      key={`${c.employeeId}-${c.skillId}-${c.field}-${i}`}
-                      className="grid grid-cols-[130px_1fr_80px_120px] gap-2 px-3 py-1.5 text-[11px] border-b border-slate-50"
-                    >
-                      <span className="truncate text-slate-700">{c.employeeName}</span>
-                      <span className="truncate text-slate-600">{c.skillName}</span>
-                      <span className="text-slate-400">{FIELD_LABEL[c.field]}</span>
-                      <span className="text-right truncate">
-                        <span className="text-slate-400">{c.from}</span>
-                        <span className="text-slate-300"> → </span>
-                        <span className="font-semibold text-slate-800">{c.to}</span>
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
         </div>
 
         <div className="flex items-center gap-2 px-6 py-3 border-t border-slate-200">
           <p className="text-[11px] text-slate-400 flex-1">
-            Applying writes exactly what&apos;s shown above and checked. Nothing else is touched.
+            Applying writes exactly what&apos;s shown above and checked. Ratings are imported
+            separately, from the Assessment tab.
           </p>
           <Button variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>
           <Button size="sm" onClick={onApply} disabled={nothingToDo}>
