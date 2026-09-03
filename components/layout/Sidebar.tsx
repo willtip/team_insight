@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { signOut, useSession } from 'next-auth/react'
 import {
   LayoutDashboard,
   Users,
@@ -13,9 +14,11 @@ import {
   Settings,
   BrainCircuit,
   ChevronRight,
+  LogOut,
   Shield,
+  User,
 } from 'lucide-react'
-import { cn, initials, avatarColor } from '@/lib/utils'
+import { cn, initials, avatarColor, nameFromEmail } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/mock-data'
 
 const NAV_ITEMS = [
@@ -35,6 +38,17 @@ const BOTTOM_ITEMS = [
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const { data: session, status } = useSession()
+
+  // CURRENT_USER is demo scaffolding whose fields are blank, so the signed-in
+  // session is the real source for the profile card. Without this the avatar
+  // renders as an empty coloured circle.
+  const name =
+    session?.user?.name?.trim() ||
+    nameFromEmail(session?.user?.email) ||
+    CURRENT_USER.name ||
+    'Team member'
+  const title = CURRENT_USER.title || session?.user?.email || ''
 
   return (
     <aside className="sidebar">
@@ -111,16 +125,30 @@ export default function Sidebar() {
           )
         })}
 
-        {/* User profile */}
-        <div className="mt-2 px-3 py-2.5 rounded-lg bg-slate-800/50 flex items-center gap-3">
-          <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0', avatarColor(CURRENT_USER.name))}>
-            {initials(CURRENT_USER.name)}
-          </div>
-          <div className="flex-1 min-w-0">
-            <p className="text-white text-xs font-medium truncate">{CURRENT_USER.name}</p>
-            <p className="text-slate-400 text-xs truncate">{CURRENT_USER.title}</p>
-          </div>
-        </div>
+        {/* User profile and sign out, hidden until the session resolves so the
+            sign-in page doesn't render a placeholder identity. */}
+        {status === 'authenticated' && (
+          <>
+            <div className="mt-2 px-3 py-2.5 rounded-lg bg-slate-800/50 flex items-center gap-3">
+              <div className={cn('w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0', avatarColor(name))}>
+                {initials(name) || <User className="w-4 h-4" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-white text-xs font-medium truncate">{name}</p>
+                {title && <p className="text-slate-400 text-xs truncate">{title}</p>}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: '/sign-in' })}
+              className="mt-1 flex w-full items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-slate-400 transition-all hover:text-white hover:bg-slate-800"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign out
+            </button>
+          </>
+        )}
       </div>
     </aside>
   )

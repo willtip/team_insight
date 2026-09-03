@@ -173,6 +173,20 @@ export function initials(name: string): string {
     .slice(0, 2)
 }
 
+/**
+ * "sarah.chen@acme.com" -> "Sarah Chen". Entra ID and the dev-login provider don't
+ * always hand back a display name, so fall back to the address for the avatar.
+ */
+export function nameFromEmail(email?: string | null): string {
+  if (!email) return ''
+  return email
+    .split('@')[0]
+    .split(/[._-]+/)
+    .filter(Boolean)
+    .map((part) => part[0].toUpperCase() + part.slice(1))
+    .join(' ')
+}
+
 export function avatarColor(name: string): string {
   const colors = [
     'bg-blue-500',
