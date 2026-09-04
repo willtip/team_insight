@@ -134,3 +134,27 @@ async def test_non_leader_cannot_create_teams_in_someone_elses_org(client, world
         json={"name": "Sneaky", "organization_id": world.alpha.id},
     )
     assert res.status_code == 403
+
+
+async def test_name_conflict_explains_when_the_clash_is_out_of_scope(client, db, world):
+    """Names are globally unique but the org list is scoped, so a bare "already
+    exists" would point at something the caller cannot see or act on."""
+    admin = auth(world.users["root"])
+    res = await client.post("/api/v1/organizations/", headers=admin, json={"name": "Hidden"})
+    assert res.status_code == 201
+
+    # frank leads Beta and a team in Alpha; "Hidden" is neither.
+    res = await client.post(
+        "/api/v1/organizations/", headers=auth(world.users["frank"]), json={"name": "Hidden"}
+    )
+    assert res.status_code == 409
+    assert "outside your scope" in res.json()["detail"]
+
+
+async def test_name_conflict_is_plain_when_the_clash_is_visible(client, world):
+    """Alpha is right there in frank's org list, so the message stays terse."""
+    res = await client.post(
+        "/api/v1/organizations/", headers=auth(world.users["frank"]), json={"name": "Alpha"}
+    )
+    assert res.status_code == 409
+    assert "outside your scope" not in res.json()["detail"]
