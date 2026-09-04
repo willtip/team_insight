@@ -477,6 +477,8 @@ class EmployeeBase(BaseModel):
 
 class EmployeeCreate(EmployeeBase):
     manager_id: Optional[str] = None
+    organization_id: Optional[str] = None
+    team_id: Optional[str] = None
     hire_date: Optional[datetime] = None
     role_profile_id: Optional[str] = None
 
@@ -487,6 +489,9 @@ class EmployeeUpdate(BaseModel):
     department: Optional[str] = None
     location: Optional[str] = None
     email: Optional[EmailStr] = None
+    manager_id: Optional[str] = None
+    organization_id: Optional[str] = None
+    team_id: Optional[str] = None
     hire_date: Optional[datetime] = None
     bio: Optional[str] = None
     career_aspirations: Optional[str] = None
@@ -511,12 +516,62 @@ class EmployeeSummary(BaseModel):
     overall_score: Optional[float] = None
     tags: List[str]
 
+
+# ---- Organizations & Teams (RBAC scoping) ----
+
+class OrganizationBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class OrganizationCreate(OrganizationBase):
+    leader_id: Optional[str] = None
+
+class OrganizationUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    leader_id: Optional[str] = None
+
+class OrganizationResponse(OrganizationBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    leader_id: Optional[str] = None
+    leader_name: Optional[str] = None
+    team_count: int = 0
+    employee_count: int = 0
+    created_at: datetime
+
+class TeamBase(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+class TeamCreate(TeamBase):
+    organization_id: str
+    lead_id: Optional[str] = None
+
+class TeamUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    lead_id: Optional[str] = None
+
+class TeamResponse(TeamBase):
+    model_config = ConfigDict(from_attributes=True)
+    id: str
+    organization_id: str
+    lead_id: Optional[str] = None
+    lead_name: Optional[str] = None
+    employee_count: int = 0
+    created_at: datetime
+
 class EmployeeDetail(EmployeeBase):
     model_config = ConfigDict(from_attributes=True)
     id: str
     hire_date: Optional[datetime]
     manager_id: Optional[str]
     manager_name: Optional[str] = None
+    organization_id: Optional[str] = None
+    organization_name: Optional[str] = None
+    team_id: Optional[str] = None
+    team_name: Optional[str] = None
     role_profile_id: Optional[str] = None
     promotion_readiness: Optional[PromotionReadiness]
     skills: List[SkillAssessmentResponse] = []

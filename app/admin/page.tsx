@@ -4,7 +4,9 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/layout/Header'
 import Button from '@/components/ui/Button'
 import IntegrationConfigModal from '@/components/admin/IntegrationConfigModal'
+import OrganizationsPanel from '@/components/admin/OrganizationsPanel'
 import { cn } from '@/lib/utils'
+import { isIntegrationConfigured } from '@/lib/integrations'
 import {
   Check, Link2,
 } from 'lucide-react'
@@ -19,14 +21,14 @@ const SCORE_WEIGHTS = [
 ]
 
 const INTEGRATIONS = [
-  { name: 'Microsoft Entra ID', status: 'connected', icon: '🔐', description: 'SSO and user provisioning' },
-  { name: 'Microsoft Teams', status: 'connected', icon: '💬', description: 'Notifications and coaching reminders' },
-  { name: 'Azure DevOps', status: 'pending', icon: '🔄', description: 'Project contribution auto-import' },
-  { name: 'GitHub', status: 'pending', icon: '🐙', description: 'PR and commit activity signals' },
-  { name: 'Jira', status: 'disconnected', icon: '🎫', description: 'Sprint completion and velocity' },
-  { name: 'Pluralsight', status: 'connected', icon: '📚', description: 'Training completion auto-sync' },
-  { name: 'LinkedIn Learning', status: 'disconnected', icon: '💼', description: 'Course completion import' },
-  { name: 'Workday', status: 'pending', icon: '🏢', description: 'HR data and org hierarchy sync' },
+  { name: 'Microsoft Entra ID', icon: '🔐', description: 'SSO and user provisioning' },
+  { name: 'Microsoft Teams', icon: '💬', description: 'Notifications and coaching reminders' },
+  { name: 'Azure DevOps', icon: '🔄', description: 'Project contribution auto-import' },
+  { name: 'GitHub', icon: '🐙', description: 'PR and commit activity signals' },
+  { name: 'Jira', icon: '🎫', description: 'Sprint completion and velocity' },
+  { name: 'Pluralsight', icon: '📚', description: 'Training completion auto-sync' },
+  { name: 'LinkedIn Learning', icon: '💼', description: 'Course completion import' },
+  { name: 'Workday', icon: '🏢', description: 'HR data and org hierarchy sync' },
 ]
 
 const NOTIF_STORAGE_KEY = 'admin-notifications'
@@ -49,7 +51,7 @@ const DEFAULT_ORG = {
   fiscalYearStart: 'January',
 }
 
-const TABS = ['Scoring Model', 'Integrations', 'Users & Roles', 'Notifications', 'Organization'] as const
+const TABS = ['Scoring Model', 'Integrations', 'Organizations', 'Users & Roles', 'Notifications', 'General'] as const
 type Tab = typeof TABS[number]
 
 import { MessageSquare } from 'lucide-react'
@@ -58,6 +60,20 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<Tab>('Scoring Model')
   const [weights, setWeights] = useState(SCORE_WEIGHTS.map(w => ({ ...w })))
   const [configuringIntegration, setConfiguringIntegration] = useState<string | null>(null)
+
+  // Connection status is derived, not stored — an integration is only "Connected" when
+  // its required fields are actually present in local config; otherwise it's "Not connected".
+  const [integrationStatus, setIntegrationStatus] = useState<Record<string, boolean>>({})
+
+  const refreshIntegrationStatus = () => {
+    setIntegrationStatus(
+      Object.fromEntries(INTEGRATIONS.map(i => [i.name, isIntegrationConfigured(i.name)]))
+    )
+  }
+
+  useEffect(() => {
+    refreshIntegrationStatus()
+  }, [])
 
   // Notification settings state
   const [notifications, setNotifications] = useState(DEFAULT_NOTIFICATIONS)
@@ -203,7 +219,9 @@ export default function AdminPage() {
 
         {activeTab === 'Integrations' && (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl">
-            {INTEGRATIONS.map(integration => (
+            {INTEGRATIONS.map(integration => {
+              const connected = integrationStatus[integration.name] ?? false
+              return (
               <div key={integration.name} className="bg-white rounded-xl border border-slate-200 p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
@@ -215,44 +233,34 @@ export default function AdminPage() {
                   </div>
                   <div className={cn(
                     'flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium',
-                    integration.status === 'connected' ? 'bg-green-100 text-green-700' :
-                    integration.status === 'pending' ? 'bg-amber-100 text-amber-700' :
-                    'bg-slate-100 text-slate-500'
+                    connected ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
                   )}>
-                    <div className={cn(
-                      'w-1.5 h-1.5 rounded-full',
-                      integration.status === 'connected' ? 'bg-green-500' :
-                      integration.status === 'pending' ? 'bg-amber-500' : 'bg-slate-400'
-                    )} />
-                    {integration.status === 'connected' ? 'Connected' :
-                     integration.status === 'pending' ? 'Pending' : 'Not connected'}
+                    <div className={cn('w-1.5 h-1.5 rounded-full', connected ? 'bg-green-500' : 'bg-slate-400')} />
+                    {connected ? 'Connected' : 'Not connected'}
                   </div>
                 </div>
                 <div className="mt-3 flex gap-2">
-                  {integration.status === 'connected' && (
+                  {connected ? (
                     <>
                       <Button size="sm" variant="secondary" onClick={() => setConfiguringIntegration(integration.name)}>
                         Configure
                       </Button>
                       <Button size="sm" variant="ghost">Sync Now</Button>
                     </>
-                  )}
-                  {integration.status === 'disconnected' && (
+                  ) : (
                     <Button size="sm" icon={<Link2 className="w-3.5 h-3.5" />}
                       onClick={() => setConfiguringIntegration(integration.name)}>
                       Connect
                     </Button>
                   )}
-                  {integration.status === 'pending' && (
-                    <Button size="sm" variant="secondary" onClick={() => setConfiguringIntegration(integration.name)}>
-                      Complete Setup
-                    </Button>
-                  )}
                 </div>
               </div>
-            ))}
+              )
+            })}
           </div>
         )}
+
+        {activeTab === 'Organizations' && <OrganizationsPanel />}
 
         {activeTab === 'Users & Roles' && (
           <div className="max-w-3xl bg-white rounded-xl border border-slate-200 p-5">
@@ -324,7 +332,7 @@ export default function AdminPage() {
           </div>
         )}
 
-        {activeTab === 'Organization' && (
+        {activeTab === 'General' && (
           <div className="max-w-2xl space-y-5">
             <div className="bg-white rounded-xl border border-slate-200 p-5">
               <h3 className="text-sm font-semibold text-slate-800 mb-4">Organization Settings</h3>
@@ -384,7 +392,11 @@ export default function AdminPage() {
       {configuringIntegration && (
         <IntegrationConfigModal
           name={configuringIntegration}
-          onClose={() => setConfiguringIntegration(null)}
+          onClose={() => {
+            setConfiguringIntegration(null)
+            refreshIntegrationStatus()
+          }}
+          onSaved={refreshIntegrationStatus}
         />
       )}
     </div>

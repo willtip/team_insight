@@ -18,6 +18,7 @@ import {
   Shield,
   User,
 } from 'lucide-react'
+import ScopeSelector from '@/components/layout/ScopeSelector'
 import { cn, initials, avatarColor, nameFromEmail } from '@/lib/utils'
 import { CURRENT_USER } from '@/lib/mock-data'
 
@@ -36,6 +37,13 @@ const BOTTOM_ITEMS = [
   { href: '/admin', label: 'Admin', icon: Settings },
 ]
 
+const ROLE_LABELS: Record<string, string> = {
+  admin: 'Admin View',
+  director: 'Director View',
+  manager: 'Manager View',
+  employee: 'Employee View',
+}
+
 export default function Sidebar() {
   const pathname = usePathname()
   const { data: session, status } = useSession()
@@ -49,6 +57,7 @@ export default function Sidebar() {
     CURRENT_USER.name ||
     'Team member'
   const title = CURRENT_USER.title || session?.user?.email || ''
+  const roleLabel = ROLE_LABELS[session?.role as string] ?? 'Team member'
 
   return (
     <aside className="sidebar">
@@ -69,9 +78,12 @@ export default function Sidebar() {
       <div className="px-4 py-3 mx-4 mt-4 mb-1 rounded-lg bg-brand-900/40 border border-brand-800/50">
         <div className="flex items-center gap-2">
           <Shield className="w-3.5 h-3.5 text-brand-400" />
-          <span className="text-brand-300 text-xs font-medium">Director View</span>
+          <span className="text-brand-300 text-xs font-medium">{roleLabel}</span>
         </div>
       </div>
+
+      {/* Org / team scope — applies to every page below */}
+      <ScopeSelector />
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-2 space-y-0.5 overflow-y-auto">

@@ -1,8 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
-import Sidebar from '@/components/layout/Sidebar'
 import Providers from '@/components/providers'
-import QuarterlyReminderBanner from '@/components/layout/QuarterlyReminderBanner'
+import AppShell from '@/components/layout/AppShell'
 
 export const metadata: Metadata = {
   title: 'Team Insight AI | Performance Management Platform',
@@ -14,13 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en">
       <body>
         <Providers>
-          <div className="flex min-h-screen">
-            <Sidebar />
-            <main className="main-content flex-1 flex flex-col">
-              <QuarterlyReminderBanner />
-              {children}
-            </main>
-          </div>
+          <AppShell>{children}</AppShell>
         </Providers>
       </body>
     </html>

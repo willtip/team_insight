@@ -7,7 +7,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, require_role
+from app.core.deps import get_current_user, get_scope, require_employee_access, require_role
+from app.core.rbac import Scope
 from app.db.session import get_db
 from app.models.models import (
     Employee,
@@ -201,12 +202,18 @@ async def update_thresholds(
 async def get_skills_matrix(
     employee_ids: Optional[List[str]] = None,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
-    """Return full skills matrix (assessments joined to catalog) for team heatmap visualization."""
+    """Return full skills matrix (assessments joined to catalog) for team heatmap visualization.
+
+    The catalog itself is org-wide reference data; only the assessments are scoped.
+    """
     query = select(SkillAssessment)
     if employee_ids:
+        scope.assert_can_view_employees(employee_ids)
         query = query.where(SkillAssessment.employee_id.in_(employee_ids))
+    elif not scope.unrestricted:
+        query = query.where(SkillAssessment.employee_id.in_(scope.employee_ids or {""}))
     result = await db.execute(query)
     assessments = [SkillAssessmentResponse.model_validate(a) for a in result.scalars().all()]
 
@@ -217,14 +224,21 @@ async def get_skills_matrix(
 
 @router.get("/gaps")
 async def get_skill_gaps(
-    db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    db: AsyncSession = Depends(get_db), scope: Scope = Depends(get_scope)
 ):
-    """Identify catalog skills where team coverage is below the org's coverage threshold."""
+    """Identify catalog skills where coverage across the caller's scope is below the
+    coverage threshold. Coverage is computed only over members they may see, so gaps
+    reflect their own team/org rather than the whole database."""
     thresholds = await _get_or_create_thresholds(db)
     catalog_result = await db.execute(select(SkillDefinition))
     catalog = catalog_result.scalars().all()
 
-    assessments_result = await db.execute(select(SkillAssessment))
+    assessments_query = select(SkillAssessment)
+    if not scope.unrestricted:
+        assessments_query = assessments_query.where(
+            SkillAssessment.employee_id.in_(scope.employee_ids or {""})
+        )
+    assessments_result = await db.execute(assessments_query)
     assessments = assessments_result.scalars().all()
 
     gaps = []
@@ -254,7 +268,9 @@ async def get_skill_gaps(
 
 @router.get("/{employee_id}", response_model=List[SkillAssessmentResponse])
 async def get_employee_skills(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     result = await db.execute(select(SkillAssessment).where(SkillAssessment.employee_id == employee_id))
     return result.scalars().all()
@@ -266,6 +282,7 @@ async def upsert_employee_skill(
     skill: SkillAssessmentUpsert,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """Create or update this employee's rating for a catalog skill."""
     result = await db.execute(
@@ -295,6 +312,7 @@ async def update_employee_skill(
     updates: SkillAssessmentUpsert,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     result = await db.execute(
         select(SkillAssessment).where(

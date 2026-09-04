@@ -6,7 +6,8 @@ from sqlalchemy import or_, select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import get_current_user, require_role
+from app.core.deps import get_scope, require_employee_access, require_role
+from app.core.rbac import Scope
 from app.db.session import get_db
 from app.models.models import (
     Accomplishment,
@@ -20,7 +21,7 @@ from app.models.models import (
     Training,
     User,
 )
-from app.routers._employee_helpers import DETAIL_RELATIONSHIPS, to_employee_detail
+from app.routers._employee_helpers import DETAIL_RELATIONSHIPS, resolve_assignment, to_employee_detail
 from app.schemas.schemas import (
     AccomplishmentCreate,
     AccomplishmentResponse,
@@ -54,25 +55,46 @@ router = APIRouter()
 async def list_employees(
     department: Optional[str] = None,
     manager_id: Optional[str] = None,
+    organization_id: Optional[str] = None,
+    team_id: Optional[str] = None,
     is_high_potential: Optional[bool] = None,
     needs_coaching: Optional[bool] = None,
     search: Optional[str] = None,
     skip: int = 0,
     limit: int = 500,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     """
     List all employees with optional filtering, fully populated (skills, goals,
     projects, development, performance). The dashboard/skills analytics run
     client-side over the whole roster, so the list endpoint returns full detail
     rather than a lightweight summary.
+
+    Results are scoped by walking the leadership chain (see app/core/rbac.py): an org
+    leader sees every team in their organization, a team leader sees their team, and
+    a user holding both grants sees the union. Admins see all.
+
+    Asking for an org or team outside that scope is a 403, not a quietly empty list.
     """
+    if organization_id:
+        scope.assert_can_view_org(organization_id)
+    if team_id:
+        scope.assert_can_view_team(team_id)
+
     query = select(Employee).options(*DETAIL_RELATIONSHIPS)
+    if not scope.unrestricted:
+        if not scope.employee_ids:
+            return []
+        query = query.where(Employee.id.in_(scope.employee_ids))
     if department:
         query = query.where(Employee.department == department)
     if manager_id:
         query = query.where(Employee.manager_id == manager_id)
+    if organization_id:
+        query = query.where(Employee.organization_id == organization_id)
+    if team_id:
+        query = query.where(Employee.team_id == team_id)
     if is_high_potential is not None:
         query = query.where(Employee.is_high_potential == is_high_potential)
     if needs_coaching is not None:
@@ -88,7 +110,9 @@ async def list_employees(
 
 @router.get("/{employee_id}", response_model=EmployeeDetail)
 async def get_employee(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """Get full employee profile including skills, goals, development records."""
     query = select(Employee).options(*DETAIL_RELATIONSHIPS).where(Employee.id == employee_id)
@@ -104,18 +128,27 @@ async def create_employee(
     employee: EmployeeCreate,
     db: AsyncSession = Depends(get_db),
     _user: User = Depends(require_role("director", "admin")),
+    scope: Scope = Depends(get_scope),
 ):
-    """Create a new employee profile. Director/Admin only."""
+    """Create a new employee profile. Director/Admin only, and only into an
+    organization the caller actually leads."""
     existing = await db.execute(
         select(Employee).where(Employee.employee_id == employee.employee_id)
     )
     if existing.scalar_one_or_none() is not None:
         raise HTTPException(status.HTTP_409_CONFLICT, "employee_id already exists")
 
-    if employee.manager_id and await db.get(Employee, employee.manager_id) is None:
-        raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Manager not found")
+    if employee.manager_id:
+        if await db.get(Employee, employee.manager_id) is None:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Manager not found")
+        scope.assert_can_view_employee(employee.manager_id)
 
-    db_employee = Employee(**employee.model_dump())
+    fields = employee.model_dump()
+    fields["organization_id"], fields["team_id"] = await resolve_assignment(
+        db, scope, employee.organization_id, employee.team_id
+    )
+
+    db_employee = Employee(**fields)
     db.add(db_employee)
     await db.flush()
     # Every employee carries a performance score (defaults to neutral until recalculated),
@@ -132,14 +165,37 @@ async def update_employee(
     employee_id: str,
     updates: EmployeeUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(require_employee_access),
 ):
     """Update employee profile fields."""
     employee = await db.get(Employee, employee_id)
     if employee is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Employee not found")
 
-    for field, value in updates.model_dump(exclude_unset=True).items():
+    update_fields = updates.model_dump(exclude_unset=True)
+    if "manager_id" in update_fields:
+        new_manager_id = update_fields["manager_id"]
+        if new_manager_id == employee_id:
+            raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "An employee cannot manage themselves")
+        if new_manager_id:
+            if await db.get(Employee, new_manager_id) is None:
+                raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Manager not found")
+            scope.assert_can_view_employee(new_manager_id)
+
+    # Re-assignment is the privilege-escalation path: without this, a team lead could
+    # move themselves (or someone else) into an organization they have no grant over.
+    # Both the source and the destination org must be manageable by the caller.
+    if "organization_id" in update_fields or "team_id" in update_fields:
+        if employee.organization_id:
+            scope.assert_can_manage_org(employee.organization_id)
+        update_fields["organization_id"], update_fields["team_id"] = await resolve_assignment(
+            db,
+            scope,
+            update_fields.get("organization_id", employee.organization_id),
+            update_fields.get("team_id", employee.team_id),
+        )
+
+    for field, value in update_fields.items():
         setattr(employee, field, value)
 
     await db.commit()
@@ -153,6 +209,7 @@ async def deactivate_employee(
     employee_id: str,
     db: AsyncSession = Depends(get_db),
     _user: User = Depends(require_role("director", "admin")),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """Remove an employee record (and all owned data) from the team. Director/Admin only."""
     employee = await db.get(Employee, employee_id)
@@ -164,7 +221,9 @@ async def deactivate_employee(
 
 @router.get("/{employee_id}/performance", tags=["Performance"])
 async def get_performance_score(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """Get the calculated performance scores for an employee."""
     result = await db.execute(select(PerformanceScore).where(PerformanceScore.employee_id == employee_id))
@@ -176,7 +235,9 @@ async def get_performance_score(
 
 @router.post("/{employee_id}/performance/recalculate", tags=["Performance"])
 async def recalculate_performance(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """Trigger recalculation of performance scores using current weight config."""
     query = (
@@ -286,7 +347,7 @@ async def get_ai_summary(
     employee_id: str,
     period: str = Query("quarterly", pattern="^(monthly|quarterly|annual)$"),
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     """
     Generate an AI-powered performance summary for the employee.
@@ -304,7 +365,9 @@ async def get_ai_summary(
 
 @router.get("/{employee_id}/development-plan", response_model=List[DevelopmentPlanItemResponse])
 async def list_development_plan(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     result = await db.execute(
         select(DevelopmentPlanItem).where(DevelopmentPlanItem.employee_id == employee_id)
@@ -317,7 +380,7 @@ async def add_development_plan_item(
     employee_id: str,
     item: DevelopmentPlanItemCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_item = DevelopmentPlanItem(employee_id=employee_id, **item.model_dump())
     db.add(db_item)
@@ -331,7 +394,7 @@ async def delete_development_plan_item(
     employee_id: str,
     item_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     item = await db.get(DevelopmentPlanItem, item_id)
     if item is None or item.employee_id != employee_id:
@@ -342,7 +405,9 @@ async def delete_development_plan_item(
 
 @router.get("/{employee_id}/accomplishments", response_model=List[AccomplishmentResponse])
 async def list_accomplishments(
-    employee_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    employee_id: str,
+    db: AsyncSession = Depends(get_db),
+    _scope: Scope = Depends(require_employee_access),
 ):
     result = await db.execute(select(Accomplishment).where(Accomplishment.employee_id == employee_id))
     return result.scalars().all()
@@ -353,7 +418,7 @@ async def add_accomplishment(
     employee_id: str,
     accomplishment: AccomplishmentCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_accomplishment = Accomplishment(employee_id=employee_id, **accomplishment.model_dump())
     db.add(db_accomplishment)
@@ -368,7 +433,7 @@ async def update_accomplishment(
     accomplishment_id: str,
     updates: AccomplishmentUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     accomplishment = await db.get(Accomplishment, accomplishment_id)
     if accomplishment is None or accomplishment.employee_id != employee_id:
@@ -385,7 +450,7 @@ async def delete_accomplishment(
     employee_id: str,
     accomplishment_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     accomplishment = await db.get(Accomplishment, accomplishment_id)
     if accomplishment is None or accomplishment.employee_id != employee_id:
@@ -401,7 +466,7 @@ async def add_certification(
     employee_id: str,
     certification: CertificationCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_cert = Certification(employee_id=employee_id, **certification.model_dump())
     db.add(db_cert)
@@ -416,7 +481,7 @@ async def update_certification(
     certification_id: str,
     updates: CertificationUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     cert = await db.get(Certification, certification_id)
     if cert is None or cert.employee_id != employee_id:
@@ -433,7 +498,7 @@ async def delete_certification(
     employee_id: str,
     certification_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     cert = await db.get(Certification, certification_id)
     if cert is None or cert.employee_id != employee_id:
@@ -447,7 +512,7 @@ async def add_training(
     employee_id: str,
     training: TrainingCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_training = Training(employee_id=employee_id, **training.model_dump())
     db.add(db_training)
@@ -462,7 +527,7 @@ async def update_training(
     training_id: str,
     updates: TrainingUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     training = await db.get(Training, training_id)
     if training is None or training.employee_id != employee_id:
@@ -479,7 +544,7 @@ async def delete_training(
     employee_id: str,
     training_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     training = await db.get(Training, training_id)
     if training is None or training.employee_id != employee_id:
@@ -493,7 +558,7 @@ async def add_conference(
     employee_id: str,
     conference: ConferenceCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_conference = Conference(employee_id=employee_id, **conference.model_dump())
     db.add(db_conference)
@@ -508,7 +573,7 @@ async def update_conference(
     conference_id: str,
     updates: ConferenceUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     conference = await db.get(Conference, conference_id)
     if conference is None or conference.employee_id != employee_id:
@@ -525,7 +590,7 @@ async def delete_conference(
     employee_id: str,
     conference_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     conference = await db.get(Conference, conference_id)
     if conference is None or conference.employee_id != employee_id:
@@ -539,7 +604,7 @@ async def add_mentoring_relation(
     employee_id: str,
     mentoring: MentoringRelationCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     db_mentoring = MentoringRelation(employee_id=employee_id, **mentoring.model_dump())
     db.add(db_mentoring)
@@ -554,7 +619,7 @@ async def update_mentoring_relation(
     mentoring_id: str,
     updates: MentoringRelationUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     mentoring = await db.get(MentoringRelation, mentoring_id)
     if mentoring is None or mentoring.employee_id != employee_id:
@@ -571,7 +636,7 @@ async def delete_mentoring_relation(
     employee_id: str,
     mentoring_id: str,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    _scope: Scope = Depends(require_employee_access),
 ):
     mentoring = await db.get(MentoringRelation, mentoring_id)
     if mentoring is None or mentoring.employee_id != employee_id:

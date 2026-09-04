@@ -6,7 +6,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from app.core.deps import get_current_user, require_role
+from app.core.deps import get_current_user, get_scope, require_role
+from app.core.rbac import Scope
 from app.db.session import get_db
 from app.models.models import DirectorNote, NoteCategoryEnum, User
 from app.schemas.schemas import DirectorNoteCreate, DirectorNoteResponse, DirectorNoteUpdate
@@ -38,17 +39,26 @@ async def list_notes(
     has_follow_up: Optional[bool] = None,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     """
-    List director notes. Access restricted to Director/Admin roles.
+    List director notes about members within the caller's scope.
     Notes are never visible to the subject employee.
+
+    The role gate alone used to be the whole check, which meant any director or
+    manager could read every note about every engineer in every organization.
     """
     if user.role.value not in ("director", "admin", "manager"):
         raise HTTPException(403, "Insufficient permissions")
 
     query = select(DirectorNote).options(selectinload(DirectorNote.author))
     if employee_id:
+        scope.assert_can_view_employee(employee_id)
         query = query.where(DirectorNote.employee_id == employee_id)
+    elif not scope.unrestricted:
+        if not scope.employee_ids:
+            return []
+        query = query.where(DirectorNote.employee_id.in_(scope.employee_ids))
     if category:
         query = query.where(DirectorNote.category == NoteCategoryEnum(category))
     if has_follow_up is not None:
@@ -67,8 +77,11 @@ async def create_note(
     note: DirectorNoteCreate,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_role("director", "manager", "admin")),
+    scope: Scope = Depends(get_scope),
 ):
-    """Create a private director note. Director/Manager role required."""
+    """Create a private director note. Director/Manager role required, and only
+    about a member inside the author's scope."""
+    scope.assert_can_view_employee(note.employee_id)
     db_note = DirectorNote(**note.model_dump(), author_id=user.id)
     db.add(db_note)
     await db.commit()
@@ -83,12 +96,14 @@ async def update_note(
     updates: DirectorNoteUpdate,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     query = select(DirectorNote).options(selectinload(DirectorNote.author)).where(DirectorNote.id == note_id)
     result = await db.execute(query)
     note = result.scalar_one_or_none()
     if note is None:
         raise HTTPException(404, "Note not found")
+    scope.assert_can_view_employee(note.employee_id)
     if note.author_id != user.id and user.role.value not in ("director", "admin"):
         raise HTTPException(403, "Insufficient permissions")
 
@@ -101,11 +116,15 @@ async def update_note(
 
 @router.delete("/{note_id}", status_code=204)
 async def delete_note(
-    note_id: str, db: AsyncSession = Depends(get_db), user: User = Depends(get_current_user)
+    note_id: str,
+    db: AsyncSession = Depends(get_db),
+    user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     note = await db.get(DirectorNote, note_id)
     if note is None:
         raise HTTPException(404, "Note not found")
+    scope.assert_can_view_employee(note.employee_id)
     if note.author_id != user.id and user.role.value not in ("director", "admin"):
         raise HTTPException(403, "Insufficient permissions")
     await db.delete(note)

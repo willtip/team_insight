@@ -9,7 +9,7 @@ from fastapi.middleware.trustedhost import TrustedHostMiddleware
 
 from app.core.redis import redis_client
 from app.db.session import engine
-from app.routers import employees, goals, skills, skill_imports, projects, insights, notes, reports, auth, one_on_ones
+from app.routers import employees, goals, skills, skill_imports, projects, insights, notes, reports, auth, one_on_ones, organizations
 
 
 @asynccontextmanager
@@ -41,6 +41,7 @@ app.add_middleware(
 # Register routers
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["Authentication"])
 app.include_router(employees.router, prefix="/api/v1/employees", tags=["Employees"])
+app.include_router(organizations.router, prefix="/api/v1/organizations", tags=["Organizations"])
 app.include_router(goals.router, prefix="/api/v1/goals", tags=["Goals"])
 app.include_router(skills.router, prefix="/api/v1/skills", tags=["Skills"])
 app.include_router(skill_imports.router, prefix="/api/v1/skill-imports", tags=["Skill Imports"])

@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button'
 import Badge from '@/components/ui/Badge'
 import { useEmployees } from '@/lib/employee-store'
 import { useSkillCatalog } from '@/lib/skill-catalog-store'
+import { useOrganizations, useTeams } from '@/lib/organization-store'
 import LevelPicker from '@/components/skills/LevelPicker'
 import ScoringGuide from '@/components/skills/ScoringGuide'
 import { PROFICIENCY_ANCHORS } from '@/lib/skill-catalog'
@@ -37,9 +38,18 @@ interface SkillDraft {
 const INPUT = 'w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-brand-500'
 const LABEL = 'text-xs font-medium text-slate-700 mb-1 block'
 
+/** ISO datetime/date strings -> the yyyy-MM-dd shape <input type="date"> requires,
+ * otherwise the browser silently renders the field blank. */
+function toDateInputValue(value?: string): string {
+  if (!value) return ''
+  const match = value.match(/^\d{4}-\d{2}-\d{2}/)
+  return match ? match[0] : ''
+}
+
 export default function EmployeeFormModal({ employee, onClose }: Props) {
-  const { addEmployee, updateEmployee } = useEmployees()
+  const { employees, addEmployee, updateEmployee } = useEmployees()
   const { catalog, skillById, roleProfiles } = useSkillCatalog()
+  const { data: organizations = [] } = useOrganizations()
   const isEdit = !!employee
 
   const [tab, setTab] = useState<Tab>('info')
@@ -50,7 +60,7 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
     department: employee?.department ?? 'Automation Solution Engineering',
     email: employee?.email ?? '',
     location: employee?.location ?? '',
-    hireDate: employee?.hireDate ?? '',
+    hireDate: toDateInputValue(employee?.hireDate),
     bio: employee?.bio ?? '',
     careerAspirations: employee?.careerAspirations ?? '',
     promotionReadiness: (employee?.promotionReadiness ?? 'Ready in 12 Months') as PromotionReadiness,
@@ -58,7 +68,19 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
     needsCoaching: employee?.needsCoaching ?? false,
     tags: employee?.tags.join(', ') ?? '',
     roleProfileId: employee?.roleProfileId ?? '',
+    managerId: employee?.managerId ?? '',
+    organizationId: employee?.organizationId ?? '',
+    teamId: employee?.teamId ?? '',
   })
+  const { data: teams = [] } = useTeams(form.organizationId || undefined)
+
+  /** Year segment of a native date input can be typed past 4 digits in some
+   * browsers; clamp anything outside a sane yyyy-MM-dd shape rather than storing it. */
+  const handleHireDateChange = (value: string) => {
+    const [year = '', month = '', day = ''] = value.split('-')
+    if (year.length > 4) return
+    setForm(f => ({ ...f, hireDate: [year, month, day].filter(Boolean).join('-') }))
+  }
 
   const [skills, setSkills] = useState<SkillDraft[]>(
     employee?.skills.map(s => ({
@@ -185,6 +207,9 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
         promotionReadiness: form.promotionReadiness, isHighPotential: form.isHighPotential,
         needsCoaching: form.needsCoaching, tags, skills: builtSkills,
         roleProfileId: form.roleProfileId || undefined,
+        managerId: form.managerId || undefined,
+        organizationId: form.organizationId || undefined,
+        teamId: form.teamId || undefined,
       })
     } else {
       addEmployee({
@@ -194,6 +219,9 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
         promotionReadiness: form.promotionReadiness, isHighPotential: form.isHighPotential,
         needsCoaching: form.needsCoaching, tags, skills: builtSkills,
         roleProfileId: form.roleProfileId || undefined,
+        managerId: form.managerId || undefined,
+        organizationId: form.organizationId || undefined,
+        teamId: form.teamId || undefined,
         employeeId: `ASE-${Date.now().toString().slice(-5)}`,
         goals: [], projectContributions: [], notes: [], accomplishments: [],
         development: { certifications: [], training: [], conferences: [], mentoring: [] },
@@ -282,7 +310,14 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className={LABEL}>Hire Date</label>
-                  <input type="date" value={form.hireDate} onChange={e => setForm(f => ({ ...f, hireDate: e.target.value }))} className={INPUT} />
+                  <input
+                    type="date"
+                    value={form.hireDate}
+                    min="1900-01-01"
+                    max="9999-12-31"
+                    onChange={e => handleHireDateChange(e.target.value)}
+                    className={INPUT}
+                  />
                 </div>
                 <div>
                   <label className={LABEL}>Promotion Readiness</label>
@@ -290,6 +325,44 @@ export default function EmployeeFormModal({ employee, onClose }: Props) {
                     onChange={e => setForm(f => ({ ...f, promotionReadiness: e.target.value as PromotionReadiness }))} className={INPUT}>
                     {(['Ready Now', 'Ready in 6 Months', 'Ready in 12 Months', 'Development Needed'] as PromotionReadiness[]).map(r => (
                       <option key={r}>{r}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <label className={LABEL}>Organization</label>
+                  <select
+                    value={form.organizationId}
+                    onChange={e => setForm(f => ({ ...f, organizationId: e.target.value, teamId: '' }))}
+                    className={INPUT}
+                  >
+                    <option value="">— None —</option>
+                    {organizations.map(o => <option key={o.id} value={o.id}>{o.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL}>Team</label>
+                  <select
+                    value={form.teamId}
+                    onChange={e => setForm(f => ({ ...f, teamId: e.target.value }))}
+                    className={INPUT}
+                    disabled={!form.organizationId}
+                  >
+                    <option value="">— None —</option>
+                    {teams.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label className={LABEL}>Reports To (Manager)</label>
+                  <select
+                    value={form.managerId}
+                    onChange={e => setForm(f => ({ ...f, managerId: e.target.value }))}
+                    className={INPUT}
+                  >
+                    <option value="">— None —</option>
+                    {employees.filter(e => e.id !== employee?.id).map(e => (
+                      <option key={e.id} value={e.id}>{e.name} — {e.title}</option>
                     ))}
                   </select>
                 </div>

@@ -7,6 +7,7 @@ import EmployeeFormModal from '@/components/employees/EmployeeFormModal'
 import DeleteConfirmModal from '@/components/employees/DeleteConfirmModal'
 import Button from '@/components/ui/Button'
 import { useEmployees } from '@/lib/employee-store'
+import { useScope } from '@/lib/scope-store'
 import { useSkillCatalog } from '@/lib/skill-catalog-store'
 import { Search, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
@@ -21,6 +22,7 @@ const FILTERS = {
 
 export default function EmployeesPage() {
   const { employees, deleteEmployee } = useEmployees()
+  const { organization, team } = useScope()
   const { skillById } = useSkillCatalog()
   const [search, setSearch] = useState('')
   const [readinessFilter, setReadinessFilter] = useState('All')
@@ -54,6 +56,14 @@ export default function EmployeesPage() {
     return result
   }, [employees, search, readinessFilter, statusFilter, levelFilter, sortBy, skillById])
 
+  // The roster is already limited to the selected org/team server-side, so this just
+  // names what is on screen.
+  const scopeLabel = [
+    organization?.name ?? 'All organizations',
+    team?.name,
+    `${employees.length} engineer${employees.length === 1 ? '' : 's'}`,
+  ].filter(Boolean).join(' · ')
+
   const stats = {
     total: employees.length,
     highPotential: employees.filter(e => e.isHighPotential).length,
@@ -65,7 +75,7 @@ export default function EmployeesPage() {
     <div className="flex flex-col min-h-screen">
       <Header
         title="Team Roster"
-        subtitle={`Automation Solution Engineering · ${employees.length} engineers`}
+        subtitle={scopeLabel}
         actions={
           <Button size="sm" icon={<Plus className="w-3.5 h-3.5" />} onClick={() => setShowCreate(true)}>
             Add Engineer

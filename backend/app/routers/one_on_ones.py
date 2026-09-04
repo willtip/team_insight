@@ -5,9 +5,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user
+from app.core.deps import get_scope
+from app.core.rbac import Scope
 from app.db.session import get_db
-from app.models.models import OneOnOne, User
+from app.models.models import OneOnOne
 from app.schemas.schemas import OneOnOneCreate, OneOnOneResponse, OneOnOneUpdate
 
 router = APIRouter()
@@ -17,11 +18,16 @@ router = APIRouter()
 async def list_one_on_ones(
     employee_id: Optional[str] = None,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     query = select(OneOnOne)
     if employee_id:
+        scope.assert_can_view_employee(employee_id)
         query = query.where(OneOnOne.employee_id == employee_id)
+    elif not scope.unrestricted:
+        if not scope.employee_ids:
+            return []
+        query = query.where(OneOnOne.employee_id.in_(scope.employee_ids))
     result = await db.execute(query.order_by(OneOnOne.date.desc()))
     return result.scalars().all()
 
@@ -30,8 +36,9 @@ async def list_one_on_ones(
 async def create_one_on_one(
     one_on_one: OneOnOneCreate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
+    scope.assert_can_view_employee(one_on_one.employee_id)
     db_one_on_one = OneOnOne(
         **one_on_one.model_dump(exclude={"ids", "action_items"}),
         ids=[item.model_dump() for item in one_on_one.ids],
@@ -48,11 +55,12 @@ async def update_one_on_one(
     one_on_one_id: str,
     updates: OneOnOneUpdate,
     db: AsyncSession = Depends(get_db),
-    _user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     one_on_one = await db.get(OneOnOne, one_on_one_id)
     if one_on_one is None:
         raise HTTPException(404, "One-on-one not found")
+    scope.assert_can_view_employee(one_on_one.employee_id)
 
     data = updates.model_dump(exclude={"ids", "action_items"}, exclude_unset=True)
     for field, value in data.items():
@@ -69,10 +77,11 @@ async def update_one_on_one(
 
 @router.delete("/{one_on_one_id}", status_code=204)
 async def delete_one_on_one(
-    one_on_one_id: str, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    one_on_one_id: str, db: AsyncSession = Depends(get_db), scope: Scope = Depends(get_scope)
 ):
     one_on_one = await db.get(OneOnOne, one_on_one_id)
     if one_on_one is None:
         raise HTTPException(404, "One-on-one not found")
+    scope.assert_can_view_employee(one_on_one.employee_id)
     await db.delete(one_on_one)
     await db.commit()

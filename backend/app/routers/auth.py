@@ -104,10 +104,21 @@ async def dev_login(request: DevLoginRequest, db: AsyncSession = Depends(get_db)
     if os.environ.get("ENVIRONMENT", "development") != "development":
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    result = await db.execute(select(User).where(User.email == request.email))
+    # Whatever email was submitted wins, so a developer can sign in as any seeded
+    # persona — an org leader, a team lead, or someone holding both — and see the
+    # scoping behave differently. DEV_LOGIN_EMAIL is only the default for a blank
+    # submission; previously it was returned unconditionally, which made every dev
+    # session the same director no matter who they asked for.
+    email = (request.email or "").strip() or os.environ.get(
+        "DEV_LOGIN_EMAIL", "director@teaminsight.dev"
+    )
+
+    result = await db.execute(select(User).where(User.email == email))
     user = result.scalar_one_or_none()
     if user is None:
-        user = User(email=request.email, name=request.name, role=UserRoleEnum.DIRECTOR)
+        # An unrecognised email gets an unprovisioned account: no Employee row, so no
+        # leadership grants, so an empty workspace until someone assigns them.
+        user = User(email=email, name=request.name or email, role=UserRoleEnum.DIRECTOR)
         db.add(user)
         await db.commit()
         await db.refresh(user)
