@@ -36,8 +36,16 @@ export default function EmployeeCard({ employee }: EmployeeCardProps) {
               <p className="text-xs text-slate-500">{employee.title}</p>
               <div className="flex items-center gap-1 mt-0.5">
                 <span className="text-xs font-medium text-slate-400">{employee.level}</span>
-                <span className="text-slate-300">·</span>
-                <span className="text-xs text-slate-400">{employee.location.split(',')[1]?.trim() ?? employee.location}</span>
+                {/* location is optional on the API, so an engineer added without one
+                    must not take the whole roster down with it. */}
+                {employee.location && (
+                  <>
+                    <span className="text-slate-300">·</span>
+                    <span className="text-xs text-slate-400">
+                      {employee.location.split(',')[1]?.trim() ?? employee.location}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>

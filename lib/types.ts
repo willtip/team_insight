@@ -216,6 +216,28 @@ export interface OneOnOne {
   actionItems: OneOnOneActionItem[]
 }
 
+export interface Organization {
+  id: string
+  name: string
+  description?: string
+  leaderId?: string
+  leaderName?: string
+  teamCount: number
+  employeeCount: number
+  createdAt: string
+}
+
+export interface Team {
+  id: string
+  organizationId: string
+  name: string
+  description?: string
+  leadId?: string
+  leadName?: string
+  employeeCount: number
+  createdAt: string
+}
+
 export interface Employee {
   id: string
   name: string
@@ -224,6 +246,10 @@ export interface Employee {
   department: string
   managerId?: string
   managerName?: string
+  organizationId?: string
+  organizationName?: string
+  teamId?: string
+  teamName?: string
   hireDate: string
   location: string
   email: string

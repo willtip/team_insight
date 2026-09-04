@@ -7,9 +7,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi import APIRouter, Depends, HTTPException
 
-from app.core.deps import get_current_user
+from app.core.deps import get_scope
+from app.core.rbac import Scope
 from app.db.session import get_db
-from app.models.models import Employee, User
+from app.models.models import Employee
 from app.routers._employee_helpers import DETAIL_RELATIONSHIPS, to_employee_detail
 from app.schemas.schemas import ReportRequest
 
@@ -35,7 +36,7 @@ REPORT_TEMPLATES = [
 
 @router.post("/generate")
 async def generate_report(
-    request: ReportRequest, db: AsyncSession = Depends(get_db), _user: User = Depends(get_current_user)
+    request: ReportRequest, db: AsyncSession = Depends(get_db), scope: Scope = Depends(get_scope)
 ):
     """
     Aggregate the data backing a performance report.
@@ -47,7 +48,20 @@ async def generate_report(
 
     query = select(Employee).options(*DETAIL_RELATIONSHIPS)
     if request.employee_ids:
+        # Reports are an export path: naming someone outside the caller's scope has
+        # to fail loudly rather than quietly dropping them from the output.
+        scope.assert_can_view_employees(request.employee_ids)
         query = query.where(Employee.id.in_(request.employee_ids))
+    elif not scope.unrestricted:
+        if not scope.employee_ids:
+            return {
+                "type": request.type,
+                "date_range": {"start": request.date_range_start, "end": request.date_range_end},
+                "sections": request.sections
+                or next(t["sections"] for t in REPORT_TEMPLATES if t["type"] == request.type),
+                "employees": [],
+            }
+        query = query.where(Employee.id.in_(scope.employee_ids))
     result = await db.execute(query)
     employees = result.scalars().all()
 

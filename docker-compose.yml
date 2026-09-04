@@ -40,8 +40,11 @@ services:
       - ./backend:/app
     command: sh -c "alembic upgrade head && python -m scripts.seed && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload"
 
-  # Next.js frontend
+  # Next.js frontend — production build. Not started by a plain `docker compose up`;
+  # local development runs `npm run dev` on the host instead (dev-login screen,
+  # hot reload). Opt in explicitly with `docker compose --profile web-prod up`.
   web:
+    profiles: ["web-prod"]
     build:
       context: .
       dockerfile: Dockerfile.web

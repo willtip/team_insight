@@ -3,9 +3,10 @@
 import { createContext, useCallback, useContext } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { apiFetch, useApiToken } from './api-client'
+import { scopeQuery, useScope } from './scope-store'
 import type {
   Accomplishment, Certification, Conference, DevelopmentPlanItem, DirectorNote,
-  Employee, Goal, MentoringRelation, OneOnOne, ProjectContribution, SkillAssessment, Training,
+  Employee, Goal, MentoringRelation, OneOnOne, PerformanceScore, ProjectContribution, SkillAssessment, Training,
 } from './types'
 
 /** One person's rating edits, keyed by catalog skill id. */
@@ -28,7 +29,32 @@ interface EmployeeStore {
 
 const EmployeeContext = createContext<EmployeeStore | null>(null)
 
-const EMPLOYEES_KEY = ['employees'] as const
+/** Keyed on the selected scope: switching org/team refetches from the server rather
+ *  than filtering a superset that was already delivered to the browser. */
+const employeesKey = (organizationId?: string, teamId?: string) =>
+  ['employees', organizationId ?? 'all', teamId ?? 'all'] as const
+
+const DEFAULT_PERFORMANCE_SCORE: PerformanceScore = {
+  overall: 0,
+  goalAchievement: 0,
+  projectContributions: 0,
+  professionalDevelopment: 0,
+  leadershipBehaviors: 0,
+  collaboration: 0,
+  innovation: 0,
+  growthScore: 0,
+  leadershipReadiness: 0,
+  promotionReadiness: 0,
+  trend: 'stable',
+  lastCalculated: '',
+}
+
+function normalizeEmployee(employee: Employee): Employee {
+  return {
+    ...employee,
+    performanceScore: employee.performanceScore ?? DEFAULT_PERFORMANCE_SCORE,
+  }
+}
 
 /** Diffs an old vs new array (by id) into create/update/delete calls, run concurrently. */
 async function diffCollection<T extends { id: string }>(
@@ -56,16 +82,22 @@ async function diffCollection<T extends { id: string }>(
 export function EmployeeProvider({ children }: { children: React.ReactNode }) {
   const token = useApiToken()
   const queryClient = useQueryClient()
+  const { organizationId, teamId, ready } = useScope()
 
   const employeesQuery = useQuery({
-    queryKey: EMPLOYEES_KEY,
-    queryFn: () => apiFetch<Employee[]>('/api/v1/employees/', { token }),
-    enabled: !!token,
+    queryKey: employeesKey(organizationId, teamId),
+    queryFn: () =>
+      apiFetch<Employee[]>(`/api/v1/employees/${scopeQuery({ organizationId, teamId })}`, { token }),
+    // Waiting for `ready` avoids one unscoped fetch of the whole visible roster on
+    // first paint, immediately discarded once the stored scope resolves.
+    enabled: !!token && ready,
   })
-  const employees = employeesQuery.data ?? []
+  const employees = (employeesQuery.data ?? []).map(normalizeEmployee)
 
+  // Invalidate every scope, not just the active one: a member can be moved between
+  // teams, so a write under one scope can change what another scope should return.
   const invalidate = useCallback(
-    () => queryClient.invalidateQueries({ queryKey: EMPLOYEES_KEY }),
+    () => queryClient.invalidateQueries({ queryKey: ['employees'] }),
     [queryClient],
   )
 
@@ -96,7 +128,7 @@ export function EmployeeProvider({ children }: { children: React.ReactNode }) {
     mutationFn: async ({ id, updates }: { id: string; updates: Partial<Employee> }) => {
       const {
         goals, projectContributions, notes, development, accomplishments, oneOnOnes,
-        skills, developmentPlan, performanceScore, managerName, ...scalarUpdates
+        skills, developmentPlan, performanceScore, managerName, organizationName, teamName, ...scalarUpdates
       } = updates
       const employee = employees.find((e) => e.id === id)
       const tasks: Promise<unknown>[] = []

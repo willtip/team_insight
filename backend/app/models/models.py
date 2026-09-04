@@ -85,6 +85,46 @@ class User(Base):
     employee = relationship("Employee", back_populates="user", uselist=False)
 
 
+class Organization(Base):
+    """Top-level org (e.g. a business unit). Has one org-level leader (a director)."""
+    __tablename__ = "organizations"
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    name = Column(String, nullable=False, unique=True)
+    description = Column(Text)
+    # use_alter breaks the organizations<->employees creation cycle (an org's leader
+    # is itself an employee scoped to that org).
+    leader_id = Column(String, ForeignKey("employees.id", use_alter=True, name="fk_organizations_leader_id"), nullable=True)
+    # Who created this org (may not yet have/ever have a linked Employee row) — lets
+    # the creator always see and manage it even before a leader is assigned.
+    created_by_user_id = Column(String, ForeignKey("users.id"), nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    leader = relationship("Employee", foreign_keys=[leader_id])
+    teams = relationship("Team", back_populates="organization", cascade="all, delete-orphan")
+    employees = relationship("Employee", back_populates="organization", foreign_keys="Employee.organization_id")
+
+
+class Team(Base):
+    """A team within an organization. Has one team lead (a manager) who reports up
+    to the organization's leader."""
+    __tablename__ = "teams"
+    __table_args__ = (UniqueConstraint("organization_id", "name", name="uq_team_org_name"),)
+
+    id = Column(String, primary_key=True, default=generate_uuid)
+    organization_id = Column(String, ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
+    name = Column(String, nullable=False)
+    description = Column(Text)
+    lead_id = Column(String, ForeignKey("employees.id"), nullable=True)
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    organization = relationship("Organization", back_populates="teams")
+    lead = relationship("Employee", foreign_keys=[lead_id])
+    employees = relationship("Employee", back_populates="team", foreign_keys="Employee.team_id")
+
+
 class Employee(Base):
     __tablename__ = "employees"
 
@@ -98,6 +138,9 @@ class Employee(Base):
     level = Column(String)  # L3, L4, L5, L6
     department = Column(String)
     manager_id = Column(String, ForeignKey("employees.id"), nullable=True)
+    # RBAC scoping: which organization/team this engineer is evaluated under.
+    organization_id = Column(String, ForeignKey("organizations.id"), nullable=True, index=True)
+    team_id = Column(String, ForeignKey("teams.id"), nullable=True, index=True)
     hire_date = Column(DateTime)
     location = Column(String)
     email = Column(String)
@@ -118,6 +161,8 @@ class Employee(Base):
     # Relationships
     user = relationship("User", back_populates="employee")
     manager = relationship("Employee", remote_side=[id], backref="reports")
+    organization = relationship("Organization", back_populates="employees", foreign_keys=[organization_id])
+    team = relationship("Team", back_populates="employees", foreign_keys=[team_id])
     role_profile = relationship("RoleProfile", back_populates="employees")
     skills = relationship("SkillAssessment", back_populates="employee", cascade="all, delete-orphan")
     goals = relationship("Goal", back_populates="employee", cascade="all, delete-orphan")

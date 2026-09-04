@@ -10,7 +10,8 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.deps import get_current_user, require_role
+from app.core.deps import get_current_user, get_scope, require_role
+from app.core.rbac import Scope
 from app.db.session import get_db
 from app.models.models import (
     AssessmentImportBatch,
@@ -46,8 +47,18 @@ def _is_manager(user: User) -> bool:
     return user.role.value in MANAGER_ROLES
 
 
-async def _load_context(db: AsyncSession):
-    employees = (await db.execute(select(Employee))).scalars().all()
+async def _load_context(db: AsyncSession, scope: Scope):
+    """Matching context for an import, narrowed to members the uploader may see.
+
+    Row matching is what turns a name or email in a spreadsheet into an employee id,
+    so an unscoped roster here would let a team lead write reviewer ratings onto
+    engineers in another organization just by naming them in a file. Rows naming
+    someone out of scope now fall out as `unknown_employee` in the preview.
+    """
+    employee_query = select(Employee)
+    if not scope.unrestricted:
+        employee_query = employee_query.where(Employee.id.in_(scope.employee_ids or {""}))
+    employees = (await db.execute(employee_query)).scalars().all()
     catalog = (await db.execute(select(SkillDefinition))).scalars().all()
     existing = (await db.execute(select(SkillAssessment))).scalars().all()
     return employees, catalog, existing
@@ -84,6 +95,7 @@ async def upload_import(
     file: UploadFile = File(...),
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_role(*MANAGER_ROLES)),
+    scope: Scope = Depends(get_scope),
 ):
     """Parse and stage an upload. Writes no assessments — commit does that."""
     content = await file.read()
@@ -92,7 +104,7 @@ async def upload_import(
     except ImportError_ as exc:
         raise HTTPException(exc.status_code, exc.message)
 
-    employees, catalog, existing = await _load_context(db)
+    employees, catalog, existing = await _load_context(db, scope)
     preview = resolve_rows(parsed, employees, catalog, existing, allowed_fields=MANAGER_FIELDS)
 
     batch = AssessmentImportBatch(
@@ -138,8 +150,15 @@ async def commit_import(
     batch_id: str,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(require_role(*MANAGER_ROLES)),
+    scope: Scope = Depends(get_scope),
 ):
     batch = await _get_owned_batch(db, batch_id, user)
+    # Staging resolved these ids under the uploader's scope, but that scope can have
+    # narrowed in between (a team handed off, a leader replaced), so re-check at the
+    # point of write rather than trusting the stored rows.
+    scope.assert_can_view_employees(
+        {row["employee_id"] for row in (batch.rows or []) if row.get("employee_id")}
+    )
     try:
         result = await apply_batch(db, batch, user)
     except ApplyError as exc:
@@ -171,6 +190,7 @@ async def submit_self_assessment(
     payload: SelfAssessmentSubmit,
     db: AsyncSession = Depends(get_db),
     user: User = Depends(get_current_user),
+    scope: Scope = Depends(get_scope),
 ):
     """In-app intake form.
 
@@ -181,6 +201,8 @@ async def submit_self_assessment(
     """
     manager = _is_manager(user)
     if manager and payload.employee_id:
+        # A manager role alone is not authority over this particular person.
+        scope.assert_can_view_employee(payload.employee_id)
         target = await db.get(Employee, payload.employee_id)
         if target is None:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Employee not found")
@@ -212,7 +234,7 @@ async def submit_self_assessment(
         for i, item in enumerate(payload.items)
     ]
 
-    employees, catalog, existing = await _load_context(db)
+    employees, catalog, existing = await _load_context(db, scope)
     preview = resolve_rows(
         parsed,
         employees,

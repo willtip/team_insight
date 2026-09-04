@@ -10,7 +10,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts'
-import { GOAL_TRENDS } from '@/lib/mock-data'
+import type { GoalTrend } from '@/lib/types'
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
@@ -28,10 +28,10 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-export default function GoalTrendChart() {
+export default function GoalTrendChart({ data }: { data: GoalTrend[] }) {
   return (
     <ResponsiveContainer width="100%" height={220}>
-      <LineChart data={GOAL_TRENDS} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+      <LineChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
         <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
         <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} />

@@ -3,6 +3,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.rbac import Scope, build_scope
 from app.core.redis import redis_client
 from app.core.security import JWTError, decode_access_token
 from app.db.session import get_db
@@ -41,3 +42,26 @@ def require_role(*roles: str):
         return user
 
     return _check
+
+
+async def get_scope(
+    user: User = Depends(get_current_user), db: AsyncSession = Depends(get_db)
+) -> Scope:
+    """Resolve the caller's org/team/member visibility for this request.
+
+    This is the security boundary: every endpoint that reads or writes member data
+    depends on it, and the React UI's own scope selector is only a convenience on top.
+    """
+    return await build_scope(user, db)
+
+
+async def require_employee_access(
+    employee_id: str, scope: Scope = Depends(get_scope)
+) -> Scope:
+    """Path dependency for `/{employee_id}` routes — 403s before the handler runs.
+
+    Deliberately a 403 rather than a 404 or an empty 200: the caller asked about a
+    specific person outside their scope and must be told no.
+    """
+    scope.assert_can_view_employee(employee_id)
+    return scope

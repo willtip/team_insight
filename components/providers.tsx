@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { EmployeeProvider } from '@/lib/employee-store'
+import { ScopeProvider } from '@/lib/scope-store'
 import { SkillCatalogProvider } from '@/lib/skill-catalog-store'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
@@ -15,7 +16,11 @@ export default function Providers({ children }: { children: React.ReactNode }) {
     <SessionProvider>
       <QueryClientProvider client={queryClient}>
         <SkillCatalogProvider>
-          <EmployeeProvider>{children}</EmployeeProvider>
+          {/* ScopeProvider wraps EmployeeProvider: the roster query is keyed on the
+              selected org/team, so the scope has to resolve first. */}
+          <ScopeProvider>
+            <EmployeeProvider>{children}</EmployeeProvider>
+          </ScopeProvider>
         </SkillCatalogProvider>
       </QueryClientProvider>
     </SessionProvider>

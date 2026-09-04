@@ -6,7 +6,7 @@ import PromotionPipeline from '@/components/dashboard/PromotionPipeline'
 import RecentActivity from '@/components/dashboard/RecentActivity'
 import { Card, CardHeader, CardTitle, CardSubtitle } from '@/components/ui/Card'
 import GoalTrendChart from '@/components/charts/GoalTrendChart'
-import PerformanceDistribution from '@/components/charts/PerformanceDistribution'
+import PerformanceDistribution, { type PerformanceBucket } from '@/components/charts/PerformanceDistribution'
 import SkillsHeatmap from '@/components/charts/SkillsHeatmap'
 import Button from '@/components/ui/Button'
 import Avatar from '@/components/ui/Avatar'
@@ -26,6 +26,34 @@ export default function Dashboard() {
   const { catalog } = useSkillCatalog()
   const urgentInsight = AI_INSIGHTS.find(i => i.severity === 'critical')
   const topEmployees = [...employees].sort((a, b) => b.performanceScore.overall - a.performanceScore.overall).slice(0, 3)
+  const goalTrends = Object.values(
+    employees.flatMap(employee => employee.goals).reduce<Record<string, { month: string; completed: number; inProgress: number; atRisk: number; total: number }>>(
+      (months, goal) => {
+        const date = new Date(goal.dueDate)
+        const month = Number.isNaN(date.getTime()) ? 'Unscheduled' : date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+        const entry = months[month] ?? { month, completed: 0, inProgress: 0, atRisk: 0, total: 0 }
+        entry.total += 1
+        if (goal.status === 'Completed') entry.completed += 1
+        else if (goal.status === 'At Risk') entry.atRisk += 1
+        else entry.inProgress += 1
+        months[month] = entry
+        return months
+      },
+      {},
+    ),
+  )
+  const performanceDistribution: PerformanceBucket[] = [
+    { range: '90-100', label: 'Outstanding', count: 0, color: '#22c55e' },
+    { range: '80-89', label: 'Exceeds', count: 0, color: '#3b82f6' },
+    { range: '70-79', label: 'Meets', count: 0, color: '#6366f1' },
+    { range: '60-69', label: 'Developing', count: 0, color: '#f59e0b' },
+    { range: 'Below 60', label: 'Needs Focus', count: 0, color: '#ef4444' },
+  ]
+  for (const employee of employees) {
+    const score = employee.performanceScore.overall
+    const bucket = score >= 90 ? 0 : score >= 80 ? 1 : score >= 70 ? 2 : score >= 60 ? 3 : 4
+    performanceDistribution[bucket].count += 1
+  }
 
   const teamMetrics = {
     totalMembers: employees.length,
@@ -168,7 +196,7 @@ export default function Dashboard() {
               <CardTitle>Goal Completion Trends</CardTitle>
               <CardSubtitle>Goals by status — Jan to Jun 2026</CardSubtitle>
             </CardHeader>
-            <GoalTrendChart />
+            <GoalTrendChart data={goalTrends} />
           </Card>
 
           <Card>
@@ -177,17 +205,12 @@ export default function Dashboard() {
               <CardSubtitle>Engineers by overall score range</CardSubtitle>
             </CardHeader>
             <div className="mb-2">
-              <PerformanceDistribution />
+              <PerformanceDistribution data={performanceDistribution} />
             </div>
             <div className="flex flex-wrap gap-2">
-              {[
-                { label: 'Outstanding', color: 'bg-green-500', count: 2 },
-                { label: 'Exceeds', color: 'bg-blue-500', count: 3 },
-                { label: 'Meets', color: 'bg-indigo-500', count: 3 },
-                { label: 'Developing', color: 'bg-amber-500', count: 2 },
-              ].map(({ label, color, count }) => (
+              {performanceDistribution.map(({ label, count, color }) => (
                 <div key={label} className="flex items-center gap-1.5">
-                  <div className={cn('w-2 h-2 rounded-full', color)} />
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: color }} />
                   <span className="text-xs text-slate-500">{label} ({count})</span>
                 </div>
               ))}

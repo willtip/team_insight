@@ -10,7 +10,13 @@ import {
   Cell,
   ResponsiveContainer,
 } from 'recharts'
-import { PERFORMANCE_DISTRIBUTION } from '@/lib/mock-data'
+
+export interface PerformanceBucket {
+  range: string
+  label: string
+  count: number
+  color: string
+}
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null
@@ -23,16 +29,16 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   )
 }
 
-export default function PerformanceDistribution() {
+export default function PerformanceDistribution({ data }: { data: PerformanceBucket[] }) {
   return (
     <ResponsiveContainer width="100%" height={200}>
-      <BarChart data={PERFORMANCE_DISTRIBUTION} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
+      <BarChart data={data} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
         <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" vertical={false} />
         <XAxis dataKey="range" tick={{ fontSize: 10, fill: '#94a3b8' }} tickLine={false} axisLine={false} />
         <YAxis tick={{ fontSize: 11, fill: '#94a3b8' }} tickLine={false} axisLine={false} allowDecimals={false} />
         <Tooltip content={<CustomTooltip />} />
         <Bar dataKey="count" radius={[4, 4, 0, 0]} maxBarSize={48}>
-          {PERFORMANCE_DISTRIBUTION.map((entry, index) => (
+          {data.map((entry, index) => (
             <Cell key={index} fill={entry.color} fillOpacity={0.85} />
           ))}
         </Bar>
