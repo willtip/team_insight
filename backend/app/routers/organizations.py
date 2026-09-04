@@ -74,9 +74,22 @@ async def create_organization(
     user: User = Depends(require_role("admin", "director")),
     scope: Scope = Depends(get_scope),
 ):
-    existing = await db.execute(select(Organization).where(Organization.name == payload.name))
-    if existing.scalar_one_or_none() is not None:
-        raise HTTPException(status.HTTP_409_CONFLICT, "An organization with this name already exists")
+    existing = (
+        await db.execute(select(Organization).where(Organization.name == payload.name))
+    ).scalar_one_or_none()
+    if existing is not None:
+        # Names are unique across the whole company, but the list this caller can see
+        # is scoped to what they lead. A bare "already exists" therefore points at
+        # something they cannot find in the UI or act on — so say where it went.
+        if scope.can_view_org(existing.id):
+            raise HTTPException(
+                status.HTTP_409_CONFLICT, "An organization with this name already exists"
+            )
+        raise HTTPException(
+            status.HTTP_409_CONFLICT,
+            "An organization with this name already exists, but it is outside your "
+            "scope. Ask an administrator to make you its leader, or pick another name.",
+        )
     if payload.leader_id and await db.get(Employee, payload.leader_id) is None:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, "Leader not found")
 
