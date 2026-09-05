@@ -2,6 +2,8 @@
 
 An enterprise performance management platform for engineering managers and directors. Team Insight consolidates performance data, goal management, AI-driven insights and — at its centre — a rigorous **technical skills assessment framework**, with integrations to Degreed, Azure DevOps, GitHub, Jira and Pluralsight.
 
+It runs across **any number of organizations**. Each has its own teams, leaders and engineers, and access is worked out by walking that hierarchy rather than by reading a role flag off an account — so a team lead sees their team, an org leader sees their whole organization, and neither sees anyone else's.
+
 > ### 📖 User Guide
 >
 > A full walkthrough — the rubric, how to run an assessment, reading each tab, the Excel round-trip, four worked examples and an FAQ — ships **inside the app**.
@@ -9,36 +11,41 @@ An enterprise performance management platform for engineering managers and direc
 > - **Running the app?** Click **Guide** in the top-right of the header, or go to **[localhost:3000/guide](http://localhost:3000/guide)**.
 > - **Browsing on GitHub?** The source is [`app/guide/page.tsx`](app/guide/page.tsx), and the sections below cover the same ground.
 
-![Skills Matrix overview](public/docs/skills-overview.png)
+![Team Insight capabilities: scoped access above member profiles, the skills framework, analytics, AI assistance and data exchange](public/docs/capabilities.svg)
 
 ---
 
 ## Quick start
 
-The Skills Matrix runs entirely in the browser — **no database, backend or API keys required**. This is the fastest way to see the product:
+Team Insight is a full stack: member data, organizations and every permission decision live on the server, so the backend has to be running. Docker brings up all of it in one command.
 
 ```bash
 git clone https://github.com/willtip/team_insight.git
 cd team_insight
+cp .env.example .env          # fill in the values listed below
+
+docker compose up -d db redis api   # Postgres, Redis, FastAPI — migrates and seeds on boot
 npm install
-npm run dev
+npm run dev                          # Next.js on http://localhost:3000
 ```
 
-Open **[http://localhost:3000](http://localhost:3000)**. The app loads with a demo team of ten engineers already assessed against the skill catalog, so every screen has real data from the first click.
+Open **[http://localhost:3000](http://localhost:3000)** and sign in with one of the seeded development logins:
 
-**Requirements:** Node.js 20+. That's it.
+| Sign in as | You get |
+|---|---|
+| `director@teaminsight.dev` | Org leader of Acme Corporation — both of its teams, all 11 engineers |
+| `platform-lead@teaminsight.dev` | Team lead — only the Automation Solution Engineering roster |
+| `reliability-lead@teaminsight.dev` | Team lead — only the Reliability Engineering roster |
+| `northwind-director@teaminsight.dev` | Org leader **and** team lead of a second organization — the dual-role case |
+
+Signing in as each in turn is the quickest way to see the scoping work: the sidebar's organization and team pickers, the roster, and every profile change with the account.
+
+**Requirements:** Node.js 20+ and Docker. The frontend runs on the host — `docker compose up` deliberately does not start it, so hot reload and the dev-login screen behave normally.
 
 Then head to **Skills Matrix** in the sidebar, or click **Guide** in the header for the walkthrough.
 
 <details>
-<summary><strong>Full stack with Docker</strong> — needed only for the Degreed integration and AI insights</summary>
-
-```bash
-cp .env.example .env      # then fill in the values below
-docker compose up --build
-```
-
-This starts PostgreSQL (`5432`), Redis (`6379`), the FastAPI backend (`8000`) and the Next.js frontend (`3000`).
+<summary><strong>Environment variables for <code>.env</code></strong></summary>
 
 ```env
 DB_USER=teaminsight
@@ -61,6 +68,8 @@ DEGREED_ORG=your-organization
 DEGREED_BASE_URL=https://api.degreed.com
 DEGREED_AUTH_URL=https://degreed.com/oauth/token
 ```
+
+The dev-login screen only appears outside production, and the backend refuses it unless `ENVIRONMENT=development`.
 
 </details>
 
@@ -92,6 +101,9 @@ API docs at [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
 | `npm run build` | Production build |
 | `npm run start` | Serve the production build |
 | `npx tsc --noEmit` | Type-check the whole project |
+| `docker compose exec api alembic upgrade head` | Apply database migrations |
+| `docker compose exec api python -m scripts.seed` | Re-seed demo organizations, teams and logins |
+| `cd backend && pytest` | Run the backend suite, including the access-control tests |
 
 ---
 
@@ -99,6 +111,8 @@ API docs at [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
 
 | Area | Description |
 |---|---|
+| **Organizations & Teams** | Any number of organizations, each with its own teams, leaders and engineers. An organization/team picker in the sidebar scopes every page beneath it |
+| **Access control** | Visibility resolved by walking Organization → Team → Member. Org leaders see their whole organization, team leads see their team, dual-role users get the union — enforced server-side, not hidden in the UI |
 | **Skills Matrix** | Catalog-driven technical assessment on a 0–5 anchored rubric — domain heat map, self vs reviewer ratings with evidence, computed gap and priority, bus-factor risk, role-profile fit, development plans, and full Excel round-trip |
 | **User Guide** | Built-in documentation at `/guide` with screenshots, step-by-step walkthroughs, worked examples and an FAQ |
 | **Dashboard** | Team health score, goal completion rate, skills growth, promotion pipeline, recent activity |
@@ -109,7 +123,70 @@ API docs at [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
 | **Director Notes** | Private coaching notes by category (Recognition, Concerns, Leadership Potential…) |
 | **Reports** | Exportable performance reports (PDF, Excel, CSV) |
 | **Degreed Integration** | Live skill ratings, focus skills, assignments and skill insights from Degreed LXP |
-| **Admin** | Scoring model weights, integration config, notifications, org settings |
+| **Admin** | Organization and team management with leader assignment, scoring model weights, integration config, notifications |
+
+---
+
+## Organizations, teams and access
+
+Team Insight is built for more than one organization. The hierarchy is three levels deep, and it is the *only* thing that grants access:
+
+```
+Organization          — has an org leader
+  └── Team            — has a team lead
+        └── Member    — an engineer, on exactly one team
+```
+
+A member belongs to exactly one team and, through it, to exactly one organization. The organization is **derived from the team** on every write, so the two can never drift out of sync.
+
+![Two organizations, each containing teams with leads and members, separated by a boundary that returns 403](public/docs/access-model.svg)
+
+### Who sees what
+
+| You are | You can see | You cannot see |
+|---|---|---|
+| **An organization leader** | Every team in your organization, every member on those teams, and their full profiles | Any other organization |
+| **A team lead** | The members of the team you lead, and their full profiles | Other teams, including ones in your own organization |
+| **Both at once** | The **union** of both grants | Anything neither grant covers |
+| **Everyone else** | Your own record | Everyone else's |
+| **`admin` role** | Everything, bypassing scoping entirely | — |
+
+Access is computed, never stored as a permission list:
+
+```
+visible members = {members of orgs you lead} ∪ {members of teams you lead} ∪ {yourself}
+```
+
+Because those are **set unions**, someone holding both an org-level and a team-level role gets the right answer with no special case and no duplicates. Leading a team inside an organization you already lead adds nothing; leading a team in a *different* organization adds exactly that team and nothing else around it.
+
+> **A job title grants nothing.** `User.role` is not consulted when deciding visibility — it only gates coarse capabilities such as who may create an organization or write a coaching note. A director who leads nothing sees nothing; an engineer made a team lead sees their team.
+
+### Enforcement
+
+The organization/team picker in the sidebar is a convenience. The boundary is on the server.
+
+![A request flowing from the browser through scope resolution to either scoped rows or a 403 refusal](public/docs/request-scoping.svg)
+
+Every endpoint carrying member data depends on `get_scope()` ([`backend/app/core/rbac.py`](backend/app/core/rbac.py)), which resolves the caller's scope per request. Asking for a member outside it returns **403** — deliberately not an empty `200`, which would still reveal whether that person exists and let a caller enumerate ids by watching which ones come back populated.
+
+This covers the roster and profiles, goals, skills, projects, development plans, accomplishments, notes, 1:1s, performance, AI insights, bulk imports and reports. Reference data that belongs to nobody — the skill catalog, the rubric, role profiles and thresholds — is shared org-wide and needs only a valid sign-in.
+
+### Setting it up
+
+1. **Admin → Organizations → Add Organization.** Whoever creates it becomes its leader by default, so you are never locked out of something you just made.
+2. **Expand the card → Add Team.** Team names need only be unique inside their own organization.
+3. **Assign an organization leader and a team lead.** This is the step that grants visibility — an organization with no leader is visible to administrators only.
+4. **Put engineers on teams**, from the member's profile or when adding them.
+
+> **Organization names are unique across the whole install**, even though the list you can see is scoped to what you lead. If you are told a name is taken but cannot find it, it belongs to an organization outside your scope.
+
+### Upgrading an existing database
+
+Migration `d3e4f5a6b7c8` handles rows that predate the hierarchy. It repairs any member whose organization disagrees with their team, then moves members with no organization or team into an "Unassigned Organization" / "Unassigned Team" **with a leader attached**. Without that leader the rows would be reachable by nobody but an administrator, since every visibility decision now starts from a leader.
+
+```bash
+docker compose exec api alembic upgrade head
+```
 
 ---
 
@@ -298,22 +375,23 @@ The **Reports** page also exports a flat `skills-readiness` CSV with domain, cri
 - **Backend**: FastAPI (Python 3.12), SQLAlchemy (async), Pydantic v2
 - **Database**: PostgreSQL 16 · **Cache**: Redis 7
 - **Auth**: Microsoft Entra ID (MSAL) + JWT · **AI**: Azure OpenAI / OpenAI GPT-4
+- **Access control**: resolved per request in [`backend/app/core/rbac.py`](backend/app/core/rbac.py), applied via the `get_scope` / `require_employee_access` FastAPI dependencies
 
-> **Note:** the Skills Matrix is currently frontend-only and persists to browser storage. The backend's `skills` router is still stubbed, and `database/schema.sql` reflects the older four-level skill model. Everything documented above works without the backend running.
+> **Note:** `database/schema.sql` is legacy and reflects the older four-level skill model. Alembic migrations under [`backend/alembic/versions/`](backend/alembic/versions/) are the source of truth for the schema.
 
 ### Where your data lives
 
-| localStorage key | Contents |
+Everything of substance lives in **PostgreSQL**, reached through the API. Members, organizations, teams, assessments, goals, notes and 1:1s are all server-side — which is what allows access to be enforced there rather than in the browser.
+
+| Store | Contents |
 |---|---|
-| `asi-employees-v2` | Engineers, skill assessments, development plans |
-| `asi-skill-catalog` | Your edited catalog (absent until you change something) |
-| `asi-role-profiles` | Your edited role profiles (absent until you change something) |
-| `asi-skill-thresholds` | Your breadth / coverage / depth threshold levels (absent until you change them) |
-| `asi-skill-migration-v2` | Marker showing the one-time upgrade from the pre-catalog format has run |
+| PostgreSQL | Organizations, teams, members and every profile record |
+| Redis | JWT revocation list, and AI insight caching keyed **per scope** so one organization's generated insights are never served to another |
+| `localStorage` | Only two conveniences: `team-insight:scope` (your selected organization and team) and `quarterly-reminder-date` |
 
-Assessments are **not synced to a server** — they live in the browser profile you entered them in. Export the workbook at the end of each cycle; that file is your record and your backup.
+The scope stored in `localStorage` is re-validated against the server on every load, so losing access to a team drops you back to something you can still see rather than leaving you on a selection that returns 403.
 
-Upgrading from an earlier version? Ratings on the old four-level scale migrate automatically on first load: Beginner → 1, Intermediate → 2, Advanced → 3, Expert → 4, leaving level 5 as new headroom. Skills with no catalog equivalent are preserved as custom catalog entries rather than dropped.
+Upgrading from an earlier version? Ratings on the old four-level scale migrate on first load: Beginner → 1, Intermediate → 2, Advanced → 3, Expert → 4, leaving level 5 as new headroom. Skills with no catalog equivalent are preserved as custom catalog entries rather than dropped.
 
 ---
 
@@ -344,7 +422,12 @@ team_insight/
 │   │   └── LevelPicker.tsx         #   the one 0–5 rating control
 │   ├── guide/                      # Documentation page primitives
 │   ├── charts/                     # SkillsHeatmap, SkillsRadar, Recharts visualisations
-│   ├── layout/  ui/  employees/    # Header/Sidebar, design system, employee cards
+│   ├── admin/OrganizationsPanel.tsx  # create orgs/teams, assign leaders
+│   ├── layout/
+│   │   ├── ScopeSelector.tsx       #   org picker + team picker, scopes every page
+│   │   ├── AppShell.tsx            #   sidebar + main, minus the sign-in page
+│   │   └── Sidebar.tsx  Header.tsx
+│   ├── ui/  employees/             # Design system, employee cards
 ├── lib/
 │   ├── skill-catalog.ts            # 69 skills, 6 anchors, 6 role profiles, sources
 │   ├── skill-analytics.ts          # every derived measure, as pure functions
@@ -352,11 +435,26 @@ team_insight/
 │   ├── skill-catalog-store.tsx     # editable catalog (localStorage)
 │   ├── skill-migration.ts          # one-time upgrade from the pre-catalog model
 │   ├── seed-assessments.ts         # demo ratings for the ten seeded engineers
-│   ├── employee-store.tsx          # employee + assessment state
+│   ├── employee-store.tsx          # roster state, keyed on the selected scope
+│   ├── scope-store.tsx             # selected org/team, persisted and re-validated
+│   ├── organization-store.tsx      # organization + team queries and mutations
 │   ├── types.ts  utils.ts          # shared types; level math and colour helpers
-├── public/docs/                    # User-guide screenshots
-├── backend/                        # FastAPI service (see Architecture note above)
-├── database/schema.sql
+├── public/docs/                    # Guide screenshots and diagrams
+├── backend/
+│   ├── app/
+│   │   ├── core/
+│   │   │   ├── rbac.py             # ★ Scope: walks org → team → member, unions grants
+│   │   │   └── deps.py             #   get_scope / require_employee_access dependencies
+│   │   ├── routers/
+│   │   │   ├── organizations.py    #   organization + team CRUD
+│   │   │   └── employees.py  goals.py  skills.py  notes.py  …
+│   │   └── models/  schemas/  services/
+│   ├── alembic/versions/           # Schema history — the source of truth
+│   ├── scripts/seed.py             # Demo orgs, teams and the four persona logins
+│   └── tests/
+│       ├── test_rbac_scoping.py    # ★ who sees what, and what a direct call gets
+│       └── test_org_lifecycle.py   #   create org → add teams → staff → appoint leader
+├── database/schema.sql             # Legacy; superseded by Alembic
 └── docker-compose.yml
 ```
 
@@ -415,11 +513,16 @@ Team Insight integrates with the [Degreed API v2](https://developer.degreed.com)
 | `GET` | `/api/health` | Health check |
 | `GET` | `/api/v1/team/metrics` | Aggregated team metrics |
 | `POST` | `/api/v1/auth/token` | Exchange Entra token for JWT |
-| `GET` | `/api/v1/employees` | List team members |
+| `POST` | `/api/v1/auth/dev-login` | Development-only sign-in (404s unless `ENVIRONMENT=development`) |
+| `GET/POST` | `/api/v1/organizations/` | Organizations you can see / create one |
+| `PATCH/DELETE` | `/api/v1/organizations/{id}` | Update or remove an organization you manage |
+| `GET/POST` | `/api/v1/organizations/{id}/teams` | Teams in an organization / add one |
+| `PATCH/DELETE` | `/api/v1/organizations/teams/{id}` | Update or remove a team |
+| `GET` | `/api/v1/employees?organization_id=&team_id=` | Members, scoped; filtering to an org or team outside your scope is a 403 |
 | `GET/POST` | `/api/v1/goals` | Goals CRUD |
-| `GET` | `/api/v1/skills/matrix` | Full skills heat map data *(stub)* |
-| `GET` | `/api/v1/skills/gaps` | Team skill gap analysis *(stub)* |
-| `GET` | `/api/v1/insights` | AI-generated insights |
+| `GET` | `/api/v1/skills/matrix` | Full skills heat map data |
+| `GET` | `/api/v1/skills/gaps` | Skill gap analysis across your scope |
+| `GET` | `/api/v1/insights` | AI-generated insights, cached per scope |
 | `GET` | `/api/v1/notes` | Director coaching notes |
 | `GET` | `/api/v1/reports` | Report generation |
 | `GET` | `/api/v1/degreed/status` | Degreed connection status |
@@ -432,6 +535,8 @@ Team Insight integrates with the [Degreed API v2](https://developer.degreed.com)
 | `POST` | `/api/v1/degreed/sync` | Trigger a Degreed data sync |
 
 Interactive docs: [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
+
+**Every endpoint carrying member data is scoped.** Passing an `employee_id`, `team_id` or `organization_id` outside your scope returns `403`, not an empty result — see [Organizations, teams and access](#organizations-teams-and-access). Endpoints serving shared reference data (`/skills/catalog`, `/skills/role-profiles`, `/skills/thresholds`) need only a valid token.
 
 ---
 
@@ -477,6 +582,11 @@ Configurable per organization via **Admin → Scoring Model**.
 | **A Final rating appears with no reviewer rating** | That's the self-rating standing in. Hover the badge to see which source it came from. |
 | **Import reports unmatched employees** | Rows match on the Employee column against the name in the app, case-insensitively. Renames, middle initials or trailing spaces break the match — the review dialog lists every one. |
 | **Ratings vanished after deleting a catalog skill** | They're retained in storage but hidden, because a rating with no definition can't be interpreted. Re-adding a skill with the same ID restores them. |
+| **The roster is empty after signing in** | You lead nothing yet. Visibility comes from leader assignments, not from your role — have an administrator make you an organization leader or a team lead in **Admin → Organizations**. |
+| **An organization name is "already taken" but is not in the list** | Names are unique across the whole install while the list is scoped to what you lead. It belongs to an organization you cannot see; ask an administrator. |
+| **A direct API call returns 403** | That member, team or organization is outside your scope. This is deliberate — the API refuses rather than returning an empty result, which would still reveal whether the record exists. |
+| **Existing engineers disappeared after upgrading** | They have no organization or team, so nobody but an administrator can reach them. Run `docker compose exec api alembic upgrade head` to apply the backfill migration. |
+| **The team picker is greyed out** | Pick an organization first — a team only means something inside one. |
 | **`npm run lint` prompts to configure ESLint** | No ESLint config is committed. Use `npx tsc --noEmit` for type checking, or run the prompt once to create a config. |
 | **Changes to `tailwind.config.ts` don't take effect** | Restart the dev server — Tailwind config is not hot-reloaded. |
 
