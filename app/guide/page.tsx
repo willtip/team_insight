@@ -5,6 +5,7 @@ import Link from 'next/link'
 import {
   BookOpen, Rocket, Ruler, ClipboardList, LayoutGrid, Map, AlertTriangle,
   GraduationCap, Settings2, FileSpreadsheet, Sparkles, HelpCircle, Database,
+  Building2, ShieldCheck,
 } from 'lucide-react'
 import Header from '@/components/layout/Header'
 import Badge from '@/components/ui/Badge'
@@ -17,6 +18,8 @@ import { cn } from '@/lib/utils'
 
 const SECTIONS = [
   { id: 'start', label: 'Getting started', icon: Rocket },
+  { id: 'orgs', label: 'Organizations & teams', icon: Building2 },
+  { id: 'access', label: 'Who sees what', icon: ShieldCheck },
   { id: 'model', label: 'How it works', icon: BookOpen },
   { id: 'rubric', label: 'The 0–5 rubric', icon: Ruler },
   { id: 'assess', label: 'Running an assessment', icon: ClipboardList },
@@ -59,7 +62,7 @@ export default function GuidePage() {
     <div className="flex flex-col min-h-screen">
       <Header
         title="User Guide"
-        subtitle="How to assess your team's technical capability with Team Insight"
+        subtitle="Scoping your organization, assessing capability, and developing your engineers"
       />
 
       <div className="flex-1 flex gap-8 p-6 max-w-[1400px]">
@@ -112,14 +115,17 @@ export default function GuidePage() {
                   Assess capability, not job titles
                 </h2>
                 <p className="text-sm text-slate-600 mt-1 leading-relaxed max-w-3xl">
-                  Team Insight&apos;s Skills Matrix measures what your engineers can
-                  demonstrably do, against a catalog of {AAP_SKILL_CATALOG.length} observable
-                  capabilities spanning {domainCount} domains — {criticalCount} of them flagged
-                  critical. Every rating is anchored to a published 0–5 rubric and backed by
-                  evidence, so the resulting gaps, risks and development plans hold up in a
-                  room full of engineers.
+                  Team Insight tracks goals, skills, projects, development, accomplishments,
+                  notes, 1:1s and performance for every engineer you are responsible for — and
+                  only for the engineers you are responsible for. Capability is measured
+                  against a catalog of {AAP_SKILL_CATALOG.length} observable capabilities
+                  spanning {domainCount} domains, {criticalCount} of them flagged critical,
+                  each anchored to a published 0–5 rubric and backed by evidence, so the
+                  resulting gaps, risks and development plans hold up in a room full of
+                  engineers.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-3">
+                  <Badge className="bg-brand-50 text-brand-700">Multi-organization</Badge>
                   <Badge className="bg-brand-50 text-brand-700">
                     {AAP_SKILL_CATALOG.length} skills
                   </Badge>
@@ -133,6 +139,12 @@ export default function GuidePage() {
               </div>
             </div>
           </Card>
+
+          <Figure
+            src="/docs/capabilities.svg"
+            alt="Overview of Team Insight: scoped access above member profiles, the skills framework, analytics, AI assistance and data exchange"
+            caption="Everything below the blue band is filtered by the organization and team you lead. Click to enlarge."
+          />
 
           {/* ── Getting started ────────────────────────────────── */}
           <Section
@@ -199,6 +211,158 @@ npm run dev`}</Pre>
                 </p>
               </Step>
             </Steps>
+          </Section>
+
+          {/* ── Organizations & teams ──────────────────────────── */}
+          <Section
+            id="orgs"
+            title="Organizations and teams"
+            lead="Everything in the app hangs off a three-level hierarchy. Set it up once and the rest of the product scopes itself."
+          >
+            <P>
+              Team Insight is built for more than one organization. An{' '}
+              <strong>Organization</strong> holds one or more <strong>Teams</strong>, and every{' '}
+              <strong>Member</strong> belongs to exactly one team — and, through it, to exactly
+              one organization. Each level has a leader, and those leader assignments are what
+              grant access. There are no permission checkboxes to maintain.
+            </P>
+
+            <Figure
+              src="/docs/access-model.svg"
+              alt="Two organizations, each containing teams with leads and members, separated by a boundary that returns 403"
+              caption="An org leader sees every team beneath them. A team lead sees one team. Nothing crosses the boundary between organizations."
+            />
+
+            <h3 className="text-sm font-semibold text-slate-800 mt-6 mb-1">Setting one up</h3>
+            <Steps>
+              <Step n={1} title="Create the organization">
+                <p>
+                  <strong>Admin → Organizations → Add Organization</strong>. Whoever creates it
+                  becomes its leader by default, so you are never locked out of something you
+                  just made.
+                </p>
+              </Step>
+              <Step n={2} title="Add teams to it">
+                <p>
+                  Expand the organization card and use <strong>Add Team</strong>. Team names
+                  need only be unique inside their own organization — two organizations can
+                  both have a &ldquo;Platform&rdquo; team.
+                </p>
+              </Step>
+              <Step n={3} title="Assign a leader at each level">
+                <p>
+                  Pick an <em>organization leader</em> on the org card and a{' '}
+                  <em>team lead</em> on each team. This is the step that grants visibility —
+                  an organization with no leader is visible to administrators only.
+                </p>
+              </Step>
+              <Step n={4} title="Put engineers on teams">
+                <p>
+                  Set a member&apos;s team from their profile or when adding them. The
+                  organization is derived from the team automatically, so the two can never
+                  disagree.
+                </p>
+              </Step>
+            </Steps>
+
+            <Callout kind="tip" title="The scope selector">
+              <p>
+                Once you belong to more than one organization or team, the sidebar shows an{' '}
+                <strong>Organization</strong> picker and, beneath it, a <strong>Team</strong>{' '}
+                picker limited to that organization. Your choice applies to every page —
+                roster, goals, skills, projects, insights, notes and reports all re-query the
+                server for the selected scope. It is remembered between visits.
+              </p>
+              <p>
+                With exactly one organization available it is selected for you, since there is
+                no choice to make.
+              </p>
+            </Callout>
+
+            <Callout kind="warn" title="Names are unique company-wide">
+              <p>
+                Organization names must be unique across the whole install, even though the
+                list you can see is limited to what you lead. If you are told a name is taken
+                but cannot find it, it belongs to an organization outside your scope — ask an
+                administrator rather than hunting for it.
+              </p>
+            </Callout>
+          </Section>
+
+          {/* ── Who sees what ──────────────────────────────────── */}
+          <Section
+            id="access"
+            title="Who sees what"
+            lead="Access is worked out by walking the hierarchy, not by reading a role label off your account."
+          >
+            <Table
+              head={['You are', 'You can see', 'You cannot see']}
+              rows={[
+                [
+                  <strong key="a">An organization leader</strong>,
+                  'Every team in your organization, every member on those teams, and their full profiles.',
+                  'Any other organization.',
+                ],
+                [
+                  <strong key="b">A team lead</strong>,
+                  'The members of the team you lead, and their full profiles.',
+                  'Other teams, including ones in your own organization.',
+                ],
+                [
+                  <strong key="c">Both at once</strong>,
+                  <>The <em>union</em> of both grants. Leading a team inside an organization
+                  you already lead adds nothing; leading a team in a different organization
+                  adds exactly that team.</>,
+                  'Anything neither grant covers.',
+                ],
+                [
+                  <strong key="d">Everyone else</strong>,
+                  'Your own record.',
+                  // A plain string, not JSX — an HTML entity would render literally here.
+                  'Everyone else’s.',
+                ],
+              ]}
+            />
+
+            <P>
+              The important consequence: a job title has no bearing on what you can open. A
+              director who leads nothing sees nothing, and an engineer who has been made a
+              team lead sees their team. Change who leads what and access changes with it,
+              immediately.
+            </P>
+
+            <h3 className="text-sm font-semibold text-slate-800 mt-6 mb-1">
+              The selector is a convenience, not the lock
+            </h3>
+            <P>
+              Hiding things in the interface is not security, so the interface is not where
+              this is enforced. Every request is checked on the server against the scope it
+              resolves for your account, and a request for someone outside it is refused
+              outright.
+            </P>
+
+            <Figure
+              src="/docs/request-scoping.svg"
+              alt="A request flowing from the browser through scope resolution to either scoped rows or a 403 refusal"
+              caption="Scope is resolved per request. Asking for a member outside it returns 403 — deliberately not an empty result, which would still reveal whether that person exists."
+            />
+
+            <Callout kind="note" title="Where this applies">
+              <p>
+                Every surface that carries member data: the roster and profiles, goals,
+                skills, projects, development plans, accomplishments, notes, 1:1s,
+                performance, AI insights, bulk imports and reports. Reference data that
+                belongs to no one — the skill catalog, the rubric, role profiles and
+                thresholds — is shared and needs only a sign-in.
+              </p>
+            </Callout>
+
+            <Callout kind="warn" title="Administrators are exempt">
+              <p>
+                An account with the <Code>admin</Code> role bypasses scoping entirely and can
+                see and manage every organization. Grant it sparingly.
+              </p>
+            </Callout>
           </Section>
 
           {/* ── Model ──────────────────────────────────────────── */}
@@ -966,6 +1130,26 @@ npm run dev`}</Pre>
           <Section id="faq" title="FAQ & troubleshooting">
             <div className="space-y-3">
               {[
+                {
+                  q: 'I signed in and the roster is empty.',
+                  a: 'Visibility comes from leader assignments, not from your role. If you do not lead an organization or a team, there is nothing for you to see beyond your own record. Ask an administrator to make you an organization leader or a team lead in Admin → Organizations.',
+                },
+                {
+                  q: 'I can only see one team, but I manage two.',
+                  a: 'You are the lead on one of them and not the other. Team access is granted per team, so leading two means being named on both — or being made the leader of the organization that contains them, which covers every team inside it at once.',
+                },
+                {
+                  q: 'I am told an organization name is taken, but I cannot find it.',
+                  a: 'Organization names are unique across the whole install, while the list you see is limited to what you lead. The clash belongs to an organization outside your scope. Ask an administrator to give you access to it, or pick a different name.',
+                },
+                {
+                  q: 'Why does the API return 403 instead of an empty list?',
+                  a: 'Because an empty list is still an answer. If out-of-scope requests came back empty, a caller could try ids one after another and learn which ones exist by watching which responses had a different shape. Refusing outright gives nothing away.',
+                },
+                {
+                  q: 'Our engineers vanished after upgrading.',
+                  a: 'They predate the organization hierarchy and have no team, so no leader chain reaches them. Run the database migrations — the backfill moves them into an "Unassigned" organization and team with a leader attached, and you can then move them onto real teams.',
+                },
                 {
                   q: 'A skill shows a gap even though the engineer is strong at it.',
                   a: 'Check the target on the Framework tab. Gaps are measured against target, not against the top of the scale — a target of 4 on a skill they hold at 3 is a real one-level gap. If the target is wrong for your team, change it there, or override it for that one person in the Target column of the Assessment tab.',
