@@ -15,6 +15,47 @@ from app.services.assessment_import import (
     resolve_rows,
 )
 
+# The engineer-facing self-assessment workbook, header for header. Columns D, E and I
+# are printed guidance; only G and H are the engineer's own cells.
+SELF_ASSESSMENT_HEADERS = [
+    "Skill ID",
+    "Domain",
+    "Skill",
+    "What doing this actually looks like",
+    "Evidence that would show it",
+    "Team target",
+    "MY RATING (0-5)",
+    "MY EVIDENCE \u2014 what would you point at?",
+    "What my rating means",
+]
+
+
+def self_assessment_bytes(name, rows):
+    """A minimal stand-in for Skills_Self_Assessment_INTAKE.xlsx.
+
+    `rows` are (skill_code, guidance, team_target, my_rating, my_evidence) tuples.
+    """
+    import io
+
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    start = wb.active
+    start.title = "Start Here"
+    start["A4"], start["B4"] = "Your name", name
+
+    ws = wb.create_sheet("My Assessment")
+    ws["A1"] = "My Assessment"
+    ws.append([])  # subtitle
+    ws.append([])  # spacer
+    ws.append(SELF_ASSESSMENT_HEADERS)
+    for code, guidance, target, rating, evidence in rows:
+        ws.append([code, "AAP", "A skill", "Looks like...", guidance, target, rating, evidence, ""])
+
+    buffer = io.BytesIO()
+    wb.save(buffer)
+    return buffer.getvalue()
+
 
 # --- stand-ins for the ORM rows, which is all resolve_rows actually touches ---
 
@@ -249,3 +290,80 @@ def test_tab_separated_file_is_read():
     )
     assert source == "csv"
     assert rows[0].values["self_rating"] == 3
+
+
+# --- guidance columns -----------------------------------------------------
+
+def test_guidance_columns_are_never_bound():
+    """`Evidence that would show it` is rubric text, printed the same for everyone.
+
+    It sits three columns left of the engineer's own `MY EVIDENCE`, so the loose
+    `evidence` keyword fallback used to claim it and `_row_from_cells` then let it
+    supersede the real answer — giving every team member identical evidence.
+    """
+    cols = match_columns(SELF_ASSESSMENT_HEADERS)
+    assert cols["self_evidence"] == 7
+    assert cols.get("evidence") is None
+    assert cols.get("skill_name") == 2
+    assert cols.get("self_rating") == 6
+
+
+def test_catalog_reference_columns_are_not_bound():
+    """The Skill Catalog export describes each skill; none of it is an input cell."""
+    cols = match_columns(
+        ["Skill ID", "Skill", "Observable capability", "Example evidence", "Target level"]
+    )
+    assert cols.get("evidence") is None
+    assert cols["skill_code"] == 0
+    assert cols["target"] == 4
+
+
+def test_named_evidence_column_still_wins_over_self_evidence():
+    """The manager sheet's calibrated evidence must keep superseding the self answer."""
+    cols = match_columns(["Employee", "Skill ID", "My evidence", "Reviewer evidence"])
+    assert cols["self_evidence"] == 2
+    assert cols["evidence"] == 3
+
+
+def test_self_assessment_keeps_each_engineers_own_evidence():
+    data = self_assessment_bytes(
+        "Sarah Chen",
+        [
+            (1, "Architecture decision and topology review", 4, 3, "Rebuilt the mesh topology"),
+            (3, "Mesh design and failure diagnosis", 4, 2, None),
+        ],
+    )
+    rows, warnings, source = parse_bytes("intake.xlsx", data)
+    assert source == "xlsx"
+    assert warnings == []
+    assert [r.employee_name for r in rows] == ["Sarah Chen", "Sarah Chen"]
+    assert rows[0].values["evidence"] == "Rebuilt the mesh topology"
+    # Blank means "leave unchanged" — not "overwrite with the guidance text".
+    assert "evidence" not in rows[1].values
+
+
+def test_self_assessment_does_not_import_the_printed_team_target():
+    """`Team target` is the catalog level shown for context, not an override the
+
+    engineer can set. Importing it would silently drop one the manager had set.
+    """
+    data = self_assessment_bytes("Sarah Chen", [(1, "Guidance", 4, 3, "Evidence")])
+    rows, _warnings, _source = parse_bytes("intake.xlsx", data)
+    assert "target_override" not in rows[0].values
+    assert rows[0].values == {"self_rating": 3, "evidence": "Evidence"}
+
+
+def test_untouched_self_assessment_rows_are_dropped_not_imported():
+    data = self_assessment_bytes("Sarah Chen", [(1, "Guidance", 4, None, None)])
+    rows, warnings, _source = parse_bytes("intake.xlsx", data)
+    assert rows == []
+    assert any("Nothing was filled in" in w for w in warnings)
+
+
+def test_reimporting_the_same_self_assessment_reports_no_change():
+    """Re-uploading to add evidence must not re-write ratings that already agree."""
+    data = self_assessment_bytes("Sarah Chen", [(1, "Guidance", 4, 3, "Rebuilt the mesh")])
+    rows, _warnings, _source = parse_bytes("intake.xlsx", data)
+    stored = [FakeAssessment("emp-001", "aap-01", self_rating=3, evidence="Rebuilt the mesh")]
+    result = resolve_rows(rows, EMPLOYEES, CATALOG, stored)
+    assert result.rows[0].status == "unchanged"

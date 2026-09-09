@@ -4,7 +4,7 @@ Pure functions over bytes and already-loaded ORM rows: nothing here touches HTTP
 commits a transaction, so the whole matching/diffing surface is testable without a
 database. `assessment_apply.py` owns the write.
 
-Two things about the shipped workbooks drive the design here, both measured rather
+Three things about the shipped workbooks drive the design here, all measured rather
 than assumed (openpyxl 3.1.5):
 
 1. The derived columns on the Assessment sheet cache as empty. In the fully populated
@@ -21,6 +21,13 @@ than assumed (openpyxl 3.1.5):
 2. `read_only=True` raises AttributeError on `cell.hyperlink`, and evidence is written
    as `{text, hyperlink}`, so the workbook must be opened read-write to recover
    `evidence_url`.
+
+3. Every sheet mixes input cells with printed guidance, and the guidance is worded like
+   a header for the same field. `My Assessment` carries both `Evidence that would show
+   it` (the rubric, column E) and `MY EVIDENCE` (the answer, column H); the Skill
+   Catalog export pairs `Example evidence` with nothing at all. A guidance column is
+   the same text on every row for every person, so binding one silently gives a whole
+   team identical values — see `REFERENCE_HEADER_PATTERNS`.
 """
 from __future__ import annotations
 
@@ -152,11 +159,31 @@ COLUMN_KEYWORDS: dict[str, tuple[tuple[str, ...], ...]] = {
 }
 
 
+# Guidance columns: rubric text printed on the sheet for whoever is filling it in.
+# They are identical for every employee, so binding one to a logical field imports the
+# instructions instead of the answer. The self-assessment workbook's `Evidence that
+# would show it` sits three columns left of the engineer's own `MY EVIDENCE`, and the
+# loose `evidence` keyword fallback below used to claim it.
+REFERENCE_HEADER_PATTERNS = (
+    re.compile(r"^what\b"),                       # What my rating means
+    re.compile(r"^example\b"),                    # Example evidence (Skill Catalog export)
+    re.compile(r"^observable\b"),                 # Observable capability / behavior
+    re.compile(r"^evidence (that|you|which)\b"),  # Evidence that would show it
+)
+
+
+def is_reference_header(label: str) -> bool:
+    """True for a column that explains what to write rather than holding what was written."""
+    return any(pattern.search(label) for pattern in REFERENCE_HEADER_PATTERNS)
+
+
 def match_columns(headers: Iterable[Any]) -> dict[str, int]:
     """Map logical field -> 0-based column index for one header row."""
     normalized = [normalize_header(h) for h in headers]
     taken: set[int] = set()
     resolved: dict[str, int] = {}
+    # Guidance columns are spoken for before anything can bind them.
+    taken |= {i for i, label in enumerate(normalized) if label and is_reference_header(label)}
 
     # Pass 1: exact alias equality, most-specific fields first so `employee id` and
     # `skill id` claim their columns before the looser `employee` / `skill` aliases.
@@ -177,6 +204,13 @@ def match_columns(headers: Iterable[Any]) -> dict[str, int]:
     # Pass 2: keyword fallback for anything still unbound.
     for field_name in order:
         if field_name in resolved or field_name not in COLUMN_KEYWORDS:
+            continue
+        if field_name == "evidence" and "self_evidence" in resolved:
+            # A sheet that names one column `My evidence` has already said where the
+            # written-in evidence lives, and `_row_from_cells` lets reviewer evidence
+            # supersede it. So a merely evidence-ish second column must not be *guessed*
+            # into that role: it has to match an alias exactly (`Evidence`, `Reviewer
+            # evidence`, `Notes`), which pass 1 above would already have bound.
             continue
         for keywords in COLUMN_KEYWORDS[field_name]:
             hit = next(
@@ -480,6 +514,12 @@ def parse_xlsx_bytes(data: bytes) -> tuple[list[ParsedRow], list[str]]:
                 if all(c is None or str(c).strip() == "" for c in cells):
                     continue
                 row = _row_from_cells(offset, cells, headers, cols)
+                # `Team target` is the catalog level printed for context; the engineer
+                # has no way to change it, so reading it back as an override would let
+                # a self-assessment silently drop one the manager set. Mirrors the
+                # Assessment sheet dropping its INDEX/MATCH self_rating below.
+                row.values.pop("target_override", None)
+                row.clears.discard("target_override")
                 if row.employee_name is None:
                     row.employee_name = name
                 if row.values or row.clears:
@@ -488,6 +528,11 @@ def parse_xlsx_bytes(data: bytes) -> tuple[list[ParsedRow], list[str]]:
                 warnings.append(
                     "This self-assessment workbook has no name on its 'Start Here' sheet, "
                     "so its rows cannot be matched to a person."
+                )
+            if not rows:
+                warnings.append(
+                    "Nothing was filled in on the 'My Assessment' sheet — every rating "
+                    "and evidence cell is blank."
                 )
             return rows, warnings
 
