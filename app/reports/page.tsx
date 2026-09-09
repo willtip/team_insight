@@ -9,6 +9,7 @@ import { TEAM_METRICS } from '@/lib/mock-data'
 import { useEmployees } from '@/lib/employee-store'
 import { useSkillCatalog } from '@/lib/skill-catalog-store'
 import { resolveEmployeeSkills } from '@/lib/skill-analytics'
+import type { ReportTable } from '@/lib/report-export'
 import { cn, scoreToColor, promotionReadinessColor, formatDate } from '@/lib/utils'
 import {
   FileText, Download, Users, Target, TrendingUp, Shield,
@@ -94,6 +95,8 @@ export default function ReportsPage() {
   const [selectedFormat, setSelectedFormat] = useState('PDF')
   const [generating, setGenerating] = useState(false)
   const [generated, setGenerated] = useState<{ reportId: string; format: string } | null>(null)
+  const [exportError, setExportError] = useState<string | null>(null)
+  const [downloading, setDownloading] = useState<string | null>(null)
   const [mounted, setMounted] = useState(false)
   useEffect(() => setMounted(true), [])
 
@@ -107,130 +110,165 @@ export default function ReportsPage() {
     }, 1500)
   }
 
-  const generateCSV = (reportId: string): string => {
+  /**
+   * One structured table per report. Every format renders from this, so PDF,
+   * Excel and PowerPoint can never disagree — and nothing has to re-parse a
+   * CSV string to recover the columns.
+   */
+  const buildTable = (reportId: string): ReportTable | null => {
+    const report = REPORT_TYPES.find(r => r.id === reportId)
+    if (!report) return null
+
+    const subtitle =
+      `Automation Solution Engineering · Q2 2026 · Prepared by William Tipton · ${new Date().toLocaleDateString()}`
+    const base = { title: report.title, subtitle }
+
     switch (reportId) {
       case 'team-health':
-        return [
-          ['Name', 'Level', 'Title', 'Department', 'Overall', 'Goals', 'Growth', 'Leadership', 'Promotion Readiness', 'Trend'].join(','),
-          ...EMPLOYEES.map(e => [
-            `"${e.name}"`, e.level, `"${e.title}"`, `"${e.department}"`,
+        return {
+          ...base,
+          headers: ['Name', 'Level', 'Title', 'Department', 'Overall', 'Goals', 'Growth', 'Leadership', 'Promotion Readiness', 'Trend'],
+          rows: EMPLOYEES.map(e => [
+            e.name, e.level, e.title, e.department,
             e.performanceScore.overall, e.performanceScore.goalAchievement,
             e.performanceScore.growthScore, e.performanceScore.leadershipReadiness,
-            `"${e.promotionReadiness}"`, e.performanceScore.trend,
-          ].join(',')),
-        ].join('\n')
+            e.promotionReadiness, e.performanceScore.trend,
+          ]),
+        }
 
       case 'goal-status':
-        return [
-          ['Employee', 'Goal Title', 'Status', 'Priority', 'Category', 'Progress %', 'Due Date', 'Strategic Alignment'].join(','),
-          ...EMPLOYEES.flatMap(e => e.goals.map(g => [
-            `"${e.name}"`, `"${g.title}"`, `"${g.status}"`, g.priority,
-            g.category, g.progress, g.dueDate, `"${g.strategicAlignment}"`,
-          ].join(','))),
-        ].join('\n')
+        return {
+          ...base,
+          headers: ['Employee', 'Goal Title', 'Status', 'Priority', 'Category', 'Progress %', 'Due Date', 'Strategic Alignment'],
+          rows: EMPLOYEES.flatMap(e => e.goals.map(g => [
+            e.name, g.title, g.status, g.priority,
+            g.category, g.progress, g.dueDate, g.strategicAlignment,
+          ])),
+        }
 
       case 'promotion-pipeline':
-        return [
-          ['Name', 'Level', 'Title', 'Promotion Readiness', 'High Potential', 'Overall Score', 'Goal Achievement', 'Leadership Score'].join(','),
-          ...EMPLOYEES
+        return {
+          ...base,
+          headers: ['Name', 'Level', 'Title', 'Promotion Readiness', 'High Potential', 'Overall Score', 'Goal Achievement', 'Leadership Score'],
+          rows: EMPLOYEES
             .slice()
             .sort((a, b) => {
               const order = ['Ready Now', 'Ready in 6 Months', 'Ready in 12 Months', 'Development Needed']
               return order.indexOf(a.promotionReadiness) - order.indexOf(b.promotionReadiness)
             })
             .map(e => [
-              `"${e.name}"`, e.level, `"${e.title}"`, `"${e.promotionReadiness}"`,
+              e.name, e.level, e.title, e.promotionReadiness,
               e.isHighPotential ? 'Yes' : 'No',
               e.performanceScore.overall, e.performanceScore.goalAchievement,
               e.performanceScore.leadershipReadiness,
-            ].join(',')),
-        ].join('\n')
+            ]),
+        }
 
       case 'skills-readiness':
-        return [
-          ['Employee', 'Domain', 'Skill', 'Critical', 'Target', 'Self', 'Reviewer',
-            'Final', 'Gap', 'Priority', 'Evidence'].join(','),
-          ...EMPLOYEES.flatMap(e =>
+        return {
+          ...base,
+          headers: ['Employee', 'Domain', 'Skill', 'Critical', 'Target', 'Self', 'Reviewer', 'Final', 'Gap', 'Priority', 'Evidence'],
+          rows: EMPLOYEES.flatMap(e =>
             resolveEmployeeSkills(e, catalog)
               .filter(r => r.final !== undefined)
               .map(r => [
-                `"${e.name}"`, `"${r.definition.domain}"`, `"${r.definition.name}"`,
+                e.name, r.definition.domain, r.definition.name,
                 r.definition.critical ? 'Yes' : 'No', r.target,
                 r.self ?? '', r.reviewer ?? '', r.final ?? '', r.gap ?? '',
-                r.priority ?? '', `"${(r.evidence ?? '').replace(/"/g, '""')}"`,
-              ].join(',')),
+                r.priority ?? '', r.evidence ?? '',
+              ]),
           ),
-        ].join('\n')
+        }
 
       case 'coaching-summary':
-        return [
-          ['Employee', 'Note Title', 'Category', 'Date', 'Follow-Up Date', 'Author', 'Content'].join(','),
-          ...EMPLOYEES.flatMap(e => e.notes.map(n => [
-            `"${e.name}"`, `"${n.title}"`, `"${n.category}"`, n.createdAt.split('T')[0],
-            n.followUpDate || '', `"${n.authorName}"`, `"${n.content.replace(/"/g, '""')}"`,
-          ].join(','))),
-        ].join('\n')
+        return {
+          ...base,
+          headers: ['Employee', 'Note Title', 'Category', 'Date', 'Follow-Up Date', 'Author', 'Content'],
+          rows: EMPLOYEES.flatMap(e => e.notes.map(n => [
+            e.name, n.title, n.category, n.createdAt.split('T')[0],
+            n.followUpDate || '', n.authorName, n.content,
+          ])),
+        }
 
       case 'succession-planning':
-        return [
-          ['Name', 'Level', 'Title', 'Location', 'Promotion Readiness', 'High Potential', 'Needs Coaching', 'Skills Count', 'Overall Score'].join(','),
-          ...EMPLOYEES
+        return {
+          ...base,
+          headers: ['Name', 'Level', 'Title', 'Location', 'Promotion Readiness', 'High Potential', 'Needs Coaching', 'Skills Count', 'Overall Score'],
+          rows: EMPLOYEES
             .slice()
             .sort((a, b) => b.performanceScore.leadershipReadiness - a.performanceScore.leadershipReadiness)
             .map(e => [
-              `"${e.name}"`, e.level, `"${e.title}"`, `"${e.location}"`,
-              `"${e.promotionReadiness}"`,
+              e.name, e.level, e.title, e.location, e.promotionReadiness,
               e.isHighPotential ? 'Yes' : 'No', e.needsCoaching ? 'Yes' : 'No',
               e.skills.length, e.performanceScore.overall,
-            ].join(',')),
-        ].join('\n')
+            ]),
+        }
 
       default:
-        return ''
+        return null
     }
   }
 
-  const downloadReport = (reportId: string, format: string) => {
-    const report = REPORT_TYPES.find(r => r.id === reportId)
-    if (!report) return
+  const escapeHtml = (v: unknown) =>
+    String(v ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 
-    if (format === 'PDF') {
+  const downloadReport = async (reportId: string, format: string) => {
+    setExportError(null)
+    setDownloading(reportId)
+
+    try {
+      const table = buildTable(reportId)
+      if (!table) return
+
+      const slug = `${table.title.replace(/\s+/g, '-')}-Q2-2026`
+
+      if (format === 'Excel') {
+        const { downloadReportXlsx } = await import('@/lib/report-export')
+        await downloadReportXlsx(table, `${slug}.xlsx`)
+        return
+      }
+
+      if (format === 'PowerPoint') {
+        const { downloadReportPptx } = await import('@/lib/report-export')
+        await downloadReportPptx(table, `${slug}.pptx`)
+        return
+      }
+
+      // PDF — rendered as a print-ready page. Built from the structured rows
+      // rather than by splitting a CSV string, which mangled any field that
+      // contained a comma (job titles, goal names, evidence notes).
       const pw = window.open('', '_blank')
-      if (!pw) { alert('Allow pop-ups to download PDF reports.'); return }
-      const csv = generateCSV(reportId)
-      const tableHTML = csv.split('\n').map((row, i) => {
-        const cols = row.split(',').map(c => c.replace(/^"|"$/g, ''))
-        const tag = i === 0 ? 'th' : 'td'
-        return `<tr>${cols.map(c => `<${tag} style="${i === 0 ? 'background:#f8fafc;font-weight:600;color:#475569;' : 'color:#334155;'}">${c}</${tag}>`).join('')}</tr>`
-      }).join('')
-      pw.document.write(`<!DOCTYPE html><html><head><title>${report.title}</title>
+      if (!pw) { setExportError('Allow pop-ups to download PDF reports.'); return }
+
+      const headHTML = `<tr>${table.headers
+        .map(h => `<th>${escapeHtml(h)}</th>`).join('')}</tr>`
+      const bodyHTML = table.rows
+        .map(row => `<tr>${row.map(c => `<td>${escapeHtml(c)}</td>`).join('')}</tr>`)
+        .join('')
+
+      pw.document.write(`<!DOCTYPE html><html><head><title>${escapeHtml(table.title)}</title>
         <style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;padding:40px;color:#1e293b;margin:0}
         h1{font-size:20px;margin-bottom:4px}.meta{font-size:11px;color:#64748b;margin-bottom:24px}
         table{border-collapse:collapse;width:100%;font-size:11px}th,td{padding:8px 12px;border:1px solid #e2e8f0;text-align:left}
+        th{background:#f8fafc;font-weight:600;color:#475569}td{color:#334155}
         tr:nth-child(even) td{background:#f8fafc}.footer{margin-top:24px;font-size:10px;color:#94a3b8;border-top:1px solid #e2e8f0;padding-top:12px;display:flex;justify-content:space-between}
         @media print{body{padding:20px}}</style>
         </head><body>
-        <h1>${report.title}</h1>
-        <div class="meta">Automation Solution Engineering · Q2 2026 · Prepared by William Tipton · ${new Date().toLocaleDateString()}</div>
-        <table>${tableHTML}</table>
+        <h1>${escapeHtml(table.title)}</h1>
+        <div class="meta">${escapeHtml(table.subtitle)}</div>
+        <table>${headHTML}${bodyHTML}</table>
         <div class="footer"><span>Team Insight AI · Automation Solution Engineering · Confidential</span><span>Generated ${new Date().toLocaleDateString()}</span></div>
         <script>window.onload=()=>{window.print()}</script>
         </body></html>`)
       pw.document.close()
-      return
+    } catch (e) {
+      console.error(`[reports] ${format} export failed`, e)
+      setExportError(
+        `Could not build the ${format} file${e instanceof Error ? ` — ${e.message}` : ''}.`
+      )
+    } finally {
+      setDownloading(null)
     }
-
-    // Excel / PowerPoint → CSV download
-    const csv = generateCSV(reportId)
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `${report.title.replace(/\s+/g, '-')}-Q2-2026.csv`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
   }
 
   const promotionCandidates = EMPLOYEES.filter(e =>
@@ -326,12 +364,21 @@ export default function ReportsPage() {
                       </Button>
                       {isGenerated && (
                         <button
-                          onClick={e => { e.stopPropagation(); downloadReport(report.id, generated!.format) }}
-                          className="flex items-center gap-2 text-xs text-green-600 font-medium hover:text-green-700 hover:underline w-full"
+                          onClick={e => { e.stopPropagation(); void downloadReport(report.id, generated!.format) }}
+                          disabled={downloading === report.id}
+                          className="flex items-center gap-2 text-xs text-green-600 font-medium hover:text-green-700 hover:underline w-full disabled:text-slate-400 disabled:no-underline"
                         >
                           <CheckCircle className="w-3.5 h-3.5 flex-shrink-0" />
-                          Report ready — click to download
+                          {downloading === report.id
+                            ? `Building the ${generated!.format} file…`
+                            : `Report ready — download ${generated!.format}`}
                         </button>
+                      )}
+                      {isGenerated && exportError && (
+                        <p className="flex items-start gap-1.5 text-xs text-red-600">
+                          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0 mt-px" />
+                          <span>{exportError}</span>
+                        </p>
                       )}
                     </div>
                   )}

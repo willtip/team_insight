@@ -121,7 +121,7 @@ API docs at [http://localhost:8000/api/docs](http://localhost:8000/api/docs).
 | **Projects** | Engineering project contributions with business and technical impact scoring |
 | **AI Insights** | GPT-4 powered performance summaries, coaching recommendations, promotion readiness analysis |
 | **Director Notes** | Private coaching notes by category (Recognition, Concerns, Leadership Potential…) |
-| **Reports** | Exportable performance reports (PDF, Excel, CSV) |
+| **Reports** | Exportable performance reports (PDF, Excel `.xlsx`, PowerPoint `.pptx`) |
 | **Degreed Integration** | Live skill ratings, focus skills, assignments and skill insights from Degreed LXP |
 | **Admin** | Organization and team management with leader assignment, scoring model weights, integration config, notifications |
 
@@ -351,7 +351,7 @@ Unmatched employee names and unknown skill IDs are reported rather than silently
 
 `exceljs` is loaded dynamically, so it stays out of the initial bundle.
 
-The **Reports** page also exports a flat `skills-readiness` CSV with domain, criticality, target, self, reviewer, final, gap, priority and evidence per row.
+The **Reports** page also exports a flat `skills-readiness` table with domain, criticality, target, self, reviewer, final, gap, priority and evidence per row. Pick a format on the report card first: **Excel** writes a real `.xlsx` (frozen header, autofilter, numbers kept numeric), **PowerPoint** writes a real `.pptx` (title slide plus paginated table slides), and **PDF** opens a print-ready page. All three are built from the same rows, so they can never disagree.
 
 ---
 

@@ -1024,9 +1024,13 @@ npm run dev`}</Pre>
 
             <P>
               The <strong>Reports</strong> page also exports a flat{' '}
-              <Code>skills-readiness</Code> CSV with domain, criticality, target, self, reviewer,
+              <Code>skills-readiness</Code> table with domain, criticality, target, self, reviewer,
               final, gap, priority and evidence per row — handy for pivot tables or feeding
-              another system.
+              another system. Choose the format on the report card before you generate:{' '}
+              <strong>Excel</strong> gives you a real <Code>.xlsx</Code> with a frozen header row
+              and an autofilter, <strong>PowerPoint</strong> gives you a real <Code>.pptx</Code>{' '}
+              with a title slide and paginated table slides, and <strong>PDF</strong> opens a
+              print-ready page. All three are built from the same rows.
             </P>
           </Section>
 
